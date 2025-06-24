@@ -1,17 +1,17 @@
 <template>
   <!-- Collapsible Sidebar -->
   <div :class="[
-    'bg-[#00569D] text-white transition-all duration-300 relative h-screen flex flex-col',
+    'bg-sky-700 text-white transition-all duration-300 relative h-screen flex flex-col',
     isCollapsed ? 'w-16' : 'w-72'
   ]">
     <!-- Header with Logo -->
-    <div class="p-4 border-b border-[#004080] flex-shrink-0">
+    <div class="p-4 border-b border-sky-800 flex-shrink-0">
       <div class="flex items-center justify-between">
         <div v-if="!isCollapsed" class="flex items-center space-x-3">
           <img src="/logo-onetwo.png" alt="Company Logo" class="h-8 w-auto" />
           <h5 class="text-sm font-semibold">Logistic Management</h5>
         </div>
-        <button @click="toggleCollapse" class="p-2 rounded-lg hover:bg-[#004080] transition-colors">
+        <button @click="toggleCollapse" class="p-2 rounded-lg hover:bg-sky-600 transition-colors">
           <Icon icon="mdi:menu" class="w-5 h-5" />
         </button>
       </div>
@@ -22,7 +22,7 @@
       <div class="relative">
         <Icon icon="mdi:magnify" class="w-4 h-4 absolute left-3 top-3 text-gray-300" />
         <input v-model="searchTerm" type="text" placeholder="12Pilots..."
-          class="w-full pl-10 pr-4 py-2 bg-[#004080] border border-[#003366] rounded-lg text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-white" />
+          class="w-full pl-10 pr-4 py-2 bg-sky-800 border border-sky-700 rounded-lg text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-white" />
       </div>
     </div>
 
@@ -31,9 +31,9 @@
       <div v-for="(data, system) in menuData" :key="system" class="relative" v-show="isMenuVisible(system, data)">
         <button @click="isCollapsed ? toggleMiniMenu(system) : toggleMenu(system)"
           :title="isCollapsed ? 'คลิกเพื่อขยายเมนู' : ''" :class="[
-            'w-full flex items-center px-4 py-3 text-left hover:bg-[#004080] transition-colors relative',
+            'w-full flex items-center px-4 py-3 text-left hover:bg-sky-600 transition-colors relative text-sm',
             isCollapsed ? 'justify-center' : 'justify-between',
-            isActiveSystem(system, data) ? 'bg-[#004080]' : ''
+            isCollapsed && isActiveSystem(system, data) ? 'bg-sky-600' : ''
           ]">
           <div class="flex items-center space-x-3">
             <Icon :icon="data.icon" class="w-5 h-5" />
@@ -45,14 +45,14 @@
 
         <!-- Mini Menu Dropdown - Show on hover when collapsed -->
         <div v-if="isCollapsed && activeMiniMenu === system"
-          class="absolute left-full top-0 ml-2 w-64 bg-[#000000] rounded-lg shadow-xl border border-[#333] z-50 max-h-[80vh] overflow-y-auto">
-          <div class="p-3 border-b border-[#333] flex-shrink-0">
+          class="absolute left-full top-0 ml-2 w-64 bg-slate-800 rounded-lg shadow-xl border border-slate-700 z-50 max-h-[80vh] overflow-y-auto">
+          <div class="p-3 border-b border-slate-700 flex-shrink-0">
             <div class="flex items-center justify-between">
               <div class="flex items-center space-x-2">
-                <Icon :icon="data.icon" class="w-5 h-5 text-[#00569D]" />
-                <span class="font-semibold text-white">{{ data.label }}</span>
+                <Icon :icon="data.icon" class="w-5 h-5 text-sky-500" />
+                <span class="font-semibold text-white text-sm">{{ data.label }}</span>
               </div>
-              <button @click="activeMiniMenu = null" class="p-1 hover:bg-[#333] rounded transition-colors"
+              <button @click="activeMiniMenu = null" class="p-1 hover:bg-slate-600 rounded transition-colors"
                 title="ปิดเมนู">
                 <Icon icon="mdi:close" class="w-4 h-4 text-gray-400 hover:text-white" />
               </button>
@@ -61,20 +61,18 @@
           <div class="p-2">
             <div v-for="(categoryData, category) in data.items" :key="category" class="mb-3"
               v-show="isCategoryVisible(system, category, categoryData)">
-              <div class="flex items-center space-x-2 px-3 py-2 text-sm font-medium text-gray-300">
+              <div class="flex items-center space-x-2 px-3 py-2 text-xs font-medium text-gray-300">
                 <Icon :icon="categoryData.icon" class="w-4 h-4" />
                 <span>{{ category }}</span>
               </div>
               <div class="ml-3">
                 <router-link v-for="item in categoryData.children" :key="item"
                   :to="getRoutePath(system, category, item)" :class="[
-                    'block px-3 py-1.5 text-sm text-gray-400 hover:text-white hover:bg-[#00569D] rounded transition-colors relative',
-                    isActiveRoute(system, category, item) ? 'bg-[#00569D] text-white' : ''
+                    'block px-3 py-1.5 text-xs text-gray-400 hover:text-white hover:bg-sky-600 rounded transition-colors relative',
+                    isActiveRoute(system, category, item) ? 'bg-slate-700 text-white font-semibold' : ''
                   ]" v-show="isItemVisible(system, category, item)">
                   <div class="flex items-center justify-between">
                     <span>{{ item }}</span>
-                    <!-- Active indicator dot for mini menu item -->
-                    <div v-if="isActiveRoute(system, category, item)" class="w-2 h-2 bg-green-500 rounded-full"></div>
                   </div>
                 </router-link>
               </div>
@@ -83,12 +81,12 @@
         </div>
 
         <!-- Expanded Menu - Show when not collapsed -->
-        <div v-if="expandedMenus[system] && !isCollapsed" class="ml-4 border-l border-[#004080]">
+        <div v-if="expandedMenus[system] && !isCollapsed" class="ml-4 border-l border-sky-800">
           <div v-for="(categoryData, category) in data.items" :key="category" class="mb-1"
             v-show="isCategoryVisible(system, category, categoryData)">
             <button @click="toggleMenu(`${system}-${category}`)" :class="[
-              'w-full flex items-center justify-between px-4 py-2 text-sm hover:bg-[#004080] text-gray-300 transition-colors relative',
-              isActiveCategory(system, category, categoryData) ? 'bg-[#004080]' : ''
+              'w-full flex items-center justify-between px-4 py-2 text-xs hover:bg-sky-600 transition-colors relative',
+              isActiveCategory(system, category, categoryData) ? 'text-white' : 'text-gray-300'
             ]">
               <div class="flex items-center space-x-2">
                 <Icon :icon="categoryData.icon" class="w-4 h-4" />
@@ -101,14 +99,11 @@
             <div v-if="expandedMenus[`${system}-${category}`]" class="ml-6">
               <router-link v-for="item in categoryData.children" :key="item" :to="getRoutePath(system, category, item)"
                 :class="[
-                  'block px-4 py-2 text-sm text-gray-200 hover:text-white hover:bg-[#004080] rounded transition-colors relative',
-                  isActiveRoute(system, category, item) ? 'bg-[#004080] text-white' : ''
+                  'block px-4 py-2 text-xs text-gray-200 hover:text-white hover:bg-sky-600 rounded transition-colors relative',
+                  isActiveRoute(system, category, item) ? 'bg-sky-800 text-white font-semibold' : ''
                 ]" v-show="isItemVisible(system, category, item)">
                 <div class="flex items-center justify-between">
                   <span>{{ item }}</span>
-                  <!-- Active indicator dot for menu item -->
-                  <div v-if="isActiveRoute(system, category, item)" class="w-2 h-2 bg-green-500 rounded-full"></div>
-                  <!-- <span class="text-red-500">{{ getRoutePath(system, category, item) }}</span> -->
                 </div>
               </router-link>
             </div>
@@ -118,23 +113,9 @@
     </nav>
 
     <!-- Footer - Always show home icon when collapsed -->
-    <div class="p-4 border-t border-[#004080] flex-shrink-0">
-      <!-- User Info - Only show when expanded -->
-      <div v-if="!isCollapsed && authStore.currentUser" class="mb-4 p-3 rounded-lg">
-        <div class="flex items-center space-x-3">
-          <img :src="authStore.userImgUrl || '/images/user.jpg'" :alt="authStore.userFullName"
-            class="w-10 h-10 rounded-full object-cover border-2 border-white"
-            @error="$event.target.src = '/images/user.jpg'" />
-          <div class="flex-1 min-w-0">
-            <p class="text-sm font-medium text-white truncate">{{ authStore.userFullNameThai }}</p>
-            <p class="text-xs text-gray-300 truncate">{{ authStore.userPosition }}</p>
-            <p class="text-xs text-gray-300 truncate">{{ authStore.userDepartment }}</p>
-          </div>
-        </div>
-      </div>
-
+    <div class="p-4 border-t border-sky-800 flex-shrink-0">
       <router-link :to="'/dashboard'" :class="[
-        'w-full flex items-center space-x-3 px-2 py-2 hover:bg-[#004080] rounded transition-colors',
+        'w-full flex items-center space-x-3 px-2 py-2 hover:bg-sky-600 rounded transition-colors text-sm',
         isCollapsed ? 'justify-center' : ''
       ]">
         <Icon icon="mdi:home" class="w-6 h-6" />
@@ -142,11 +123,11 @@
       </router-link>
 
       <button @click="confirmLogout" :class="[
-        'w-full flex items-center space-x-3 px-2 py-2 hover:bg-[#004080] rounded transition-colors',
+        'w-full flex items-center space-x-3 px-2 py-2 hover:bg-sky-600 rounded transition-colors text-sm',
         isCollapsed ? 'justify-center' : ''
       ]">
-        <Icon icon="mdi:logout" class="w-6 h-6 text-red-500" />
-        <span v-if="!isCollapsed" class="text-red-500">ออกจากระบบ</span>
+        <Icon icon="mdi:logout" class="w-6 h-6 text-red-400" />
+        <span v-if="!isCollapsed" class="text-red-400">ออกจากระบบ</span>
       </button>
     </div>
 
@@ -156,27 +137,27 @@
         <h3 class="text-lg font-semibold mb-4 text-center">ยืนยันการออกจากระบบ</h3>
         <div class="flex justify-end space-x-2 mt-2">
           <button @click="cancelLogout" class="px-3 py-1 rounded bg-gray-200 text-gray-700">ยกเลิก</button>
-          <button @click="proceedLogout" class="px-3 py-1 rounded bg-[#00569D] text-white">ตกลง</button>
+          <button @click="proceedLogout" class="px-3 py-1 rounded bg-sky-600 text-white">ตกลง</button>
         </div>
       </div>
     </div>
   </div>
 
   <footer :class="[
-  'fixed bottom-0 bg-none dark:bg-gray-800 z-30 ml-2 transition-all duration-300',
-  // 'fixed bottom-0 bg-[#F3F4F6] rounded-lg shadow-sm dark:bg-gray-800 z-30 ml-2 transition-all duration-300',
-  isCollapsed ? 'left-14 right-4' : 'left-72 right-4'
-]">
-    <div class="w-full mx-auto p-4">
-   
-        <div class="flex items-center justify-start space-x-2">
-              <img src="/logo-fplus.png" alt="logo" class="h-4 object-contain" />
-              <span class="text-xs text-gray-500 dark:text-gray-400">
-                Copyright One Two Trading Co., Ltd. All rights reserved.
-              </span>
-            </div>
+    'fixed bottom-0 bg-none dark:bg-gray-800 z-30 ml-2 transition-all duration-300',
+    // 'fixed bottom-0 bg-[#F3F4F6] rounded-lg shadow-sm dark:bg-gray-800 z-30 ml-2 transition-all duration-300',
+    isCollapsed ? 'left-14 right-4' : 'left-72 right-4'
+  ]">
+    <div class="w-full mx-auto p-4 pb-2">
+
+      <div class="flex items-center justify-start space-x-2">
+        <img src="/logo-fplus.png" alt="logo" class="h-4 object-contain" />
+        <span class="text-xs text-gray-500 dark:text-gray-400">
+          Copyright One Two Trading Co., Ltd. All rights reserved.
+        </span>
+      </div>
     </div>
-</footer>
+  </footer>
 </template>
 
 <script setup>
@@ -532,6 +513,43 @@ button[title]:hover::before {
   border-width: 5px;
   border-style: solid;
   border-color: transparent transparent transparent rgba(0, 0, 0, 0.8);
+  pointer-events: none;
+}
+
+/* Custom tooltip for user avatar */
+img[title] {
+  position: relative;
+}
+
+img[title]:hover::after {
+  content: attr(title);
+  position: absolute;
+  left: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  margin-left: 10px;
+  padding: 8px 12px;
+  background: rgba(0, 0, 0, 0.9);
+  color: white;
+  border-radius: 6px;
+  font-size: 11px;
+  white-space: pre-line;
+  z-index: 1000;
+  pointer-events: none;
+  max-width: 200px;
+  line-height: 1.4;
+}
+
+img[title]:hover::before {
+  content: '';
+  position: absolute;
+  left: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  margin-left: 2px;
+  border-width: 6px;
+  border-style: solid;
+  border-color: transparent transparent transparent rgba(0, 0, 0, 0.9);
   pointer-events: none;
 }
 </style>

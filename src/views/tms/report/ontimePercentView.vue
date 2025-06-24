@@ -1,5 +1,5 @@
 <template>
-  <div class="flex-1 p-6 bg-gray-50 min-h-screen">
+  <div class="flex-1 bg-gray-50 min-h-screen">
     <div class="flex flex-col md:flex-row gap-6">
       <!-- Filter/Condition Section -->
       <div class="w-full md:w-1/4 bg-white rounded-lg shadow-sm border border-gray-200 p-4 h-fit">

@@ -1,88 +1,80 @@
 <template>
-  <div class="flex-1 p-6 bg-gray-50 min-h-screen">
-    <!-- Page Header -->
-    <div class="mb-6">
-      <nav class="flex mb-4" aria-label="Breadcrumb">
-        <ol class="inline-flex items-center space-x-1 md:space-x-3">
-          <li class="inline-flex items-center">
-            <router-link to="/dashboard" class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-[#00569D]">
-              <Icon icon="mdi:home" class="w-4 h-4 mr-2" />
-              Dashboard
-            </router-link>
-          </li>
-          <li>
-            <div class="flex items-center">
-              <Icon icon="mdi:chevron-right" class="w-4 h-4 text-gray-400" />
-              <span class="ml-1 text-sm font-medium text-gray-500 md:ml-2">TMS</span>
+  <div class="flex-1 bg-gray-50 min-h-screen">
+    <div class="bg-white p-8 rounded-lg shadow-md border border-gray-200">
+      <h1 class="text-2xl font-bold mb-6 text-gray-800">กำหนดค่าขนส่ง</h1>
+      <!-- Form for setting shipping costs -->
+      <form @submit.prevent="saveSettings">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Left Column -->
+          <div>
+            <h2 class="text-lg font-semibold mb-4 text-gray-700 border-b pb-2">ค่าขนส่ง (รถบริษัท)</h2>
+            <div class="space-y-4">
+              <div>
+                <label for="company-lt-100" class="block text-sm font-medium text-gray-600">ระยะทางน้อยกว่า 100 กม. (บาท/กม.)</label>
+                <input type="number" id="company-lt-100" v-model.number="form.company.lt_100" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+              </div>
+              <div>
+                <label for="company-gte-100" class="block text-sm font-medium text-gray-600">ระยะทางมากกว่าหรือเท่ากับ 100 กม. (บาท/กม.)</label>
+                <input type="number" id="company-gte-100" v-model.number="form.company.gte_100" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+              </div>
             </div>
-          </li>
-          <li>
-            <div class="flex items-center">
-              <Icon icon="mdi:chevron-right" class="w-4 h-4 text-gray-400" />
-              <span class="ml-1 text-sm font-medium text-gray-500 md:ml-2">จัดการ</span>
-            </div>
-          </li>
-          <li aria-current="page">
-            <div class="flex items-center">
-              <Icon icon="mdi:chevron-right" class="w-4 h-4 text-gray-400" />
-              <span class="ml-1 text-sm font-medium text-[#00569D] md:ml-2">กำหนดค่าขนส่ง</span>
-            </div>
-          </li>
-        </ol>
-      </nav>
-    </div>
+          </div>
 
-    <div class="flex flex-col md:flex-row gap-6">
-      <!-- Search/Condition Section -->
-      <div class="w-full md:w-1/4 bg-white rounded-lg shadow-sm border border-gray-200 p-4 h-fit">
-        <h2 class="text-base font-semibold mb-2">เงื่อนไข:</h2>
-        <div class="mb-2">
-          <label class="block text-xs font-medium mb-1">คำค้น:</label>
-          <input v-model="searchTerm" type="text" class="w-full border border-gray-300 rounded px-2 py-1 text-xs focus:ring-1 focus:ring-blue-500 focus:border-blue-500" placeholder="ค้นหา..." />
+          <!-- Right Column -->
+          <div>
+            <h2 class="text-lg font-semibold mb-4 text-gray-700 border-b pb-2">ค่าขนส่ง (รถร่วม)</h2>
+            <div class="space-y-4">
+              <div>
+                <label for="shared-lt-100" class="block text-sm font-medium text-gray-600">ระยะทางน้อยกว่า 100 กม. (บาท/กม.)</label>
+                <input type="number" id="shared-lt-100" v-model.number="form.shared.lt_100" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+              </div>
+              <div>
+                <label for="shared-gte-100" class="block text-sm font-medium text-gray-600">ระยะทางมากกว่าหรือเท่ากับ 100 กม. (บาท/กม.)</label>
+                <input type="number" id="shared-gte-100" v-model.number="form.shared.gte_100" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+              </div>
+            </div>
+          </div>
         </div>
-        <button @click="search" class="w-full bg-[#00569D] hover:bg-[#004080] text-white text-xs font-medium rounded px-2 py-1 mb-2 transition-colors">ค้นหา</button>
-        <button @click="addCustomer" class="w-full text-blue-600 hover:underline text-xs font-medium py-1">+ Add a new customer</button>
-      </div>
 
-      <!-- Table Section -->
-      <div class="w-full md:w-3/4 bg-white rounded-lg shadow-sm border border-gray-200 p-4 overflow-x-auto">
-        <h2 class="text-base font-semibold mb-2">ค่าขนส่ง:</h2>
-        <div class="relative overflow-x-auto shadow-md sm:rounded-lg max-h-[70vh]">
-          <table class="w-full text-xs text-left text-gray-500 border-collapse border border-gray-300">
-            <thead class="text-xs text-gray-700 uppercase bg-gray-50 sticky top-0">
-              <tr>
-                <th class="px-2 py-2 text-center">รหัสลูกค้า</th>
-                <th class="px-2 py-2 text-center">ช่องทางที่</th>
-                <th class="px-2 py-2 text-center">รหัสไปรษณีย์</th>
-                <th class="px-2 py-2 text-center">อำเภอ</th>
-                <th class="px-2 py-2 text-center">รูปแบบ</th>
-                <th class="px-2 py-2 text-center">ค่าขนส่ง</th>
-                <th class="px-2 py-2 text-center">จัดการ</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="(item, idx) in filteredData" :key="idx" :class="idx % 2 === 1 ? 'bg-blue-50' : 'bg-white'">
-                <td class="px-2 py-1 text-center">{{ item.customerCode }}</td>
-                <td class="px-2 py-1 text-center">{{ item.channel }}</td>
-                <td class="px-2 py-1 text-center">{{ item.zipCode }}</td>
-                <td class="px-2 py-1 text-center">{{ item.district }}</td>
-                <td class="px-2 py-1 text-center">{{ item.type }}</td>
-                <td class="px-2 py-1 text-center">{{ item.cost }}</td>
-                <td class="px-2 py-1 text-center">
-                  <button @click="manageItem(item)" class="bg-gray-200 hover:bg-gray-300 text-xs rounded px-2 py-1 border border-gray-300">จัดการ</button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+        <!-- Action Buttons -->
+        <div class="mt-8 pt-6 border-t border-gray-200 flex justify-end space-x-3">
+          <button type="button" @click="resetSettings" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors">
+            Reset
+          </button>
+          <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+            Save Settings
+          </button>
         </div>
-      </div>
+      </form>
     </div>
   </div>
 </template>
 
 <script setup>
 import { ref, computed } from 'vue';
-import { Icon } from '@iconify/vue';
+
+const form = ref({
+  company: {
+    lt_100: 0,
+    gte_100: 0
+  },
+  shared: {
+    lt_100: 0,
+    gte_100: 0
+  }
+});
+
+const saveSettings = () => {
+  console.log('Saving settings:', form.value);
+  alert('Settings saved!');
+};
+
+const resetSettings = () => {
+  form.value = {
+    company: { lt_100: 0, gte_100: 0 },
+    shared: { lt_100: 0, gte_100: 0 }
+  };
+};
 
 const searchTerm = ref('');
 const data = ref([

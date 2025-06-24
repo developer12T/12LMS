@@ -1,138 +1,103 @@
 <template>
-  <div class="flex-1 p-6 bg-gray-50 min-h-screen">
-    <!-- Page Header -->
-    <div class="mb-6">
-      <nav class="flex mb-4" aria-label="Breadcrumb">
-        <ol class="inline-flex items-center space-x-1 md:space-x-3">
-          <li class="inline-flex items-center">
-            <router-link to="/dashboard" class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-[#00569D]">
-              <Icon icon="mdi:home" class="w-4 h-4 mr-2" />
-              Dashboard
-            </router-link>
-          </li>
-          <li>
-            <div class="flex items-center">
-              <Icon icon="mdi:chevron-right" class="w-4 h-4 text-gray-400" />
-              <span class="ml-1 text-sm font-medium text-gray-500 md:ml-2">TMS</span>
-            </div>
-          </li>
-          <li>
-            <div class="flex items-center">
-              <Icon icon="mdi:chevron-right" class="w-4 h-4 text-gray-400" />
-              <span class="ml-1 text-sm font-medium text-gray-500 md:ml-2">จัดการ</span>
-            </div>
-          </li>
-          <li aria-current="page">
-            <div class="flex items-center">
-              <Icon icon="mdi:chevron-right" class="w-4 h-4 text-gray-400" />
-              <span class="ml-1 text-sm font-medium text-[#00569D] md:ml-2">ออเดอร์ค้างส่ง(หน่วยรถ)</span>
-            </div>
-          </li>
-        </ol>
-      </nav>
-    </div>
-
-    <!-- Filter and Action Section -->
-    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-      <div class="flex flex-col lg:flex-row gap-4 lg:justify-between lg:items-end">
-        <!-- Action Buttons Section -->
-        <div class="flex flex-col sm:flex-row gap-3 lg:order-1">
-          <button type="button"
-            class="text-white bg-green-600 hover:bg-green-700 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-xs px-3 py-1.5 text-center inline-flex items-center justify-center dark:focus:ring-green-800 transition-colors">
-            <Icon icon="file-icons:microsoft-excel" width="16" height="16" class="mr-1.5" />
-            Export Excel
-          </button>
-          <button type="button"
-            class="text-white bg-red-600 hover:bg-red-700 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-xs px-3 py-1.5 text-center inline-flex items-center justify-center dark:focus:ring-red-800 transition-colors">
-            <Icon icon="mdi:database-sync" width="16" height="16" class="mr-1.5" />
-            ดึงข้อมูลใหม่
-          </button>
+  <div class="flex-1 bg-gray-50 min-h-screen p-4">
+    <!-- Page content goes here -->
+    <div class="bg-white p-4 shadow-md rounded-lg">
+      <div class="flex justify-between items-center mb-4">
+        <div class="flex items-center gap-2">
+          <span class="text-gray-600">Filter</span>
+          <div class="flex items-center bg-gray-200 rounded-full px-2 py-1 text-sm">
+            <span class="text-red-500 mr-1 cursor-pointer">✖</span>
+            <span>Batch</span>
+          </div>
         </div>
-
-        <!-- Filter Section -->
-        <div class="flex flex-col sm:flex-row gap-3 lg:order-2 lg:flex-1 lg:max-w-lg lg:ml-6">
-          <div class="flex-1 min-w-0">
-            <label for="dc-select" class="block mb-1 text-xs font-medium text-gray-900 dark:text-white">
-              Select DC
-            </label>
-            <select id="dc-select"
-              class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-1.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-colors">
-              <option selected>101 | คลังนครปฐม</option>
-              <option value="102">102 | คลังอื่น</option>
-            </select>
-          </div>
-          <div class="flex-shrink-0 sm:self-end">
-            <button type="button"
-              class="w-full sm:w-auto text-white bg-[#00569D] hover:bg-[#004080] focus:ring-4 focus:ring-[#00569D]/30 font-medium rounded-lg text-xs px-4 py-1.5 dark:bg-[#00569D] dark:hover:bg-[#004080] focus:outline-none dark:focus:ring-[#00569D]/30 transition-colors inline-flex items-center justify-center min-w-[100px]">
-              <Icon icon="mdi:magnify" width="14" height="14" class="mr-1.5" />
-              Go
-            </button>
-          </div>
-          <div class="flex-shrink-0 sm:self-end">
-            <button type="button"
-              class="w-full sm:w-auto text-white bg-blue-500 hover:bg-blue-600 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-xs px-4 py-1.5 transition-colors">
-              Save
-            </button>
-          </div>
+        <div class="flex items-center gap-2">
+          <label for="dc" class="text-sm font-medium text-gray-700 whitespace-nowrap"
+            >Select DC:</label
+          >
+          <select
+            id="dc"
+            name="dc"
+            class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+          >
+            <option>101 | คลังนครปฐม</option>
+          </select>
+          <button
+            class="px-6 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none"
+          >
+            Go
+          </button>
+          <button
+            class="px-6 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none"
+          >
+            Save
+          </button>
         </div>
       </div>
     </div>
 
-    <!-- Table Section -->
-    <div class="bg-white rounded-lg shadow-sm border border-gray-200">
-      <div class="relative overflow-x-auto shadow-md sm:rounded-lg" style="max-height: calc(100vh - 300px);">
-        <table class="w-full text-xs text-left text-gray-500 dark:text-gray-400 border-collapse border border-gray-300 dark:border-gray-600">
-          <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 sticky top-0">
-            <tr>
-              <th class="px-2 py-2 text-center">คลัง</th>
-              <th class="px-2 py-2 text-center">เลขที่เอกสาร</th>
-              <th class="px-2 py-2 text-center">เขตการขาย</th>
-              <th class="px-2 py-2 text-center">วันที่เบิก</th>
-              <th class="px-2 py-2 text-center">ระยะเวลาเบิก</th>
-              <th class="px-2 py-2 text-center">รหัสสินค้า</th>
-              <th class="px-2 py-2 text-center">ชื่อสินค้า</th>
-              <th class="px-2 py-2 text-center">เบิก</th>
-              <th class="px-2 py-2 text-center">ได้รับ</th>
-              <th class="px-2 py-2 text-center">ไม่ได้รับ</th>
-              <th class="px-2 py-2 text-center">มูลค่าที่ไม่ได้รับ</th>
-              <th class="px-2 py-2 text-center">สาเหตุที่ไม่ได้รับ</th>
-              <th class="px-2 py-2 text-center">ระบุข้อความ</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(item, index) in tableData" :key="index" class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-              <td class="px-2 py-1 text-center">{{ item.warehouse }}</td>
-              <td class="px-2 py-1 text-center">{{ item.docNumber }}</td>
-              <td class="px-2 py-1 text-center">{{ item.salesZone }}</td>
-              <td class="px-2 py-1 text-center">{{ item.pickDate }}</td>
-              <td class="px-2 py-1 text-center">{{ item.pickDuration }}</td>
-              <td class="px-2 py-1 text-center">{{ item.productCode }}</td>
-              <td class="px-2 py-1">{{ item.productName }}</td>
-              <td class="px-2 py-1 text-center">{{ item.pickQty }}</td>
-              <td class="px-2 py-1 text-center">{{ item.receivedQty }}</td>
-              <td class="px-2 py-1 text-center">{{ item.notReceivedQty }}</td>
-              <td class="px-2 py-1 text-center">{{ item.notReceivedValue }}</td>
-              <td class="px-2 py-1">
-                <select v-model="item.notReceivedReason" class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 block w-full p-0.5">
-                  <option value="">--เลือกสาเหตุ--</option>
-                  <option value="reason1">เหตุผล 1</option>
-                  <option value="reason2">เหตุผล 2</option>
+    <div class="mt-4 bg-white shadow-md rounded-lg overflow-x-auto">
+      <table class="min-w-full">
+        <thead class="bg-blue-100">
+          <tr>
+            <th class="p-3 text-sm font-semibold tracking-wide text-center">คลัง</th>
+            <th class="p-3 text-sm font-semibold tracking-wide text-left">เลขที่เอกสาร</th>
+            <th class="p-3 text-sm font-semibold tracking-wide text-left">เขตการขาย</th>
+            <th class="p-3 text-sm font-semibold tracking-wide text-left">วันที่เบิก</th>
+            <th class="p-3 text-sm font-semibold tracking-wide text-center">ระยะเวลาเบิก</th>
+            <th class="p-3 text-sm font-semibold tracking-wide text-left">รหัสสินค้า</th>
+            <th class="p-3 text-sm font-semibold tracking-wide text-left">ชื่อสินค้า</th>
+            <th class="p-3 text-sm font-semibold tracking-wide text-right">เบิก</th>
+            <th class="p-3 text-sm font-semibold tracking-wide text-right">ได้รับ</th>
+            <th class="p-3 text-sm font-semibold tracking-wide text-right">ไม่ได้รับ</th>
+            <th class="p-3 text-sm font-semibold tracking-wide text-right">มูลค่าที่ไม่ได้รับ</th>
+            <th class="p-3 text-sm font-semibold tracking-wide text-left whitespace-nowrap">
+              สาเหตุที่ไม่ได้รับ
+            </th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100">
+          <tr v-for="i in 12" :key="i" class="bg-white hover:bg-gray-50">
+            <td class="p-3 text-sm text-gray-700 text-center">101</td>
+            <td class="p-3 text-sm text-gray-700">W670121805</td>
+            <td class="p-3 text-sm text-gray-700">MB312</td>
+            <td class="p-3 text-sm text-gray-700">15/01/2567</td>
+            <td class="p-3 text-sm text-gray-700 text-center">2</td>
+            <td class="p-3 text-sm text-gray-700">20010101001</td>
+            <td class="p-3 text-sm text-gray-700 whitespace-nowrap">
+              น้ำปลาร้าต้มสุก ฟ้าไทย 400ml x12x2
+            </td>
+            <td class="p-3 text-sm text-gray-700 text-right">10</td>
+            <td class="p-3 text-sm text-gray-700 text-right">
+                {{ i % 3 == 0 ? 4 : '-' }}
+            </td>
+            <td class="p-3 text-sm text-gray-700 text-right">
+                {{ i % 3 == 0 ? 6 : 10 }}
+            </td>
+            <td class="p-3 text-sm text-gray-700 text-right">5,960</td>
+            <td class="p-3 text-sm text-gray-700 whitespace-nowrap">
+              <div class="flex items-center gap-2">
+                <select
+                  class="w-40 text-sm border-gray-300 rounded-md focus:ring-0 focus:border-gray-400"
+                >
+                  <option>--เลือกสาเหตุ--</option>
                 </select>
-              </td>
-              <td class="px-2 py-1">
-                <input v-model="item.notReceivedNote" type="text" class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 block w-full p-0.5" placeholder="ระบุข้อความ" />
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+                <input
+                  type="text"
+                  placeholder="ระบุข้อความ"
+                  class="w-40 text-sm border-gray-300 rounded-md focus:ring-0 focus:border-gray-400"
+                />
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
 </template>
 
 <script setup>
 import { ref } from 'vue';
-import { Icon } from '@iconify/vue';
+
 
 const tableData = ref([
   { warehouse: '101', docNumber: 'W670121805', salesZone: 'MB312', pickDate: '15/01/2567', pickDuration: 2, productCode: '20010101001', productName: 'น้ำปลา ร้าดังสุด ฟ้าไทย 400ml x12x2', pickQty: 10, receivedQty: '-', notReceivedQty: 10, notReceivedValue: 5960, notReceivedReason: '', notReceivedNote: '' },

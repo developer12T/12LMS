@@ -1,37 +1,5 @@
 <template>
-  <div class="flex-1 p-6 bg-gray-50 min-h-screen">
-    <!-- Page Header -->
-    <div class="mb-6">
-      <nav class="flex mb-4" aria-label="Breadcrumb">
-        <ol class="inline-flex items-center space-x-1 md:space-x-3">
-          <li class="inline-flex items-center">
-            <router-link to="/dashboard" class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-[#00569D]">
-              <Icon icon="mdi:home" class="w-4 h-4 mr-2" />
-              Dashboard
-            </router-link>
-          </li>
-          <li>
-            <div class="flex items-center">
-              <Icon icon="mdi:chevron-right" class="w-4 h-4 text-gray-400" />
-              <span class="ml-1 text-sm font-medium text-gray-500 md:ml-2">TMS</span>
-            </div>
-          </li>
-          <li>
-            <div class="flex items-center">
-              <Icon icon="mdi:chevron-right" class="w-4 h-4 text-gray-400" />
-              <span class="ml-1 text-sm font-medium text-gray-500 md:ml-2">รายงาน</span>
-            </div>
-          </li>
-          <li aria-current="page">
-            <div class="flex items-center">
-              <Icon icon="mdi:chevron-right" class="w-4 h-4 text-gray-400" />
-              <span class="ml-1 text-sm font-medium text-[#00569D] md:ml-2">วางแผน</span>
-            </div>
-          </li>
-        </ol>
-      </nav>
-    </div>
-
+  <div class="flex-1 bg-gray-50 min-h-screen">
     <div class="flex flex-col md:flex-row gap-6">
       <!-- Condition/Filter Section -->
       <div class="w-full md:w-1/4 bg-white rounded-lg shadow-sm border border-gray-200 p-4 h-fit">
