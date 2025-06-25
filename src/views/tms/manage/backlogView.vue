@@ -301,7 +301,7 @@
                                         <span v-else class="px-1 py-0.5 text-xs truncate max-w-28" :title="item.otherbl">{{ item.otherbl || '-' }}</span>
                                     </td>
                                     <td class="border border-gray-300 dark:border-gray-600 p-0 align-middle">
-                                        <DatePicker v-if="editingRowIndexes.has(index)" v-model:value="item.po_detail" type="date" format="DD/MM/YYYY" value-format="YYYY-MM-DD" placeholder="เลือกวันที่" :editable="false" :clearable="false" lang="th">
+                                        <DatePicker v-if="editingRowIndexes.has(index)" v-model:value="item.po_detail" type="date" format="DD/MM/YYYY" value-format="YYYY-MM-DD" placeholder="เลือกวันที่" :editable="false" :clearable="false" :locale="th">
                                             <template #default="{ open }">
                                                 <button @click="open" class="p-1.5 bg-blue-500 text-white hover:bg-blue-600 rounded-lg">
                                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
@@ -477,7 +477,8 @@ import { showError, showWarning, showSuccess } from '@/utils/toast';
 import * as XLSX from 'xlsx';
 import DatePicker from 'vue-datepicker-next';
 import 'vue-datepicker-next/index.css';
-import 'vue-datepicker-next/locale/th';
+// Fix locale import for production build
+import th from 'vue-datepicker-next/locale/th';
 
 // Stores
 const transportStore = useTransportStore();
@@ -734,12 +735,6 @@ const exportToExcel = () => {
         '', '', '', '', '', '', '', '', '', '', '', '', ''
     ];
 
-    // const summaryRow = [
-    //     `คลัง ${selectedDC.value} : ${getSelectedDCName()}`,
-    //     `สถานะ: ${getStatusText(selectedStatus.value)}`,
-    //     '', '', '', '', '', '', '', '', '', '', '', '', ''
-    // ];
-
     console.log(summaryRow);
     // Prepare header row
     const headerRow = [
@@ -747,10 +742,6 @@ const exportToExcel = () => {
         'สถานที่จัดส่ง', 'จังหวัด', 'เกิน', 'ค้าง FG', 'ค้าง PM', 'สาเหตุ', 'อื่นๆ (ระบุ)', 'เลื่อนส่ง'
     ];
 
-    // const headerRow = [
-    //     'ลำดับ', 'คลัง', 'วันที่เปิด SR', 'กำหนดส่ง', 'เลขที่ใบสั่งซื้อ', 'รหัสลูกค้า', 'ชื่อลูกค้า',
-    //     'สถานที่จัดส่ง', 'จังหวัด', 'เกิน', 'ค้าง FG', 'ค้าง PM', 'สาเหตุ', 'อื่นๆ (ระบุ)', 'เลื่อนส่ง'
-    // ];
     // Prepare data rows
     const dataRows = filteredBacklogData.value.map((item, index) => [
         index + 1,
@@ -773,14 +764,9 @@ const exportToExcel = () => {
     const aoa = [summaryRow, headerRow, ...dataRows];
     // Create worksheet and merge summary cells if needed
     const ws = XLSX.utils.aoa_to_sheet(aoa);
-    // (Optional) Merge summary cells for summary row
-    // ws['!merges'] = [
-    //     { s: { r:0, c:0 }, e: { r:0, c:1 } }
-    // ];
     // Set column widths
     const colWidths = [
         { wch: 8 },  // ลำดับ
-        // { wch: 8 },  // คลัง
         { wch: 12 }, // วันที่เปิด SR
         { wch: 12 }, // กำหนดส่ง
         { wch: 15 }, // เลขที่ใบสั่งซื้อ
