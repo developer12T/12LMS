@@ -29,7 +29,7 @@
     <!-- Navigation - Scrollable -->
     <nav :class="[isCollapsed ? 'overflow-visible' : 'overflow-y-auto overflow-x-hidden', 'flex-1']">
       <div v-for="(data, system) in menuData" :key="system" class="relative" v-show="isMenuVisible(system, data)">
-        <button @click="isCollapsed ? toggleMiniMenu(system) : toggleMenu(system)"
+        <button @click="isCollapsed ? toggleMiniMenu(system) : toggleMenu(system)" v-if="system === 'OMS'"
           :title="isCollapsed ? 'คลิกเพื่อขยายเมนู' : ''" :class="[
             'w-full flex items-center px-4 py-3 text-left hover:bg-sky-600 transition-colors relative text-sm',
             isCollapsed ? 'justify-center' : 'justify-between',
@@ -180,13 +180,25 @@ const menuData = {
     icon: 'lets-icons:order-fill',
     label: 'Order Management',
     items: {
-      'Reports': {
+      'รายงาน': {
         icon: 'mdi:file-document',
-        children: []
+        children: [
+          '%เติมสินค้าเข้า DC',
+          'Stock On Hand',
+          'Daily Stock',
+          'สินค้าที่ยังไม่ได้เปิด Invoice',
+          'ออเดอร์ค้างส่ง(หน่วยรถ)',
+          'วางแผน',
+          'วางแผนรวม',
+          'อายุสินค้าคงเหลือ',
+          'ค่าขนส่ง(shipment)',
+          'ค่าขนส่ง(รถร่วม)',
+          '% ontime'
+        ]
       },
-      'Management': {
+      'จัดการ': {
         icon: 'mdi:cog',
-        children: []
+        children: ['ออเดอร์ค้างส่ง', 'ออเดอร์ค้างส่ง(หน่วยรถ)', 'กำหนดปริมาตรและน้ำหนักรถบรรทุก', 'จัดการค่าขนส่ง', 'กำหนดค่าขนส่ง']
       }
     }
   },
@@ -208,25 +220,13 @@ const menuData = {
     icon: 'mdi:truck',
     label: 'Transport Management',
     items: {
-      'รายงาน': {
+      'Reports': {
         icon: 'mdi:file-document',
-        children: [
-          '%เติมสินค้าเข้า DC',
-          'Stock On Hand',
-          'Daily Stock',
-          'สินค้าที่ยังไม่ได้เปิด Invoice',
-          'ออเดอร์ค้างส่ง(หน่วยรถ)',
-          'วางแผน',
-          'วางแผนรวม',
-          'อายุสินค้าคงเหลือ',
-          'ค่าขนส่ง(shipment)',
-          'ค่าขนส่ง(รถร่วม)',
-          '% ontime'
-        ]
+        children: []
       },
-      'จัดการ': {
+      'Management': {
         icon: 'mdi:cog',
-        children: ['ออเดอร์ค้างส่ง', 'ออเดอร์ค้างส่ง(หน่วยรถ)', 'กำหนดปริมาตรและน้ำหนักรถบรรทุก', 'จัดการค่าขนส่ง', 'กำหนดค่าขนส่ง']
+        children: []
       }
     }
   },
@@ -264,7 +264,7 @@ function toggleMiniMenu(system) {
 
 function getRoutePath(system, category, item) {
   const routeMap = {
-    'TMS': {
+    'OMS': {
       'รายงาน': {
         '%เติมสินค้าเข้า DC': '/tms/report/percent-fill-to-dc',
         'Stock On Hand': '/tms/report/stock-on-hand',
@@ -286,28 +286,22 @@ function getRoutePath(system, category, item) {
         'กำหนดค่าขนส่ง': '/tms/manage/shipcost-setting'
       }
     },
-    'LMS': {
-      'รายงาน': {
-      },
-      'จัดการ': {
-      }
-    },
     'WMS': {
-      'รายงาน': {
+      'Reports': {
       },
-      'จัดการ': {
+      'Management': {
       }
     },
-    'OMS': {
-      'รายงาน': {
+    'TMS': {
+      'Reports': {
       },
-      'จัดการ': {
+      'Management': {
       }
     },
     'PMS': {
-      'รายงาน': {
+      'Reports': {
       },
-      'จัดการ': {
+      'Management': {
       }
     }
   };

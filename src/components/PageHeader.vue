@@ -1,5 +1,5 @@
 <template>
-  <div v-if="breadcrumbs.length" class="mb-6 flex justify-between items-center">
+  <div v-if="route.meta.breadcrumb" class="mb-6 flex justify-between items-center">
     <nav class="flex" aria-label="Breadcrumb">
       <ol class="inline-flex items-center space-x-1 md:space-x-3">
         <li class="inline-flex items-center">
@@ -46,7 +46,7 @@ const authStore = useAuthStore();
 const breadcrumbs = computed(() => {
   const metaBreadcrumb = route.meta.breadcrumb || '';
   if (metaBreadcrumb && typeof metaBreadcrumb === 'string') {
-    // Exclude 'Dashboard' from the split parts
+    // For Dashboard, return empty array since it's already shown as home
     if (metaBreadcrumb === 'Dashboard') return [];
     return metaBreadcrumb.split(' / ');
   }

@@ -13,10 +13,11 @@
                                 <Icon icon="file-icons:microsoft-excel" width="16" height="16" class="mr-1.5" />
                                 Export Excel
                             </button>
-                            <button type="button" @click="showConfirmReload = true" :disabled="isLoadingTransport"
+                            <button type="button" @click="showConfirmReload = true" :disabled="isLoadingTransport || isReloading"
                                 class="text-white bg-red-600 hover:bg-red-700 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-xs px-3 py-1.5 text-center inline-flex items-center justify-center dark:focus:ring-red-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-                                <Icon icon="mdi:database-sync" width="16" height="16" class="mr-1.5" />
-                                {{ isLoadingTransport ? 'กำลังโหลด...' : 'ดึงข้อมูลใหม่' }}
+                                <Icon v-if="isReloading" icon="mdi:loading" class="animate-spin w-4 h-4 mr-1.5" />
+                                <Icon v-else icon="mdi:database-sync" width="16" height="16" class="mr-1.5" />
+                                {{ isReloading ? 'กำลังประมวลผล...' : 'ดึงข้อมูลใหม่' }}
                             </button>
                         </div>
 
@@ -457,8 +458,9 @@
         <!-- Confirm Reload Modal -->
         <div v-if="showConfirmReload" class="fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center">
             <div class="bg-white rounded-lg p-6 flex flex-col items-center space-y-4">
-                <h3 class="text-lg font-semibold">ยืนยันการดึงข้อมูลใหม่</h3>
-                <p>คุณต้องการดึงข้อมูลใหม่ใช่หรือไม่?</p>
+                <h3 class="text-lg font-semibold">ยืนยันการ Gen Back Order</h3>
+                <p>คุณต้องการสร้างข้อมูล Back Order ใหม่ใช่หรือไม่?</p>
+                <p class="text-sm text-gray-600">การดำเนินการนี้อาจใช้เวลาสักครู่</p>
                 <div class="flex space-x-4">
                     <button @click="confirmReload" class="bg-green-600 text-white px-4 py-2 rounded">ยืนยัน</button>
                     <button @click="showConfirmReload = false" class="bg-gray-400 text-white px-4 py-2 rounded">ยกเลิก</button>
@@ -470,7 +472,7 @@
         <div v-if="isReloading" class="fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center">
             <div class="bg-white rounded-lg p-8 flex flex-col items-center space-y-4 w-full max-w-xs">
                 <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-                <p class="text-center text-gray-600 mt-2">กำลังโหลดข้อมูลใหม่...</p>
+                <p class="text-center text-gray-600 mt-2">กำลังสร้างข้อมูล Back Order...</p>
             </div>
         </div>
     </div>
@@ -736,7 +738,7 @@ const exportToExcel = () => {
     // Prepare data rows
     const dataRows = filteredBacklogData.value.map((item, index) => [
         index + 1,
-        item.wh_no,
+        // item.wh_no,
         formatExcelDate(item.date_create),
         formatExcelDate(item.date_send),
         item.po_no,
@@ -799,10 +801,32 @@ const closePoDetailModal = () => {
 const confirmReload = async () => {
     showConfirmReload.value = false;
     isReloading.value = true;
-    // เพิ่ม delay 2 วินาที (2000 ms) เพื่อทดสอบ
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    await loadTransportData();
-    isReloading.value = false;
+    
+    try {
+        // Call gen-back-order API
+        const params = {
+            warehouse: selectedDC.value || '',
+            start_date: '', // You can add date filters if needed
+            end_date: ''
+        };
+        
+        const result = await transportStore.getGenBackOrderData(params);
+        
+        if (result.success) {
+            showSuccess('สำเร็จ', 'ดึงข้อมูลใหม่เรียบร้อยแล้ว');
+            // Optionally reload the current backlog data
+            if (selectedDC.value && selectedStatus.value) {
+                await loadData();
+            }
+        } else {
+            showError('ผิดพลาด', result.message || 'ไม่สามารถดึงข้อมูลใหม่ได้');
+        }
+    } catch (err) {
+        showError('ผิดพลาด', 'เกิดข้อผิดพลาดในการดึงข้อมูลใหม่');
+        console.error('Error in confirmReload:', err);
+    } finally {
+        isReloading.value = false;
+    }
 };
 
 // Helper function to get selected DC name
@@ -817,11 +841,12 @@ const filteredBacklogData = computed(() => {
         return backlogData.value;
     }
     return backlogData.value.filter(item => {
+        const searchTerm = searchQuery.value.toLowerCase();
         return (
-            item.cus_name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-            item.po_no.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-            item.addressbl.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-            item.provincebl.toLowerCase().includes(searchQuery.value.toLowerCase())
+            (item.cus_name && item.cus_name.toLowerCase().includes(searchTerm)) ||
+            (item.po_no && item.po_no.toLowerCase().includes(searchTerm)) ||
+            (item.addressbl && item.addressbl.toLowerCase().includes(searchTerm)) ||
+            (item.provincebl && item.provincebl.toLowerCase().includes(searchTerm))
         );
     });
 });

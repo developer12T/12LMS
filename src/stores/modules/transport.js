@@ -84,6 +84,53 @@ export const useTransportStore = defineStore('transport', () => {
     selectedTransport.value = transport;
   };
 
+  // New function for gen-back-order API
+  const getGenBackOrderData = async (params) => {
+    loading.value = true;
+    error.value = null;
+    try {
+      const authStore = useAuthStore();
+      
+      const response = await axios.post(`${API_BASE_URL}/api/transport/gen-back-order`, params, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${authStore.token}`
+        }
+      });
+      
+      const data = response.data;
+      
+      if (data.status && data.status.code === 200) {
+        return { success: true, data: data.data };
+      } else {
+        throw new Error(data.status?.message || 'Failed to fetch gen back order data');
+      }
+    } catch (err) {
+      let errorMessage = 'เกิดข้อผิดพลาดในการดึงข้อมูล Gen Back Order';
+      
+      if (err.response) {
+        if (err.response.status === 401) {
+          const authStore = useAuthStore();
+          authStore.logout();
+          errorMessage = 'Session expired. Please login again.';
+        } else {
+          errorMessage = err.response.data?.message || errorMessage;
+        }
+      } else if (err.request) {
+        errorMessage = 'Network error. Please check your connection.';
+      } else {
+        errorMessage = err.message || errorMessage;
+      }
+      
+      error.value = errorMessage;
+      showError(errorMessage);
+      console.error('Error fetching gen back order data:', err);
+      return { success: false, message: errorMessage };
+    } finally {
+      loading.value = false;
+    }
+  };
+
   const clearError = () => {
     error.value = null;
   };
@@ -110,6 +157,7 @@ export const useTransportStore = defineStore('transport', () => {
     // Actions
     fetchTransportList,
     setSelectedTransport,
+    getGenBackOrderData,
     clearError,
     reset,
   };
