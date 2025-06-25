@@ -23,9 +23,9 @@
     </nav>
     <!-- User Info -->
     <div v-if="authStore.currentUser" class="flex items-center space-x-2">
-      <img :src="authStore.userImgUrl || '/logo12.png'" :alt="authStore.userFullName"
+      <img :src="authStore.userImgUrl || 'logo12.png'" :alt="authStore.userFullName"
         class="w-8 h-8 rounded-full object-cover border-2 border-gray-200"
-        @error="$event.target.src = '/logo12.png'" />
+        @error="$event.target.src = 'logo12.png'" />
       <div class="flex-1 min-w-0">
         <p class="text-sm font-medium text-gray-800 truncate">{{ authStore.userFullNameThai }}</p>
         <p class="text-xs text-gray-500 truncate">{{ authStore.userPosition }}</p>
