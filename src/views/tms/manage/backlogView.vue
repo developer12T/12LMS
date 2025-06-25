@@ -301,7 +301,14 @@
                                         <span v-else class="px-1 py-0.5 text-xs truncate max-w-28" :title="item.otherbl">{{ item.otherbl || '-' }}</span>
                                     </td>
                                     <td class="border border-gray-300 dark:border-gray-600 p-0 align-middle">
-                                        <DatePicker v-if="editingRowIndexes.has(index)" v-model:value="item.po_detail" type="date" format="DD/MM/YYYY" value-format="YYYY-MM-DD" placeholder="เลือกวันที่" :editable="false" :clearable="false" :locale="th">
+                                        <DatePicker v-if="editingRowIndexes.has(index)" 
+                                                   v-model:value="item.po_detail" 
+                                                   type="date" 
+                                                   format="DD/MM/YYYY" 
+                                                   value-format="YYYY-MM-DD" 
+                                                   placeholder="เลือกวันที่" 
+                                                   :editable="false" 
+                                                   :clearable="false">
                                             <template #default="{ open }">
                                                 <button @click="open" class="p-1.5 bg-blue-500 text-white hover:bg-blue-600 rounded-lg">
                                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
@@ -477,8 +484,6 @@ import { showError, showWarning, showSuccess } from '@/utils/toast';
 import * as XLSX from 'xlsx';
 import DatePicker from 'vue-datepicker-next';
 import 'vue-datepicker-next/index.css';
-// Fix locale import for production build
-import th from 'vue-datepicker-next/locale/th';
 
 // Stores
 const transportStore = useTransportStore();
@@ -662,34 +667,6 @@ const getStatusText = (status) => {
     return statusMap[status] || '';
 };
 
-// Helper function to format date
-const formatDate = (dateString) => {
-    if (!dateString) return '';
-    const date = new Date(dateString);
-    return date.toLocaleDateString('th-TH');
-};
-
-// Helper function to get selected DC name
-const getSelectedDCName = () => {
-    const selectedTransport = transportStore.getTransportById(selectedDC.value);
-    return selectedTransport ? selectedTransport.who_name : 'เลือก DC';
-};
-
-// Computed property for filtered backlog data
-const filteredBacklogData = computed(() => {
-    if (!backlogData.value || !searchQuery.value) {
-        return backlogData.value;
-    }
-    return backlogData.value.filter(item => {
-        return (
-            item.cus_name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-            item.po_no.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-            item.addressbl.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-            item.provincebl.toLowerCase().includes(searchQuery.value.toLowerCase())
-        );
-    });
-});
-
 // Helper function to format date for Thai display
 const formatThaiDate = (dateString) => {
     if (!dateString) return '';
@@ -699,6 +676,20 @@ const formatThaiDate = (dateString) => {
     const year = date.getFullYear() + 543;
 
     return `${day}/${month}/${year}`;
+};
+
+// Helper function to format date for HTML date input (YYYY-MM-DD)
+const formatDateForInput = (dateString) => {
+    if (!dateString || dateString.startsWith('1900-01-01')) return '';
+    const date = new Date(dateString);
+    return date.toISOString().split('T')[0]; // Returns YYYY-MM-DD format
+};
+
+// Helper function to convert HTML date input value to proper format
+const convertDateInputValue = (dateString) => {
+    if (!dateString) return '';
+    // HTML date input returns YYYY-MM-DD, convert to proper format if needed
+    return dateString;
 };
 
 // Function to format date for Excel
@@ -813,6 +804,27 @@ const confirmReload = async () => {
     await loadTransportData();
     isReloading.value = false;
 };
+
+// Helper function to get selected DC name
+const getSelectedDCName = () => {
+    const selectedTransport = transportStore.getTransportById(selectedDC.value);
+    return selectedTransport ? selectedTransport.who_name : 'เลือก DC';
+};
+
+// Computed property for filtered backlog data
+const filteredBacklogData = computed(() => {
+    if (!backlogData.value || !searchQuery.value) {
+        return backlogData.value;
+    }
+    return backlogData.value.filter(item => {
+        return (
+            item.cus_name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+            item.po_no.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+            item.addressbl.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+            item.provincebl.toLowerCase().includes(searchQuery.value.toLowerCase())
+        );
+    });
+});
 </script>
 
 <style scoped>
