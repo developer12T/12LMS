@@ -10,6 +10,7 @@ const routes = [
   { path: '/tms/report/percent-fill-to-dc', name: 'percent-fill-to-dc', component: () => import('../views/tms/report/percentFillToDCView.vue'), meta: { requiresAuth: true, breadcrumb: 'TMS / รายงาน / %เติมสินค้าเข้า DC' } },
   { path: '/tms/report/stock-on-hand', name: 'stock-on-hand', component: () => import('../views/tms/report/stockOnHandView.vue'), meta: { requiresAuth: true, breadcrumb: 'TMS / รายงาน / Stock On Hand' } },
   { path: '/tms/report/daily-stock', name: 'daily-stock', component: () => import('../views/tms/report/dailyStockView.vue'), meta: { requiresAuth: true, breadcrumb: 'TMS / รายงาน / Daily Stock' } },
+  { path: '/tms/report/not-bill', name: 'not-bill', component: () => import('../views/tms/report/notBillView.vue'), meta: { requiresAuth: true, breadcrumb: 'TMS / รายงาน / รายการที่ไม่ได้วางบิล' } },
   { path: '/tms/report/not-open-invoice', name: 'not-open-invoice', component: () => import('../views/tms/report/notOpenInvoiceView.vue'), meta: { requiresAuth: true, breadcrumb: 'TMS / รายงาน / สินค้าที่ยังไม่ได้เปิด Invoice' } },
   { path: '/tms/report/backlog-unit', name: 'backlog-unit-report', component: () => import('../views/tms/report/backlogUnitReportView.vue'), meta: { requiresAuth: true, breadcrumb: 'TMS / รายงาน / ออเดอร์ค้างส่ง(หน่วยรถ)' } },
   { path: '/tms/report/plan', name: 'plan', component: () => import('../views/tms/report/planView.vue'), meta: { requiresAuth: true, breadcrumb: 'TMS / รายงาน / วางแผน' } },
@@ -24,6 +25,7 @@ const routes = [
   { path: '/tms/manage/weight-volume', name: 'weight-volume', component: () => import('../views/tms/manage/weightVolumeView.vue'), meta: { requiresAuth: true, breadcrumb: 'TMS / จัดการ / กำหนดปริมาตรและน้ำหนักรถบรรทุก' } },
   { path: '/tms/manage/shipcost-management', name: 'shipcost-management', component: () => import('../views/tms/manage/shipcostView.vue'), meta: { requiresAuth: true, breadcrumb: 'TMS / จัดการ / จัดการค่าขนส่ง' } },
   { path: '/tms/manage/shipcost-setting', name: 'shipcost-setting', component: () => import('../views/tms/manage/shipcostSettingView.vue'), meta: { requiresAuth: true, breadcrumb: 'TMS / จัดการ / กำหนดค่าขนส่ง' } },
+  { path: '/tms/manage/shipcost-edit', name: 'shipcost-edit', component: () => import('../views/tms/manage/shipcostEditView.vue'), meta: { requiresAuth: true, breadcrumb: 'TMS / จัดการ / แก้ไขค่าขนส่ง' } },
   { path: '/logout', name: 'Logout', beforeEnter: (to, from, next) => {
     const authStore = useAuthStore();
     authStore.logout();

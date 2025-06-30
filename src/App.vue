@@ -13,7 +13,7 @@ const route = useRoute();
             <SideBar v-if="route.path !== '/login'" />
             <div class="flex-1 flex flex-col">
                 <main :class="route.path !== '/login' ? 'flex-1 p-6' : ''">
-                    <PageHeader v-if="route.path !== '/login' && route.meta.breadcrumb" />
+                    <PageHeader v-if="route.path !== '/login' && route.meta.breadcrumb && route.path !== '/tms/manage/backlog' && route.path !== '/tms/report/shipment-cost'" />
                     <router-view />
                 </main>
             </div>

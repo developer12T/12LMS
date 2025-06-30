@@ -1,147 +1,174 @@
 <template>
     <div class="flex-1 bg-gray-50 min-h-screen">
-        <!-- Filter and Action Section -->
-        <div class="space-y-6">
-            <!-- Sticky Filter Controls -->
-            <div class=" bg-gray-100 dark:bg-gray-800">
-                <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                    <div class="flex flex-col lg:flex-row gap-4 lg:justify-between lg:items-end">
-                        <!-- Action Buttons Section -->
-                        <div class="flex flex-col sm:flex-row gap-3 lg:order-1">
-                            <button type="button" @click="exportToExcel" :disabled="!filteredBacklogData.length"
-                                class="text-white bg-green-600 hover:bg-green-700 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-xs px-3 py-1.5 text-center inline-flex items-center justify-center dark:focus:ring-green-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-                                <Icon icon="file-icons:microsoft-excel" width="16" height="16" class="mr-1.5" />
-                                Export Excel
-                            </button>
-                            <button type="button" @click="showConfirmReload = true" :disabled="isLoadingTransport || isReloading"
-                                class="text-white bg-red-600 hover:bg-red-700 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-xs px-3 py-1.5 text-center inline-flex items-center justify-center dark:focus:ring-red-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-                                <Icon v-if="isReloading" icon="mdi:loading" class="animate-spin w-4 h-4 mr-1.5" />
-                                <Icon v-else icon="mdi:database-sync" width="16" height="16" class="mr-1.5" />
-                                {{ isReloading ? 'กำลังประมวลผล...' : 'ดึงข้อมูลใหม่' }}
-                            </button>
+        <PageHeader>
+            <template #actions>
+                <div class="flex flex-col sm:flex-row gap-3 pl-5 items-end bg-white shadow-md rounded-lg p-2">
+                    <div class=" flex flex-row gap-1 items-center">
+                        <button type="button" @click="exportToExcel" :disabled="!filteredBacklogData.length"
+                        class="text-white bg-green-600 hover:bg-green-700 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-xs px-3 py-1.5 text-center inline-flex items-center justify-center dark:focus:ring-green-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                        <Icon icon="file-icons:microsoft-excel" width="16" height="16" class="mr-1.5" />
+                        Export Excel
+                    </button>
+                    <button type="button" @click="showConfirmReload = true" :disabled="isLoadingTransport || isReloading"
+                        class="text-white bg-red-600 hover:bg-red-700 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-xs px-3 py-1.5 text-center inline-flex items-center justify-center dark:focus:ring-red-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                        <Icon v-if="isReloading" icon="mdi:loading" class="animate-spin w-4 h-4 mr-1.5" />
+                        <Icon v-else icon="mdi:database-sync" width="16" height="16" class="mr-1.5" />
+                        {{ isReloading ? 'กำลังประมวลผล...' : 'ดึงข้อมูลใหม่' }}
+                    </button>
+                    </div>
+                    <div class="flex-1 flex flex-row gap-1 min-w-0 items-center">
+                        <label for="mh-select" class="block mb-1 text-sm whitespace-nowrap font-sm text-gray-900 dark:text-white">
+                            เลือก DC : 
+                        </label>
+                        <select id="mh-select" v-model="selectedDC" @change="onDCChange" :disabled="isLoadingTransport"
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-1.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                            <option value="" disabled>{{ isLoadingTransport ? 'กำลังโหลด...' : 'เลือก DC' }}</option>
+                            <option v-for="transport in transportOptions" :key="transport.value" :value="transport.value">
+                                {{ transport.label }} : {{ transport.value }}
+                            </option>
+                        </select>
+                        <p v-if="transportError" class="mt-1 text-xs text-red-600 dark:text-red-400">
+                            {{ transportError }}
+                        </p>
+                    </div>
+                    <div class="flex-1 flex flex-row gap-1 min-w-0 items-center">
+                        <label for="status-select" class="block mb-1 text-sm whitespace-nowrap font-sm text-gray-900 dark:text-white">
+                            สถานะ :
+                        </label>
+                        <select id="status-select" v-model="selectedStatus" @change="onStatusChange"
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-1.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-colors">
+                            <option value="">เลือก สถานะ</option>
+                            <option value="1">เกินกำหนดส่ง</option>
+                            <option value="2">ครบกำหนดส่ง</option>
+                            <option value="3">ยังไม่ถึงกำหนดส่ง</option>
+                            <option value="ALL">ทุกสถานะ</option>
+                        </select>
+                    </div>
+                    <div class="flex-shrink-0 sm:self-end">
+                        <button type="button" @click="loadData" :disabled="isLoadingBacklog || !selectedDC || !selectedStatus"
+                            class="w-full sm:w-auto text-white bg-[#00569D] hover:bg-[#004080] focus:ring-4 focus:ring-[#00569D]/30 font-medium rounded-lg text-xs px-4 py-1.5 dark:bg-[#00569D] dark:hover:bg-[#004080] focus:outline-none dark:focus:ring-[#00569D]/30 transition-colors inline-flex items-center justify-center min-w-[100px] disabled:opacity-50 disabled:cursor-not-allowed">
+                            <Icon v-if="isLoadingBacklog" icon="mdi:loading" class="animate-spin w-4 h-4 mr-1.5" />
+                            <Icon v-else icon="mdi:magnify" width="14" height="14" class="mr-1.5" />
+                            {{ isLoadingBacklog ? 'กำลังโหลด...' : 'ดึงข้อมูล' }}
+                        </button>
+                    </div>
+                </div>
+            </template>
+        </PageHeader>
+        <div class="overflow-x-auto bg-white rounded-lg shadow mb-2 p-2">
+            <table class="min-w-max text-xs text-center border border-gray-200 bg-white">
+                <thead>
+                    <tr class="hover:bg-blue-50 transition">
+                        <th class="px-3 py-2 border border-gray-200 text-left font-medium bg-gray-50">จำนวนวันที่เกิน</th>
+                        <td v-for="(d, colIdx) in backlogSummaryPivot.days" :key="'d'+d"
+                            class="px-3 py-2 border border-gray-200"
+                            :class="{ 'bg-blue-50': hoverCol === colIdx }"
+                            @mouseover="hoverCol = colIdx"
+                            @mouseleave="hoverCol = null"
+                        >{{ d }}</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="hover:bg-blue-50 transition">
+                        <th class="px-3 py-2 border border-gray-200 text-left font-medium bg-gray-50">จำนวนบิล</th>
+                        <td v-for="(n, colIdx) in backlogSummaryPivot.billCounts" :key="'b'+n"
+                            class="px-3 py-2 border border-gray-200"
+                            :class="{ 'bg-blue-50': hoverCol === colIdx }"
+                            @mouseover="hoverCol = colIdx"
+                            @mouseleave="hoverCol = null"
+                        >{{ n }}</td>
+                    </tr>
+                    <tr class="hover:bg-blue-50 transition">
+                        <th class="px-3 py-2 border border-gray-200 text-left font-medium bg-gray-50">ยอดรวมค้างส่ง FG</th>
+                        <td v-for="(n, colIdx) in backlogSummaryPivot.fgTotals" :key="'fg'+n"
+                            class="px-3 py-2 border border-gray-200"
+                            :class="{ 'bg-blue-50': hoverCol === colIdx }"
+                            @mouseover="hoverCol = colIdx"
+                            @mouseleave="hoverCol = null"
+                        >{{ n }}</td>
+                    </tr>
+                    <tr class="hover:bg-blue-50 transition">
+                        <th class="px-3 py-2 border border-gray-200 text-left font-medium bg-gray-50">ยอดรวมค้างส่ง PM</th>
+                        <td v-for="(n, colIdx) in backlogSummaryPivot.pmTotals" :key="'pm'+n"
+                            class="px-3 py-2 border border-gray-200"
+                            :class="{ 'bg-blue-50': hoverCol === colIdx }"
+                            @mouseover="hoverCol = colIdx"
+                            @mouseleave="hoverCol = null"
+                        >{{ n }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <!-- Table Section -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+            <!-- Loading State -->
+            <div v-if="isLoadingBacklog" class="flex items-center justify-center p-8">
+                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+            </div>
+
+            <!-- Error State -->
+            <div v-else-if="backlogError" class="p-8 text-center text-red-500">
+                {{ backlogError }}
+            </div>
+
+            <!-- No Data State -->
+            <div v-else-if="!backlogStore.hasData && hasLoadedData" class="p-8 text-center">
+                <div class="text-gray-500">
+                    <Icon icon="mdi:database-off" class="w-12 h-12 mx-auto mb-4" />
+                    <p class="text-lg font-medium mb-2">ไม่มีข้อมูล</p>
+                    <p class="text-sm">ไม่พบข้อมูลที่ตรงกับเงื่อนไขที่เลือก</p>
+                    <div class="mt-4 text-xs text-gray-400">
+                        <p>DC: {{ getSelectedDCName() }} | สถานะ: {{ getStatusText(selectedStatus) }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Not Selected State -->
+            <div v-else-if="!selectedDC || !selectedStatus" class="p-8 text-center">
+                <div class="text-gray-500">
+                    <Icon icon="mdi:clipboard-text-outline" class="w-12 h-12 mx-auto mb-4" />
+                    <p class="text-lg font-medium mb-2">กรุณาเลือกเงื่อนไข</p>
+                    <p class="text-sm">เลือก DC และสถานะ แล้วกดปุ่ม "ดึงข้อมูล"</p>
+                    <div class="mt-4 flex flex-col items-center space-y-2 text-xs">
+                        <div class="flex items-center space-x-2">
+                            <Icon :icon="selectedDC ? 'mdi:check-circle' : 'mdi:circle-outline'"
+                                :class="selectedDC ? 'text-green-500' : 'text-gray-400'" class="w-4 h-4" />
+                            <span :class="selectedDC ? 'text-gray-700' : 'text-gray-400'">
+                                DC: {{ selectedDC ? getSelectedDCName() : 'ยังไม่เลือก' }}
+                            </span>
                         </div>
-
-                        <!-- Filter Section -->
-                        <div class="flex flex-col sm:flex-row gap-3 lg:order-2 lg:flex-1 lg:max-w-lg lg:ml-6">
-                            <div class="flex-1 min-w-0">
-                                <label for="mh-select"
-                                    class="block mb-1 text-xs font-medium text-gray-900 dark:text-white">
-                                    เลือก DC
-                                </label>
-                                <select id="mh-select" v-model="selectedDC" @change="onDCChange"
-                                    :disabled="isLoadingTransport"
-                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-1.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-                                    <option value="" disabled>{{ isLoadingTransport ? 'กำลังโหลด...' : 'เลือก DC' }}
-                                    </option>
-                                    <option v-for="transport in transportOptions" :key="transport.value"
-                                        :value="transport.value">
-                                        {{ transport.label }} : {{ transport.value }}
-                                    </option>
-                                </select>
-                                <p v-if="transportError" class="mt-1 text-xs text-red-600 dark:text-red-400">
-                                    {{ transportError }}
-                                </p>
-                            </div>
-
-                            <div class="flex-1 min-w-0">
-                                <label for="status-select"
-                                    class="block mb-1 text-xs font-medium text-gray-900 dark:text-white">
-                                    สถานะ
-                                </label>
-                                <select id="status-select" v-model="selectedStatus" @change="onStatusChange"
-                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-1.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-colors">
-                                    <option value="">เลือก สถานะ</option>
-                                    <option value="1">เกินกำหนดส่ง</option>
-                                    <option value="2">ครบกำหนดส่ง</option>
-                                    <option value="3">ยังไม่ถึงกำหนดส่ง</option>
-                                    <option value="ALL">ทุกสถานะ</option>
-                                </select>
-                            </div>
-
-                            <!-- Search Button -->
-                            <div class="flex-shrink-0 sm:self-end">
-                                <button type="button" @click="loadData" 
-                                    :disabled="isLoadingBacklog || !selectedDC || !selectedStatus"
-                                    class="w-full sm:w-auto text-white bg-[#00569D] hover:bg-[#004080] focus:ring-4 focus:ring-[#00569D]/30 font-medium rounded-lg text-xs px-4 py-1.5 dark:bg-[#00569D] dark:hover:bg-[#004080] focus:outline-none dark:focus:ring-[#00569D]/30 transition-colors inline-flex items-center justify-center min-w-[100px] disabled:opacity-50 disabled:cursor-not-allowed">
-                                    <Icon v-if="isLoadingBacklog" icon="mdi:loading"
-                                        class="animate-spin w-4 h-4 mr-1.5" />
-                                    <Icon v-else icon="mdi:magnify" width="14" height="14" class="mr-1.5" />
-                                    {{ isLoadingBacklog ? 'กำลังโหลด...' : 'ดึงข้อมูล' }}
-                                </button>
-                            </div>
+                        <div class="flex items-center space-x-2">
+                            <Icon :icon="selectedStatus ? 'mdi:check-circle' : 'mdi:circle-outline'"
+                                :class="selectedStatus ? 'text-green-500' : 'text-gray-400'" class="w-4 h-4" />
+                            <span :class="selectedStatus ? 'text-gray-700' : 'text-gray-400'">
+                                สถานะ: {{ selectedStatus ? getStatusText(selectedStatus) : 'ยังไม่เลือก' }}
+                            </span>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Table Section -->
-            <div class="bg-white rounded-lg shadow-sm border border-gray-200">
-                <!-- Loading State -->
-                <div v-if="isLoadingBacklog" class="flex items-center justify-center p-8">
-                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
-                </div>
-
-                <!-- Error State -->
-                <div v-else-if="backlogError" class="p-8 text-center text-red-500">
-                    {{ backlogError }}
-                </div>
-
-                <!-- No Data State -->
-                <div v-else-if="!backlogStore.hasData && hasLoadedData" class="p-8 text-center">
-                    <div class="text-gray-500">
-                        <Icon icon="mdi:database-off" class="w-12 h-12 mx-auto mb-4" />
-                        <p class="text-lg font-medium mb-2">ไม่มีข้อมูล</p>
-                        <p class="text-sm">ไม่พบข้อมูลที่ตรงกับเงื่อนไขที่เลือก</p>
-                        <div class="mt-4 text-xs text-gray-400">
-                            <p>DC: {{ getSelectedDCName() }} | สถานะ: {{ getStatusText(selectedStatus) }}</p>
-                        </div>
+            <!-- Never Loaded State -->
+            <div v-else-if="!hasLoadedData && selectedDC && selectedStatus" class="p-8 text-center">
+                <div class="text-gray-500">
+                    <Icon icon="mdi:database-search" class="w-12 h-12 mx-auto mb-4" />
+                    <p class="text-lg font-medium mb-2">พร้อมดึงข้อมูล</p>
+                    <p class="text-sm">กดปุ่ม "ดึงข้อมูล" เพื่อดูรายการออร์เดอร์ค้างส่ง</p>
+                    <div class="mt-4 text-xs text-gray-400">
+                        <p>DC: {{ getSelectedDCName() }} | สถานะ: {{ getStatusText(selectedStatus) }}</p>
                     </div>
                 </div>
+            </div>
 
-                <!-- Not Selected State -->
-                <div v-else-if="!selectedDC || !selectedStatus" class="p-8 text-center">
-                    <div class="text-gray-500">
-                        <Icon icon="mdi:clipboard-text-outline" class="w-12 h-12 mx-auto mb-4" />
-                        <p class="text-lg font-medium mb-2">กรุณาเลือกเงื่อนไข</p>
-                        <p class="text-sm">เลือก DC และสถานะ แล้วกดปุ่ม "ดึงข้อมูล"</p>
-                        <div class="mt-4 flex flex-col items-center space-y-2 text-xs">
-                            <div class="flex items-center space-x-2">
-                                <Icon :icon="selectedDC ? 'mdi:check-circle' : 'mdi:circle-outline'"
-                                    :class="selectedDC ? 'text-green-500' : 'text-gray-400'" class="w-4 h-4" />
-                                <span :class="selectedDC ? 'text-gray-700' : 'text-gray-400'">
-                                    DC: {{ selectedDC ? getSelectedDCName() : 'ยังไม่เลือก' }}
-                                </span>
-                            </div>
-                            <div class="flex items-center space-x-2">
-                                <Icon :icon="selectedStatus ? 'mdi:check-circle' : 'mdi:circle-outline'"
-                                    :class="selectedStatus ? 'text-green-500' : 'text-gray-400'" class="w-4 h-4" />
-                                <span :class="selectedStatus ? 'text-gray-700' : 'text-gray-400'">
-                                    สถานะ: {{ selectedStatus ? getStatusText(selectedStatus) : 'ยังไม่เลือก' }}
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Never Loaded State -->
-                <div v-else-if="!hasLoadedData && selectedDC && selectedStatus" class="p-8 text-center">
-                    <div class="text-gray-500">
-                        <Icon icon="mdi:database-search" class="w-12 h-12 mx-auto mb-4" />
-                        <p class="text-lg font-medium mb-2">พร้อมดึงข้อมูล</p>
-                        <p class="text-sm">กดปุ่ม "ดึงข้อมูล" เพื่อดูรายการออร์เดอร์ค้างส่ง</p>
-                        <div class="mt-4 text-xs text-gray-400">
-                            <p>DC: {{ getSelectedDCName() }} | สถานะ: {{ getStatusText(selectedStatus) }}</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Data Table with Custom Scrollbar -->
-                <div v-else-if="backlogStore.hasData" class="relative shadow-md sm:rounded-lg custom-scrollbar overflow-x-auto overflow-y-auto" style="max-height: calc(100vh - 240px);">
-
+            <!-- Data Table with Custom Scrollbar -->
+            <div v-else-if="backlogStore.hasData" class="relative shadow-md sm:rounded-lg custom-scrollbar p-2 overflow-x-auto overflow-y-hidden" style="max-height: calc(100vh - 270px);">
+                <div class="virtual-table-container rounded-t-lg  overflow-auto" 
+                     style="height: calc(100vh - 270px);" 
+                     @scroll="handleScroll">
                     <table
-                        class="w-full text-xs text-left text-gray-500 dark:text-gray-400 border-collapse border border-gray-300 dark:border-gray-600">
+                        class="w-full text-xs text-left text-gray-500  dark:text-gray-400 border-collapse border border-gray-300 dark:border-gray-600">
                         <thead
-                            class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 sticky top-0 z-10">
+                            class="text-xs text-gray-700 uppercase bg-gray-100 dark:bg-gray-700 dark:text-gray-400 sticky top-0 z-10">
                             <tr>
                                 <th colspan="16" class="px-4 py-3 border-b border-gray-200 dark:border-gray-600">
                                     <div class="flex items-center justify-between">
@@ -227,126 +254,134 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-if="filteredBacklogData.length === 0" class="bg-white dark:bg-gray-800">
+                            <!-- Top padding for virtual scrolling -->
+                            <tr v-if="topPadding > 0">
+                                <td :colspan="16" :style="{ height: topPadding + 'px', padding: 0 }"></td>
+                            </tr>
+                            
+                            <tr v-if="virtualScrollData.length === 0" class="bg-white dark:bg-gray-800">
                                 <td colspan="16" class="px-4 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
                                     ไม่พบข้อมูลค้นหา
                                 </td>
                             </tr>
-                            <template v-else v-for="(item, index) in filteredBacklogData" :key="item.po_no">
-                                <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                                    <td class="px-1 py-0.5 font-medium text-gray-900 dark:text-white text-center text-xs border border-gray-300 dark:border-gray-600">
-                                        {{ index + 1 }}
-                                    </td>
-                                    <td class="px-1 py-0.5 text-center text-xs whitespace-nowrap border border-gray-300 dark:border-gray-600">
-                                        {{ item.wh_no }}
-                                    </td>
-                                    <td class="px-1 py-0.5 text-center text-xs whitespace-nowrap border border-gray-300 dark:border-gray-600">
-                                        {{ formatThaiDate(item.date_create) }}
-                                    </td>
-                                    <td class="px-1 py-0.5 text-center text-xs whitespace-nowrap border border-gray-300 dark:border-gray-600">
-                                        {{ formatThaiDate(item.date_send) }}
-                                    </td>
-                                    <td class="px-1 py-0.5 text-center text-xs whitespace-nowrap border border-gray-300 dark:border-gray-600">
-                                        <a href="#" @click.prevent="openPoDetail(item)"
-                                            class="font-medium text-blue-600 dark:text-blue-500 hover:underline">
-                                            {{ item.po_no }}
-                                        </a>
-                                    </td>
-                                    <td class="px-1 py-0.5 text-center text-xs whitespace-nowrap border border-gray-300 dark:border-gray-600">
-                                        {{ item.cus_code }}
-                                    </td>
-                                    <td class="px-1 py-0.5 text-xs whitespace-nowrap max-w-28 truncate border border-gray-300 dark:border-gray-600"
-                                        :title="item.cus_name">
-                                        {{ item.cus_name }}
-                                    </td>
-                                    <td class="px-1 py-0.5 text-xs w-40 border border-gray-300 dark:border-gray-600">
-                                        <div class="max-w-40 line-clamp-2 text-ellipsis overflow-hidden"
-                                            :title="item.addressbl">
-                                            {{ item.addressbl }}
+                            <tr v-else v-for="(item, index) in virtualScrollData" :key="item.po_no" class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                                <td class="px-1 py-0.5 font-medium text-gray-900 dark:text-white text-center text-xs border border-gray-300 dark:border-gray-600">
+                                    {{ item.originalIndex + 1 }}
+                                </td>
+                                <td class="px-1 py-0.5 text-center text-xs whitespace-nowrap border border-gray-300 dark:border-gray-600">
+                                    {{ item.wh_no }}
+                                </td>
+                                <td class="px-1 py-0.5 text-center text-xs whitespace-nowrap border border-gray-300 dark:border-gray-600">
+                                    {{ formatThaiDate(item.date_create) }}
+                                </td>
+                                <td class="px-1 py-0.5 text-center text-xs whitespace-nowrap border border-gray-300 dark:border-gray-600">
+                                    {{ formatThaiDate(item.date_send) }}
+                                </td>
+                                <td class="px-1 py-0.5 text-center text-xs whitespace-nowrap border border-gray-300 dark:border-gray-600">
+                                    <a href="#" @click.prevent="openPoDetail(item)"
+                                        class="font-medium text-blue-600 dark:text-blue-500 hover:underline">
+                                        {{ item.po_no }}
+                                    </a>
+                                </td>
+                                <td class="px-1 py-0.5 text-center text-xs whitespace-nowrap border border-gray-300 dark:border-gray-600">
+                                    {{ item.cus_code }}
+                                </td>
+                                <td class="px-1 py-0.5 text-xs whitespace-nowrap max-w-28 truncate border border-gray-300 dark:border-gray-600"
+                                    :title="item.cus_name">
+                                    {{ item.cus_name }}
+                                </td>
+                                <td class="px-1 py-0.5 text-xs w-40 border border-gray-300 dark:border-gray-600">
+                                    <div class="max-w-40 line-clamp-2 text-ellipsis overflow-hidden"
+                                        :title="item.addressbl">
+                                        {{ item.addressbl }}
+                                    </div>
+                                </td>
+                                <td class="px-1 py-0.5 text-xs whitespace-nowrap max-w-28 truncate border border-gray-300 dark:border-gray-600"
+                                    :title="item.provincebl">
+                                    {{ item.provincebl }}
+                                </td>
+                                <td
+                                    class="px-1 py-0.5 text-center text-xs whitespace-nowrap border border-gray-300 dark:border-gray-600">
+                                    <span
+                                        :class="item.overdue < 0 ? 'text-red-600 font-semibold' : 'text-yellow-600 font-semibold'">
+                                        {{ item.overdue }}
+                                    </span>
+                                </td>
+                                <td
+                                    class="px-1 py-0.5 text-center text-xs whitespace-nowrap border border-gray-300 dark:border-gray-600">
+                                    <span class="text-orange-600 font-semibold">{{ item.fg }}</span>
+                                </td>
+                                <td
+                                    class="px-1 py-0.5 text-center text-purple-600 font-semibold border border-gray-300 dark:border-gray-600">
+                                    {{ item.pm }}
+                                </td>
+                                <td class="border border-gray-300 dark:border-gray-600 p-0 align-middle">
+                                    <select v-if="editingRowIndexes.has(item.originalIndex)" v-model="item.reason_id" class="bg-white border-none text-gray-900 text-xs rounded-lg focus:ring-1 focus:ring-blue-500 block w-full p-1.5 dark:bg-gray-700 dark:text-white">
+                                        <option value="" disabled>กรุณาเลือกสาเหตุ</option>
+                                        <option v-for="reason in reasonOptions" :key="reason.value" :value="reason.value">{{ reason.label }}</option>
+                                    </select>
+                                    <template v-else>
+                                        <span v-if="item.reason_name" class="px-1 py-0.5 text-xs">{{ item.reason_name }}</span>
+                                        <div v-else class="flex items-center justify-between bg-gray-100 dark:bg-gray-700 rounded-[5px] w-full text-xs text-gray-500 dark:text-gray-400 cursor-default mx-0.5">
+                                            <span class="pl-2 py-[3px]">เลือกสาเหตุ</span>
+                                            <Icon icon="mdi:chevron-down" class="w-4 h-4 mr-1" />
                                         </div>
-                                    </td>
-                                    <td class="px-1 py-0.5 text-xs whitespace-nowrap max-w-28 truncate border border-gray-300 dark:border-gray-600"
-                                        :title="item.provincebl">
-                                        {{ item.provincebl }}
-                                    </td>
-                                    <td
-                                        class="px-1 py-0.5 text-center text-xs whitespace-nowrap border border-gray-300 dark:border-gray-600">
-                                        <span
-                                            :class="item.overdue < 0 ? 'text-red-600 font-semibold' : 'text-yellow-600 font-semibold'">
-                                            {{ item.overdue }}
-                                        </span>
-                                    </td>
-                                    <td
-                                        class="px-1 py-0.5 text-center text-xs whitespace-nowrap border border-gray-300 dark:border-gray-600">
-                                        <span class="text-orange-600 font-semibold">{{ item.fg }}</span>
-                                    </td>
-                                    <td
-                                        class="px-1 py-0.5 text-center text-purple-600 font-semibold border border-gray-300 dark:border-gray-600">
-                                        {{ item.pm }}
-                                    </td>
-                                    <td class="border border-gray-300 dark:border-gray-600 p-0 align-middle">
-                                        <select v-if="editingRowIndexes.has(index)" v-model="item.reason_id" class="bg-white border-none text-gray-900 text-xs rounded-lg focus:ring-1 focus:ring-blue-500 block w-full p-1.5 dark:bg-gray-700 dark:text-white">
-                                            <option value="" disabled>กรุณาเลือกสาเหตุ</option>
-                                            <option v-for="reason in reasonOptions" :key="reason.value" :value="reason.value">{{ reason.label }}</option>
-                                        </select>
-                                        <template v-else>
-                                            <span v-if="item.reason_name" class="px-1 py-0.5 text-xs">{{ item.reason_name }}</span>
-                                            <div v-else class="flex items-center justify-between bg-gray-100 dark:bg-gray-700 rounded-[5px] w-full text-xs text-gray-500 dark:text-gray-400 cursor-default mx-0.5">
-                                                <span class="pl-2 py-[3px]">เลือกสาเหตุ</span>
-                                                <Icon icon="mdi:chevron-down" class="w-4 h-4 mr-1" />
-                                            </div>
+                                    </template>
+                                </td>
+                                <td class="border border-gray-300 dark:border-gray-600 p-0 align-middle">
+                                    <input v-if="editingRowIndexes.has(item.originalIndex)" type="text" v-model="item.otherbl" class="bg-white border-none text-gray-900 text-xs rounded-lg focus:ring-1 focus:ring-blue-500 block w-full p-1.5 dark:bg-gray-700 dark:text-white">
+                                    <span v-else class="px-1 py-0.5 text-xs truncate max-w-28" :title="item.otherbl">{{ item.otherbl || '-' }}</span>
+                                </td>
+                                <td class="border border-gray-300 dark:border-gray-600 p-0 align-middle">
+                                    <DatePicker v-if="editingRowIndexes.has(item.originalIndex)" 
+                                               v-model:value="item.po_detail" 
+                                               type="date" 
+                                               format="DD/MM/YYYY" 
+                                               value-format="YYYY-MM-DD" 
+                                               placeholder="เลือกวันที่" 
+                                               :editable="false" 
+                                               :clearable="false">
+                                        <template #default="{ open }">
+                                            <button @click="open" class="p-1.5 bg-blue-500 text-white hover:bg-blue-600 rounded-lg">
+                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
+                                                    <path d="M12.75 12.75a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM7.5 15.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM8.25 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM9.75 15.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM10.5 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12 15.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM12.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM14.25 15.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM15 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM16.5 15.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM12 10.5a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM8.25 10.5a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM9.75 10.5a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM14.25 10.5a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z" />
+                                                    <path fill-rule="evenodd" d="M5.25 2.25A.75.75 0 0 1 6 3v.75h12V3a.75.75 0 0 1 1.5 0v.75h.75a3 3 0 0 1 3 3v11.25a3 3 0 0 1-3 3H5.25a3 3 0 0 1-3-3V6.75a3 3 0 0 1 3-3H4.5a.75.75 0 0 1 .75-.75Zm-1.5 4.5a1.5 1.5 0 0 1 1.5-1.5h13.5a1.5 1.5 0 0 1 1.5 1.5v11.25a1.5 1.5 0 0 1-1.5-1.5H5.25a1.5 1.5 0 0 1-1.5-1.5V6.75Z" clip-rule="evenodd" />
+                                                  </svg>
+                                            </button>
                                         </template>
-                                    </td>
-                                    <td class="border border-gray-300 dark:border-gray-600 p-0 align-middle">
-                                        <input v-if="editingRowIndexes.has(index)" type="text" v-model="item.otherbl" class="bg-white border-none text-gray-900 text-xs rounded-lg focus:ring-1 focus:ring-blue-500 block w-full p-1.5 dark:bg-gray-700 dark:text-white">
-                                        <span v-else class="px-1 py-0.5 text-xs truncate max-w-28" :title="item.otherbl">{{ item.otherbl || '-' }}</span>
-                                    </td>
-                                    <td class="border border-gray-300 dark:border-gray-600 p-0 align-middle">
-                                        <DatePicker v-if="editingRowIndexes.has(index)" 
-                                                   v-model:value="item.po_detail" 
-                                                   type="date" 
-                                                   format="DD/MM/YYYY" 
-                                                   value-format="YYYY-MM-DD" 
-                                                   placeholder="เลือกวันที่" 
-                                                   :editable="false" 
-                                                   :clearable="false">
-                                            <template #default="{ open }">
-                                                <button @click="open" class="p-1.5 bg-blue-500 text-white hover:bg-blue-600 rounded-lg">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
-                                                        <path d="M12.75 12.75a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM7.5 15.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM8.25 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM9.75 15.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM10.5 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12 15.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM12.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM14.25 15.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM15 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM16.5 15.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM12 10.5a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM8.25 10.5a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM9.75 10.5a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM14.25 10.5a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z" />
-                                                        <path fill-rule="evenodd" d="M5.25 2.25A.75.75 0 0 1 6 3v.75h12V3a.75.75 0 0 1 1.5 0v.75h.75a3 3 0 0 1 3 3v11.25a3 3 0 0 1-3 3H5.25a3 3 0 0 1-3-3V6.75a3 3 0 0 1 3-3H4.5a.75.75 0 0 1 .75-.75Zm-1.5 4.5a1.5 1.5 0 0 1 1.5-1.5h13.5a1.5 1.5 0 0 1 1.5 1.5v11.25a1.5 1.5 0 0 1-1.5-1.5H5.25a1.5 1.5 0 0 1-1.5-1.5V6.75Z" clip-rule="evenodd" />
-                                                      </svg>
-                                                </button>
-                                            </template>
-                                        </DatePicker>
-                                        <div v-else class="text-xs text-center px-1 py-0.5">
-                                            {{ item.po_detail && !item.po_detail.startsWith('1900-01-01') ? formatThaiDate(item.po_detail) : '-' }}
+                                    </DatePicker>
+                                    <div v-else class="text-xs text-center px-1 py-0.5">
+                                        {{ item.po_detail && !item.po_detail.startsWith('1900-01-01') ? formatThaiDate(item.po_detail) : '-' }}
+                                    </div>
+                                </td>
+                                <td class="px-1 py-0.5 text-center border border-gray-300 dark:border-gray-600 align-middle">
+                                    <div v-if="editingRowIndexes.has(item.originalIndex)">
+                                        <!-- Show individual controls only if ONE item is being edited -->
+                                        <div v-if="editingRowIndexes.size === 1" class="flex items-center justify-center space-x-1">
+                                            <button @click="saveChanges(item, item.originalIndex)" title="บันทึก" class="focus:outline-none text-white bg-green-600 hover:bg-green-700 focus:ring-2 focus:ring-green-300 font-medium rounded p-1">
+                                                <Icon icon="mdi:check-bold" class="w-4 h-4" />
+                                            </button>
+                                            <button @click="cancelEditing(item.originalIndex)" title="ยกเลิก" class="focus:outline-none text-white bg-red-600 hover:bg-red-700 focus:ring-2 focus:ring-red-300 font-medium rounded p-1">
+                                                <Icon icon="mdi:close-thick" class="w-4 h-4" />
+                                            </button>
                                         </div>
-                                    </td>
-                                    <td class="px-1 py-0.5 text-center border border-gray-300 dark:border-gray-600 align-middle">
-                                        <div v-if="editingRowIndexes.has(index)">
-                                            <!-- Show individual controls only if ONE item is being edited -->
-                                            <div v-if="editingRowIndexes.size === 1" class="flex items-center justify-center space-x-1">
-                                                <button @click="saveChanges(item, index)" title="บันทึก" class="focus:outline-none text-white bg-green-600 hover:bg-green-700 focus:ring-2 focus:ring-green-300 font-medium rounded p-1">
-                                                    <Icon icon="mdi:check-bold" class="w-4 h-4" />
-                                                </button>
-                                                <button @click="cancelEditing(index)" title="ยกเลิก" class="focus:outline-none text-white bg-red-600 hover:bg-red-700 focus:ring-2 focus:ring-red-300 font-medium rounded p-1">
-                                                    <Icon icon="mdi:close-thick" class="w-4 h-4" />
-                                                </button>
-                                            </div>
-                                             <!-- In multi-edit mode, show only a per-row cancel button -->
-                                            <div v-else class="flex items-center justify-center">
-                                                <button @click="cancelEditing(index)" title="ยกเลิกการแก้ไขรายการนี้" class="focus:outline-none text-white bg-red-600 hover:bg-red-700 focus:ring-2 focus:ring-red-300 font-medium rounded p-1">
-                                                    <Icon icon="mdi:close-thick" class="w-4 h-4" />
-                                                </button>
-                                            </div>
+                                         <!-- In multi-edit mode, show only a per-row cancel button -->
+                                        <div v-else class="flex items-center justify-center">
+                                            <button @click="cancelEditing(item.originalIndex)" title="ยกเลิกการแก้ไขรายการนี้" class="focus:outline-none text-white bg-red-600 hover:bg-red-700 focus:ring-2 focus:ring-red-300 font-medium rounded p-1">
+                                                <Icon icon="mdi:close-thick" class="w-4 h-4" />
+                                            </button>
                                         </div>
-                                        <button v-else type="button" @click="startEditing(item, index)" title="แก้ไข" class="focus:outline-none text-white bg-amber-500 hover:bg-amber-600 focus:ring-2 focus:ring-amber-300 font-medium rounded text-xs p-1">
-                                            <Icon icon="mdi:pencil" class="w-4 h-4" />
-                                        </button>
-                                    </td>
-                                </tr>
-                            </template>
+                                    </div>
+                                    <button v-else type="button" @click="startEditing(item, item.originalIndex)" title="แก้ไข" class="focus:outline-none text-white bg-amber-500 hover:bg-amber-600 focus:ring-2 focus:ring-amber-300 font-medium rounded text-xs p-1">
+                                        <Icon icon="mdi:pencil" class="w-4 h-4" />
+                                    </button>
+                                </td>
+                            </tr>
+                            
+                            <!-- Bottom padding for virtual scrolling -->
+                            <tr v-if="bottomPadding > 0">
+                                <td :colspan="16" :style="{ height: bottomPadding + 'px', padding: 0 }"></td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
@@ -479,13 +514,14 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed, watch } from 'vue';
+import { ref, onMounted, computed, watch, nextTick } from 'vue';
 import { Icon } from '@iconify/vue';
 import { useTransportStore, useBacklogStore, useAuthStore } from '@/stores';
 import { showError, showWarning, showSuccess } from '@/utils/toast';
 import * as XLSX from 'xlsx';
 import DatePicker from 'vue-datepicker-next';
 import 'vue-datepicker-next/index.css';
+import PageHeader from '@/components/PageHeader.vue';
 
 // Stores
 const transportStore = useTransportStore();
@@ -524,6 +560,29 @@ const isLoadingBacklog = computed(() => backlogStore.loading);
 const backlogError = computed(() => backlogStore.error);
 const backlogData = computed(() => backlogStore.backlogList);
 const reasonOptions = computed(() => backlogStore.reasonOptions);
+
+const backlogSummaryPivot = computed(() => {
+    if (!backlogData.value) return { days: [], billCounts: [], fgTotals: [], pmTotals: [] };
+    // สร้าง map สำหรับแต่ละวัน
+    const map = {};
+    backlogData.value.forEach(item => {
+        const day = item.overdue;
+        if (!map[day]) {
+            map[day] = { bill: 0, fg: 0, pm: 0 };
+        }
+        map[day].bill += 1;
+        map[day].fg += Number(item.fg) || 0;
+        map[day].pm += Number(item.pm) || 0;
+    });
+    // เรียงวันที่จากน้อยไปมาก
+    const days = Object.keys(map).map(Number).sort((a, b) => a - b);
+    return {
+        days,
+        billCounts: days.map(d => map[d].bill),
+        fgTotals: days.map(d => map[d].fg),
+        pmTotals: days.map(d => map[d].pm)
+    };
+});
 
 // Edit Mode Functions
 const startEditing = (item, index) => {
@@ -607,6 +666,20 @@ const cancelAllEditing = () => {
 onMounted(() => {
     loadTransportData();
     backlogStore.fetchReasons();
+
+    // Restore from localStorage
+    selectedDC.value = localStorage.getItem('backlog_selectedDC') || '';
+    selectedStatus.value = localStorage.getItem('backlog_selectedStatus') || '';
+
+    // ถ้ามีค่า DC และ Status ที่เลือกไว้ ให้ดึงข้อมูลทันที
+    if (selectedDC.value && selectedStatus.value) {
+        loadData();
+    }
+
+    // ตั้งค่าความสูง container สำหรับ virtual scrolling
+    nextTick(() => {
+        setContainerHeight();
+    });
 });
 
 // Function to load transport data
@@ -850,6 +923,64 @@ const filteredBacklogData = computed(() => {
         );
     });
 });
+
+// Watch for changes in selectedDC and selectedStatus
+watch(selectedDC, (val) => {
+    localStorage.setItem('backlog_selectedDC', val || '');
+});
+
+watch(selectedStatus, (val) => {
+    localStorage.setItem('backlog_selectedStatus', val || '');
+});
+
+const hoverCol = ref(null);
+
+// Virtual scrolling properties
+const rowHeight = 40; // ความสูงแต่ละแถว (px)
+const visibleRows = 20; // จำนวนแถวที่แสดงพร้อมกัน
+const scrollTop = ref(0);
+const containerHeight = ref(0);
+
+// คำนวณแถวที่ควรแสดงจาก scroll position
+const virtualScrollData = computed(() => {
+    if (!filteredBacklogData.value) return [];
+    
+    const startIndex = Math.floor(scrollTop.value / rowHeight);
+    const endIndex = Math.min(startIndex + visibleRows, filteredBacklogData.value.length);
+    
+    return filteredBacklogData.value.slice(startIndex, endIndex).map((item, index) => ({
+        ...item,
+        virtualIndex: startIndex + index,
+        originalIndex: startIndex + index
+    }));
+});
+
+// คำนวณ padding-top เพื่อให้ scroll bar ถูกต้อง
+const topPadding = computed(() => {
+    return Math.floor(scrollTop.value / rowHeight) * rowHeight;
+});
+
+// คำนวณ padding-bottom เพื่อให้ความสูงรวมเท่าเดิม
+const bottomPadding = computed(() => {
+    if (!filteredBacklogData.value) return 0;
+    const totalHeight = filteredBacklogData.value.length * rowHeight;
+    const visibleHeight = visibleRows * rowHeight;
+    const remainingHeight = totalHeight - visibleHeight - topPadding.value;
+    return Math.max(0, remainingHeight);
+});
+
+// จัดการ scroll event
+const handleScroll = (event) => {
+    scrollTop.value = event.target.scrollTop;
+};
+
+// ตั้งค่าความสูง container
+const setContainerHeight = () => {
+    const container = document.querySelector('.virtual-table-container');
+    if (container) {
+        containerHeight.value = container.clientHeight;
+    }
+};
 </script>
 
 <style scoped>
@@ -940,5 +1071,40 @@ const filteredBacklogData = computed(() => {
         opacity: 1;
         transform: scale(1);
     }
+}
+
+/* Virtual scrolling styles */
+.virtual-table-container {
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e0 #f7fafc;
+}
+
+.virtual-table-container::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+.virtual-table-container::-webkit-scrollbar-track {
+    background: #f7fafc;
+    border-radius: 4px;
+}
+
+.virtual-table-container::-webkit-scrollbar-thumb {
+    background: #cbd5e0;
+    border-radius: 4px;
+}
+
+.virtual-table-container::-webkit-scrollbar-thumb:hover {
+    background: #a0aec0;
+}
+
+/* Ensure table rows have consistent height */
+.virtual-table-container tbody tr {
+    height: 40px;
+}
+
+/* Smooth scrolling */
+.virtual-table-container {
+    scroll-behavior: smooth;
 }
 </style>

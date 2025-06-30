@@ -9,7 +9,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@tanstack/vue-virtual": "^3.13.11",
     "@vueuse/core": "^10.2.1",
+    "ag-grid-vue3": "^33.3.2",
     "axios": "^1.4.0",
     "cors": "^2.8.5",
     "date-fns": "^2.30.0",

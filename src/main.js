@@ -5,6 +5,7 @@ import { createPinia } from 'pinia'
 import Toast from 'vue-toastification'
 import 'vue-toastification/dist/index.css'
 import "./index.css";
+import { ModuleRegistry, AllCommunityModule } from 'ag-grid-community'
 
 const pinia = createPinia();
 
@@ -23,6 +24,8 @@ const toastOptions = {
   icon: true,
   rtl: false
 };
+
+ModuleRegistry.registerModules([AllCommunityModule]);
 
 const app = createApp(App);
 

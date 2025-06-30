@@ -19,7 +19,7 @@
           <div class="flex flex-col lg:flex-row gap-4 lg:justify-end lg:items-end">
             <!-- Action Section (Backlog style) -->
             <div class="flex flex-col sm:flex-row gap-3 items-start sm:items-end">
-              <button type="button" @click="downloadData" :disabled="!tableData.length || storeLoading"
+              <button type="button" @click="downloadData" :disabled="!rowData.length || storeLoading"
                 class="text-white bg-green-600 hover:bg-green-700 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-xs px-3 py-1.5 text-center inline-flex items-center justify-center dark:focus:ring-green-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
                 <Icon icon="file-icons:microsoft-excel" width="16" height="16" class="mr-1.5" />
                 Export Excel
@@ -39,7 +39,7 @@
           </div>
         </div>
       </div>
-  
+
       <!-- Table Section -->
       <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-0 w-full">
         <!-- Loading State -->
@@ -51,7 +51,7 @@
         </div>
 
         <!-- Empty State -->
-        <div v-else-if="!tableData.length" class="flex items-center justify-center p-8">
+        <div v-else-if="!rowData || !rowData.length">
           <div class="text-center">
             <Icon icon="mdi:database-off" class="text-gray-400 mb-2" width="48" height="48" />
             <p class="text-gray-600">ไม่พบข้อมูล</p>
@@ -62,79 +62,57 @@
         </div>
 
         <!-- Table Content -->
-        <div v-else class="relative custom-scrollbar overflow-x-auto w-full" style="max-height: calc(100vh - 240px);">
-          <table
-            class="text-xs text-left text-gray-500 dark:text-gray-400 border-collapse border border-gray-300 dark:border-gray-600 w-full"
-            style="font-size: 0.8rem;">
-            <thead class="text-xs text-gray-700 uppercase bg-gray-50 whitespace-nowrap">
-              <tr>
-                <th class="sticky left-0 top-0 z-50 px-2 py-1 bg-gray-50 shadow-sm" rowspan="2">รหัสสินค้า</th>
-                <th class="sticky left-12 top-0 z-50 px-2 py-1 bg-gray-50 shadow-sm" rowspan="2">ชื่อสินค้า</th>
-                <th class="sticky top-0 z-10 px-2 py-2 text-center bg-gray-50 border" rowspan="2">On Hand</th>
-                <th class="sticky top-0 z-10 px-2 py-2 text-center bg-gray-50 border"  rowspan="2">Allocated</th>
-                <th class="sticky top-0 z-10 px-2 py-2 text-center bg-gray-50 border" rowspan="2">Allocatable</th>
-                <th class="sticky top-0 z-10 px-2 py-2 text-center bg-gray-50 border" rowspan="2">In Transit</th>
-                <th class="sticky top-0 z-10 px-2 py-2 text-center bg-gray-50 border" rowspan="2">CO</th>
-                <th class="sticky top-0 z-10 px-2 py-2 text-center bg-gray-50 border" rowspan="2">สินค้ารอจัดส่ง</th> 
-              </tr>
-              <tr>
-                <!-- Sub headers for each warehouse -->
-                <template v-for="warehouse in warehouses" :key="`sub-${warehouse.who_no}`">
-                  <th class="sticky top-[40px] z-10 px-2 py-1 text-black text-center bg-gray-50 border" 
-                      :style="{ backgroundColor: warehouse.color, }">{{ warehouse.who_no }} - On Hand</th>
-                  <th class="sticky top-[40px] z-10 px-2 py-1 text-black text-center bg-gray-50 border" 
-                      :style="{ backgroundColor: warehouse.color, }">{{ warehouse.who_no }} - Allocated</th>
-                  <th class="sticky top-[40px] z-10 px-2 py-1 text-black text-center bg-gray-50 border" 
-                      :style="{ backgroundColor: warehouse.color, }">{{ warehouse.who_no }} - Allocatable</th>
-                  <th class="sticky top-[40px] z-10 px-2 py-1 text-black text-center bg-gray-50 border" 
-                      :style="{ backgroundColor: warehouse.color, }">{{ warehouse.who_no }} - In Transit</th>
-                  <th class="sticky top-[40px] z-10 px-2 py-1 text-black text-center bg-gray-50 border" 
-                      :style="{ backgroundColor: warehouse.color, }">{{ warehouse.who_no }} - CO</th>
-                  <th class="sticky top-[40px] z-10 px-2 py-1 text-black text-center bg-gray-50 border" 
-                      :style="{ backgroundColor: warehouse.color, }">{{ warehouse.who_no }} - สินค้ารอจัดส่ง</th>
-                </template>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="(item, idx) in tableData" :key="idx" :class="idx % 2 === 1 ? 'bg-gray-100' : 'bg-white'">
-                <td class="sticky left-0 z-40 bg-white border whitespace-nowrap px-2 py-1 border-gray-300 dark:border-gray-600">{{ item.item_no }}</td>
-                <td class="sticky left-12 z-40 bg-white border whitespace-nowrap px-2 py-1 border-gray-300 dark:border-gray-600">{{ item.item_name }}</td>
-                <td class="px-2 py-1 text-center border">{{ formatNumber(item.onhand) }}</td>
-                <td class="px-2 py-1 text-center border">{{ formatNumber(item.allocated) }}</td>
-                <td class="px-2 py-1 text-center border">{{ formatNumber(item.allocatable) }}</td>
-                <td class="px-2 py-1 text-center border">{{ formatNumber(item.in_transit) }}</td>
-                <td class="px-2 py-1 text-center border">{{ formatNumber(item.co) }}</td>
-                <td class="px-2 py-1 text-center border">{{ formatNumber(item.waiting) }}</td>
-                <!-- Dynamic warehouse data -->
-                <template v-for="warehouse in warehouses" :key="`data-${warehouse.who_no}-${idx}`">
-                  <td class="px-2 py-1 text-center text-black border" 
-                      :style="{ backgroundColor: warehouse.color, opacity: 0.8 }">
-                    {{ formatNumber(item[`${warehouse.who_no}_onhand`]) }}
-                  </td>
-                  <td class="px-2 py-1 text-center text-black border" 
-                      :style="{ backgroundColor: warehouse.color, opacity: 0.8 }">
-                    {{ formatNumber(item[`${warehouse.who_no}_allocated`]) }}
-                  </td> 
-                  <td class="px-2 py-1 text-center text-black border" 
-                      :style="{ backgroundColor: warehouse.color, opacity: 0.8 }">
-                    {{ formatNumber(item[`${warehouse.who_no}_allocatable`]) }}
-                  </td>
-                  <td class="px-2 py-1 text-center text-black border" 
-                      :style="{ backgroundColor: warehouse.color, opacity: 0.8 }">
-                    {{ formatNumber(item[`${warehouse.who_no}_in_transit`]) }}
-                  </td>
-                  <td class="px-2 py-1 text-center text-black border" 
-                      :style="{ backgroundColor: warehouse.color, opacity: 0.8 }">
-                    {{ formatNumber(item[`${warehouse.who_no}_co`]) }}
-                  </td>
-                  <td class="px-2 py-1 text-center text-black border" 
-                      :style="{ backgroundColor: warehouse.color, opacity: 0.8 }">
-                    {{ formatNumber(item[`${warehouse.who_no}_waiting`]) }}
-                  </td>
-                </template>
-              </tr>
-            </tbody>
-          </table>
+        <div v-else class="mb-2 flex justify-between items-center mt-2 mr-2">
+          <!-- Result count (left) -->
+          <div class="flex items-center gap-3 ml-2 px-3 py-2 bg-white rounded-lg border border-gray-200 shadow-sm">
+            <!-- Simple icon -->
+            <Icon icon="streamline-ultimate:time-daily-1-bold" color="#374151" class="w-5 h-5 mr-2" />
+
+            <!-- Clean text layout -->
+            <div class="flex items-center gap-2 text-sm font-sarabun text-gray-700">
+              <span class="font-medium">ผลลัพธ์:</span>
+
+              <!-- Highlighted current count -->
+              <span class="inline-flex items-center px-3 py-1 bg-gray-50 text-gray-600 rounded-md font-bold text-sm"
+                v-if="searchText">
+                {{ filteredRowData.length }}
+              </span>
+
+              <span class="text-gray-400" v-if="searchText">/</span>
+
+              <!-- Total count -->
+              <span
+                class="inline-flex items-center px-3 py-1 bg-green-100 text-green-600 rounded-md font-medium text-sm">
+                {{ rowData.length }}
+              </span>
+
+              <span>รายการ</span>
+            </div>
+          </div>
+          <!-- Beautiful Search Input with Flowbite styling (right) -->
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 flex items-center pl-2 pointer-events-none">
+              <Icon icon="mdi:magnify" class="w-3.5 h-3.5 text-gray-500 dark:text-gray-400" />
+            </div>
+            <input v-model="searchText" type="text" placeholder="ค้นหา รหัสสินค้า หรือ ชื่อสินค้า"
+              class="block w-64 p-2 pl-8 text-xs text-gray-900 border border-gray-300 rounded-md bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-all duration-200 hover:bg-white hover:border-gray-400 focus:bg-white" />
+            <div class="absolute inset-y-0 right-0 flex items-center pr-2">
+              <button v-if="searchText" @click="searchText = ''" type="button"
+                class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200">
+                <Icon icon="mdi:close-circle" class="w-3.5 h-3.5" />
+              </button>
+            </div>
+          </div>
+        </div>
+        <div
+          v-if="!storeLoading && rowData && rowData.length"
+          class="ag-theme-alpine m-2"
+          style="width: calc(100% - 16px); height: calc(100vh - 300px);"
+        >
+          <ag-grid-vue :rowData="filteredRowData" :columnDefs="columnDefs" :defaultColDef="defaultColDef" theme="legacy"
+            :pagination="false" :animateRows="false" :suppressHorizontalScroll="false" :localeText="{
+              noRowsToShow: 'ไม่พบข้อมูลที่ค้นหา',
+            }" style="width: 100%; height: calc(100vh - 300px);"  />
         </div>
       </div>
     </div>
@@ -147,35 +125,69 @@ import { Icon } from '@iconify/vue';
 import ExcelJS from 'exceljs';
 import { saveAs } from 'file-saver';
 import { useReportTmsStore } from '@/stores/modules/reportTms';
+import { AgGridVue } from 'ag-grid-vue3';
+import { themeQuartz } from 'ag-grid-community';
 
 // Store
 const reportTmsStore = useReportTmsStore();
 
-// Reactive data
-const isLoading = ref(false);
+const myTheme = themeQuartz
+  .withParams({
+    browserColorScheme: "light",
+    columnBorder: true,
+    headerFontSize: 14
+  });
 
-// Warehouse configurations based on PHP code
-const warehouses = ref([
-  { who_no: 'NP', color: '#ffa07a' },   // Light Salmon
-  { who_no: 'MH', color: '#87cefa' },   // Light Sky Blue
-  { who_no: 'LP', color: '#f08080' },   // Light Coral
-  { who_no: 'ST', color: '#b0c4de' },   // Light Steel Blue
-  { who_no: 'BN', color: '#90ee90' },   // Light Green
-  { who_no: 'NS', color: '#4c8af8' },   // Blue
-  { who_no: 'KR', color: '#fff163' },   // Yellow
-  { who_no: 'NON', color: '#778899' },  // Light Slate Gray
-  { who_no: 'NP2', color: '#ffb6c1' },  // Light Pink
-]);
-
-// Computed properties for store data
-const tableData = computed(() => reportTmsStore.getDailyStockData);
+// ใช้ข้อมูลจาก store โดยตรง
+const rowData = computed(() => reportTmsStore.getDailyStockData || []);
 const storeLoading = computed(() => reportTmsStore.loading);
 const storeError = computed(() => reportTmsStore.error);
 
-// Functions
+// warehouses กำหนดเอง (หรือจะดึงจาก API ก็ได้)
+const warehouses = [
+  { who_no: 'NP', color: '#ffa07a' },
+  { who_no: 'MH', color: '#87cefa' },
+  { who_no: 'LP', color: '#f08080' },
+  { who_no: 'ST', color: '#b0c4de' },
+  { who_no: 'BN', color: '#90ee90' },
+  { who_no: 'NS', color: '#4c8af8' },
+  { who_no: 'KR', color: '#fff163' },
+  { who_no: 'NON', color: '#778899' },
+  { who_no: 'NP2', color: '#ffb6c1' },
+];
+
+const columnDefs = [
+  { headerName: 'รหัสสินค้า', field: 'item_no', pinned: 'left', autoWidth: true },
+  { headerName: 'ชื่อสินค้า', field: 'item_name', pinned: 'left', cellStyle: { whiteSpace: 'nowrap', textOverflow: 'unset', overflow: 'visible' }, autoHeight: true, autoWidth: true },
+  { headerName: 'On Hand', field: 'onhand', minWidth: 60, valueFormatter: p => formatNumber(p.value), cellClass: 'ag-right-aligned-cell' },
+  { headerName: 'Allocated', field: 'allocated', minWidth: 60, valueFormatter: p => formatNumber(p.value), cellClass: 'ag-right-aligned-cell' },
+  { headerName: 'Allocatable', field: 'allocatable', minWidth: 60, valueFormatter: p => formatNumber(p.value), cellClass: 'ag-right-aligned-cell' },
+  { headerName: 'In Transit', field: 'in_transit', minWidth: 60, valueFormatter: p => formatNumber(p.value), cellClass: 'ag-right-aligned-cell' },
+  { headerName: 'CO', field: 'co', minWidth: 60, valueFormatter: p => formatNumber(p.value), cellClass: 'ag-right-aligned-cell' },
+  { headerName: 'สินค้ารอจัดส่ง', field: 'waiting', minWidth: 60, valueFormatter: p => formatNumber(p.value), cellClass: 'ag-right-aligned-cell' },
+  ...warehouses.flatMap(wh => [
+    { headerName: `${wh.who_no} - On Hand`, field: `${wh.who_no}_onhand`, minWidth: 60, valueFormatter: p => formatNumber(p.value), cellStyle: { background: wh.color, opacity: 0.8 }, cellClass: 'ag-right-aligned-cell' },
+    { headerName: `${wh.who_no} - Allocated`, field: `${wh.who_no}_allocated`, minWidth: 60, valueFormatter: p => formatNumber(p.value), cellStyle: { background: wh.color, opacity: 0.8 }, cellClass: 'ag-right-aligned-cell' },
+    { headerName: `${wh.who_no} - Allocatable`, field: `${wh.who_no}_allocatable`, minWidth: 60, valueFormatter: p => formatNumber(p.value), cellStyle: { background: wh.color, opacity: 0.8 }, cellClass: 'ag-right-aligned-cell' },
+    { headerName: `${wh.who_no} - In Transit`, field: `${wh.who_no}_in_transit`, minWidth: 60, valueFormatter: p => formatNumber(p.value), cellStyle: { background: wh.color, opacity: 0.8 }, cellClass: 'ag-right-aligned-cell' },
+    { headerName: `${wh.who_no} - CO`, field: `${wh.who_no}_co`, minWidth: 60, valueFormatter: p => formatNumber(p.value), cellStyle: { background: wh.color, opacity: 0.8 }, cellClass: 'ag-right-aligned-cell' },
+    { headerName: `${wh.who_no} - สินค้ารอจัดส่ง`, field: `${wh.who_no}_waiting`, minWidth: 60, valueFormatter: p => formatNumber(p.value), cellStyle: { background: wh.color, opacity: 0.8 }, cellClass: 'ag-right-aligned-cell' }
+  ])
+];
+
+const defaultColDef = {
+  resizable: false,
+  sortable: true,
+  filter: false,
+  minWidth: 20,
+  flex: undefined
+};
+
 function formatNumber(value) {
-  if (value === null || value === undefined || value === 0) return '-';
-  return new Intl.NumberFormat('th-TH').format(value);
+  if (value === null || value === undefined || value === '' || value === 0) {
+    return '-';
+  }
+  return Number(value).toLocaleString();
 }
 
 function downloadData() {
@@ -186,7 +198,7 @@ function downloadData() {
   const headerRow = [
     'รหัสสินค้า', 'ชื่อสินค้า', 'On Hand', 'Allocated', 'Allocatable', 'In Transit', 'CO', 'สินค้ารอจัดส่ง'
   ];
-  warehouses.value.forEach(wh => {
+  warehouses.forEach(wh => {
     headerRow.push(
       `${wh.who_no} - On Hand`,
       `${wh.who_no} - Allocated`,
@@ -199,7 +211,7 @@ function downloadData() {
   worksheet.addRow(headerRow);
 
   // Data
-  tableData.value.forEach(item => {
+  rowData.value.forEach(item => {
     const row = [
       item.item_no,
       item.item_name,
@@ -210,7 +222,7 @@ function downloadData() {
       item.co || 0,
       item.waiting || 0
     ];
-    warehouses.value.forEach(wh => {
+    warehouses.forEach(wh => {
       row.push(
         item[`${wh.who_no}_onhand`] || 0,
         item[`${wh.who_no}_allocated`] || 0,
@@ -242,7 +254,7 @@ function downloadData() {
 
   // ใส่สี warehouse columns
   const startCol = 9;
-  warehouses.value.forEach((wh, idx) => {
+  warehouses.forEach((wh, idx) => {
     for (let i = 0; i < 6; i++) {
       const col = startCol + idx * 6 + i;
       worksheet.getColumn(col).eachCell((cell, rowNumber) => {
@@ -281,177 +293,97 @@ function downloadData() {
     }
   });
 
+
   // Set column widths
   const colWidths = [
     15, 40, 12, 12, 12, 12, 10, 15
   ];
-  warehouses.value.forEach(() => {
+  warehouses.forEach(() => {
     colWidths.push(12, 12, 12, 12, 10, 15);
   });
   colWidths.forEach((w, i) => worksheet.getColumn(i + 1).width = w);
 
   // Export
   workbook.xlsx.writeBuffer().then(buffer => {
-    saveAs(new Blob([buffer]), `daily_stock_${new Date().toISOString().slice(0,10)}.xlsx`);
+    saveAs(new Blob([buffer]), `daily_stock_${new Date().toISOString().slice(0, 10)}.xlsx`);
   });
 }
 
 async function fetchData() {
-  isLoading.value = true;
-  try {
-    const result = await reportTmsStore.fetchDailyStockData();
-    if (!result.success) {
-      console.error('Failed to fetch data:', result.message);
-    }
-  } catch (error) {
-    console.error('Error fetching data:', error);
-  } finally {
-    isLoading.value = false;
-  }
+  await reportTmsStore.fetchDailyStockData();
 }
 
 function refreshPage() {
   window.location.reload();
 }
 
-// Load data on component mount
+const searchText = ref('');
+
+const filteredRowData = computed(() => {
+  if (!searchText.value) return rowData.value;
+  const search = searchText.value.toLowerCase();
+  return rowData.value.filter(
+    row =>
+      (row.item_no && row.item_no.toLowerCase().includes(search)) ||
+      (row.item_name && row.item_name.toLowerCase().includes(search))
+  );
+});
+
+const gridApi = ref(null);
+
+function onGridReady(params) {
+  gridApi.value = params.api;
+  // Auto size เฉพาะคอลัมน์ชื่อสินค้า
+  params.columnApi.autoSizeColumn('item_no', false);
+  params.columnApi.autoSizeColumn('item_name');
+}
+
 onMounted(async () => {
-  console.log('Daily Stock component mounted');
   await fetchData();
 });
 </script>
 
-<style scoped>
-.custom-scrollbar {
-  scrollbar-width: thin;
-  scrollbar-color: #94a3b8 #f1f5f9;
+<style>
+@import "ag-grid-community/styles/ag-grid.css";
+@import "ag-grid-community/styles/ag-theme-alpine.css";
+
+.ag-theme-alpine {
+  font-size: 10px !important;
+  --ag-borders: solid;
+  --ag-border-color: #d1d5db;
+  --ag-row-border-width: 1px;
+  --ag-header-column-separator-display: block;
+  --ag-header-column-separator-height: 100%;
+  --ag-header-column-separator-width: 1px;
 }
 
-.custom-scrollbar::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+.ag-theme-alpine .ag-header-cell-label {
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: visible;
+  text-overflow: unset;
 }
 
-.custom-scrollbar::-webkit-scrollbar-track {
-  background: #f1f5f9;
-  border-radius: 4px;
+.ag-theme-alpine .ag-body-cell {
+  font-size: 10px !important;
 }
 
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #94a3b8;
-  border-radius: 4px;
-  border: 2px solid #f1f5f9;
+.ag-theme-alpine .ag-cell,
+.ag-theme-alpine .ag-header-cell,
+.ag-theme-alpine .ag-header-group-cell {
+  border-right: 1px solid #d1d5db !important;
+  /* เส้นแนวตั้ง */
+  border-bottom: 1px solid #d1d5db !important;
+  /* เส้นแนวนอน */
+  padding-left: 4px !important;
+  padding-right: 4px !important;
 }
 
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #64748b;
+.ag-theme-alpine .ag-row {
+  border-bottom: 1px solid #d1d5db !important;
 }
 
-.border {
-  border: 1px solid #d1d5db;
+.ag-theme-alpine .ag-header-row {
+  border-bottom: 1.5px solid #bdbdbd !important;
 }
-
-table {
-  border-collapse: collapse;
-}
-
-th, td {
-  border: 1px solid #d1d5db;
-}
-
-/* Dark mode styles */
-@media (prefers-color-scheme: dark) {
-  .custom-scrollbar {
-    scrollbar-color: #475569 #1e293b;
-  }
-
-  .custom-scrollbar::-webkit-scrollbar-track {
-    background: #1e293b;
-  }
-
-  .custom-scrollbar::-webkit-scrollbar-thumb {
-    background: #475569;
-    border: 2px solid #1e293b;
-  }
-
-  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: #64748b;
-  }
-}
-
-/* Enhanced sticky columns */
-.sticky {
-  position: sticky;
-}
-
-.sticky.left-0 {
-  left: 0;
-  box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1);
-}
-
-.sticky.left-12 {
-  left: 48px; /* 12 * 4px = 48px */
-  box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1);
-}
-
-/* Ensure sticky columns stay on top during scrolling */
-.z-20 {
-  z-index: 20;
-}
-
-.z-30 {
-  z-index: 30;
-}
-
-/* Add subtle border to separate sticky columns */
-.sticky.left-12 {
-  border-right: 1px solid #e5e7eb;
-}
-
-/* Enhanced sticky positioning for both axes */
-thead th.sticky {
-  position: sticky;
-  top: 0;
-  z-index: 40;
-}
-
-tbody td.sticky {
-  position: sticky;
-  z-index: 30;
-}
-
-/* Specific positioning for first two columns */
-thead th.sticky.left-0 {
-  left: 0;
-  z-index: 50;
-}
-
-thead th.sticky.left-12 {
-  left: 48px;
-  z-index: 50;
-}
-
-tbody td.sticky.left-0 {
-  left: 0;
-  z-index: 40;
-}
-
-tbody td.sticky.left-12 {
-  left: 48px;
-  z-index: 40;
-}
-
-/* Dark mode adjustments for sticky columns */
-@media (prefers-color-scheme: dark) {
-  .sticky.left-0,
-  .sticky.left-12 {
-    box-shadow: 2px 0 4px rgba(0, 0, 0, 0.3);
-  }
-  
-  .sticky.left-12 {
-    border-right: 1px solid #374151;
-  }
-}
-
-th.sticky.top-row-2 { top: 40px !important; }
 </style>

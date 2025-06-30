@@ -1,5 +1,5 @@
 <template>
-  <div v-if="route.meta.breadcrumb" class="mb-6 flex justify-between items-center">
+  <div v-if="route.meta.breadcrumb" :class="route.path === '/tms/manage/backlog' || route.path === '/tms/report/shipment-cost' || route.path === '/tms/manage/shipcost-edit' ? 'mb-2' : 'mb-6'" class="flex justify-between items-center">
     <nav class="flex" aria-label="Breadcrumb">
       <ol class="inline-flex items-center space-x-1 md:space-x-3">
         <li class="inline-flex items-center">
@@ -19,17 +19,29 @@
             </span>
           </div>
         </li>
+        <!-- <template v-if="authStore.currentUser && route.path === '/tms/manage/backlog'">
+        <img :src="authStore.userImgUrl || 'logo12.png'" :alt="authStore.userFullName"
+          class="w-8 h-8 rounded-full object-cover border-2 border-gray-200"
+          @error="$event.target.src = 'logo12.png'" />
+        <div class="flex-1 min-w-0">
+          <p class="text-xs font-medium text-gray-800 truncate">{{ authStore.userFullNameThai }}</p>
+          <p class="text-xs text-gray-500 truncate">{{ authStore.userPosition }}</p>
+        </div>
+      </template> -->
       </ol>
     </nav>
-    <!-- User Info -->
-    <div v-if="authStore.currentUser" class="flex items-center space-x-2">
-      <img :src="authStore.userImgUrl || 'logo12.png'" :alt="authStore.userFullName"
-        class="w-8 h-8 rounded-full object-cover border-2 border-gray-200"
-        @error="$event.target.src = 'logo12.png'" />
-      <div class="flex-1 min-w-0">
-        <p class="text-sm font-medium text-gray-800 truncate">{{ authStore.userFullNameThai }}</p>
-        <p class="text-xs text-gray-500 truncate">{{ authStore.userPosition }}</p>
-      </div>
+    <!-- User Info + Actions Slot -->
+    <div class="flex items-center space-x-2">
+      <template v-if="authStore.currentUser && route.path !== '/tms/manage/backlog' && route.path !== '/tms/report/shipment-cost'">
+        <img :src="authStore.userImgUrl || 'logo12.png'" :alt="authStore.userFullName"
+          class="w-8 h-8 rounded-full object-cover border-2 border-gray-200"
+          @error="$event.target.src = 'logo12.png'" />
+        <div class="flex-1 min-w-0">
+          <p class="text-sm font-medium text-gray-800 truncate">{{ authStore.userFullNameThai }}</p>
+          <p class="text-xs text-gray-500 truncate">{{ authStore.userPosition }}</p>
+        </div>
+      </template>
+      <slot name="actions"></slot>
     </div>
   </div>
 </template>

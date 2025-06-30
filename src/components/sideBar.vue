@@ -186,12 +186,13 @@ const menuData = {
           // '%เติมสินค้าเข้า DC',
           // 'Stock On Hand',
           'Daily Stock',
+          'รายการที่ไม่ได้วางบิล',
           // 'สินค้าที่ยังไม่ได้เปิด Invoice',
           // 'ออเดอร์ค้างส่ง(หน่วยรถ)',
           // 'วางแผน',
           // 'วางแผนรวม',
           // 'อายุสินค้าคงเหลือ',
-          // 'ค่าขนส่ง(shipment)',
+          'ค่าขนส่ง(shipment)',
           // '% ontime'
         ]
       },
@@ -201,7 +202,7 @@ const menuData = {
           'ออเดอร์ค้างส่ง',
           // 'ออเดอร์ค้างส่ง(หน่วยรถ)',
           // 'กำหนดปริมาตรและน้ำหนักรถบรรทุก',
-          // 'จัดการค่าขนส่ง',
+          'จัดการค่าขนส่ง',
           // 'กำหนดค่าขนส่ง'
         ]
       }
@@ -274,6 +275,7 @@ function getRoutePath(system, category, item) {
         '%เติมสินค้าเข้า DC': '/tms/report/percent-fill-to-dc',
         'Stock On Hand': '/tms/report/stock-on-hand',
         'Daily Stock': '/tms/report/daily-stock',
+        'รายการที่ไม่ได้วางบิล': '/tms/report/not-bill',
         'สินค้าที่ยังไม่ได้เปิด Invoice': '/tms/report/not-open-invoice',
         'ออเดอร์ค้างส่ง(หน่วยรถ)': '/tms/report/backlog-unit',
         'วางแผน': '/tms/report/plan',
