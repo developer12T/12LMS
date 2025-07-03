@@ -172,16 +172,15 @@
                             <tr>
                                 <th colspan="16" class="px-4 py-3 border-b border-gray-200 dark:border-gray-600">
                                     <div class="flex items-center justify-between">
-                                        <div class="flex items-center justify-center flex-row">
-                                            <h3 class="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                            รายการออร์เดอร์ค้างส่ง
-                                        </h3>
+                                      
                                          <!-- Record Count -->
-                                         <span class="text-xs ms-2 bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full">
-                                            {{ searchQuery ? `${filteredBacklogData.length}/${backlogData.length}` : backlogData.length }} รายการ
-                                        </span>
-                                        </div>
-                                       
+                                         <ResultCount
+                                            :label="'ผลลัพธ์:'"
+                                            :current="searchQuery ? filteredBacklogData.length : null"
+                                            :total="backlogData.length"
+                                            icon="mdi:clipboard-text-outline"
+                                            iconColor="#00569D"
+                                         />
                                         <div class="flex items-center space-x-4">
                                             <!-- Multi-Save Controls -->
                                             <div v-if="editingRowIndexes.size > 1" class="flex items-center space-x-2 animate-fade-in">
@@ -522,6 +521,7 @@ import * as XLSX from 'xlsx';
 import DatePicker from 'vue-datepicker-next';
 import 'vue-datepicker-next/index.css';
 import PageHeader from '@/components/PageHeader.vue';
+import ResultCount from '@/components/ResultCount.vue';
 
 // Stores
 const transportStore = useTransportStore();
@@ -697,10 +697,22 @@ const loadData = async () => {
         return;
     }
     hasLoadedData.value = true;
+    
+    // Reset scroll position before loading new data
+    scrollTop.value = 0;
+    
     await backlogStore.fetchBacklogData(selectedDC.value, selectedStatus.value);
     if (backlogStore.error) {
         showError('Error', `เกิดข้อผิดพลาด: ${backlogStore.error}`);
     }
+    
+    // Reset scroll position after data is loaded
+    nextTick(() => {
+        const container = document.querySelector('.virtual-table-container');
+        if (container) {
+            container.scrollTop = 0;
+        }
+    });
 };
 
 const selectReason = (item, reason) => {
@@ -876,6 +888,9 @@ const confirmReload = async () => {
     isReloading.value = true;
     
     try {
+        // Reset scroll position before reloading
+        scrollTop.value = 0;
+        
         // Call gen-back-order API
         const params = {
             warehouse: selectedDC.value || '',
@@ -931,6 +946,18 @@ watch(selectedDC, (val) => {
 
 watch(selectedStatus, (val) => {
     localStorage.setItem('backlog_selectedStatus', val || '');
+});
+
+// Watch for changes in backlogData to reset scroll position
+watch(backlogData, () => {
+    // Reset scroll position when data changes
+    scrollTop.value = 0;
+    nextTick(() => {
+        const container = document.querySelector('.virtual-table-container');
+        if (container) {
+            container.scrollTop = 0;
+        }
+    });
 });
 
 const hoverCol = ref(null);

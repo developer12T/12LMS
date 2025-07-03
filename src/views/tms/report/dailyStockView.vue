@@ -1,10 +1,10 @@
 <template>
   <div class="mx-auto w-full px-4" style="max-width: calc(100vw - 100px);">
     <!-- Filter and Action Section -->
-    <div class="space-y-6">
+    <div class="space-y-2">
       <!-- Sticky Filter Controls -->
       <div class="bg-gray-100 dark:bg-gray-800">
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 w-full">
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-2 py-4 w-full">
           <!-- Error Message -->
           <div v-if="storeError" class="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
             <div class="flex items-center">
@@ -19,11 +19,6 @@
           <div class="flex flex-col lg:flex-row gap-4 lg:justify-end lg:items-end">
             <!-- Action Section (Backlog style) -->
             <div class="flex flex-col sm:flex-row gap-3 items-start sm:items-end">
-              <button type="button" @click="downloadData" :disabled="!rowData.length || storeLoading"
-                class="text-white bg-green-600 hover:bg-green-700 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-xs px-3 py-1.5 text-center inline-flex items-center justify-center dark:focus:ring-green-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-                <Icon icon="file-icons:microsoft-excel" width="16" height="16" class="mr-1.5" />
-                Export Excel
-              </button>
               <button type="button" @click="fetchData" :disabled="storeLoading"
                 class="text-white bg-red-600 hover:bg-red-700 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-xs px-3 py-1.5 text-center inline-flex items-center justify-center dark:focus:ring-red-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
                 <Icon v-if="storeLoading" icon="mdi:loading" class="animate-spin mr-1.5" width="16" height="16" />
@@ -64,43 +59,33 @@
         <!-- Table Content -->
         <div v-else class="mb-2 flex justify-between items-center mt-2 mr-2">
           <!-- Result count (left) -->
-          <div class="flex items-center gap-3 ml-2 px-3 py-2 bg-white rounded-lg border border-gray-200 shadow-sm">
-            <!-- Simple icon -->
-            <Icon icon="streamline-ultimate:time-daily-1-bold" color="#374151" class="w-5 h-5 mr-2" />
-
-            <!-- Clean text layout -->
-            <div class="flex items-center gap-2 text-sm font-sarabun text-gray-700">
-              <span class="font-medium">ผลลัพธ์:</span>
-
-              <!-- Highlighted current count -->
-              <span class="inline-flex items-center px-3 py-1 bg-gray-50 text-gray-600 rounded-md font-bold text-sm"
-                v-if="searchText">
-                {{ filteredRowData.length }}
-              </span>
-
-              <span class="text-gray-400" v-if="searchText">/</span>
-
-              <!-- Total count -->
-              <span
-                class="inline-flex items-center px-3 py-1 bg-green-100 text-green-600 rounded-md font-medium text-sm">
-                {{ rowData.length }}
-              </span>
-
-              <span>รายการ</span>
-            </div>
-          </div>
+          <ResultCount
+            :label="'ผลลัพธ์:'"
+            :current="searchText ? filteredRowData.length : null"
+            :total="rowData.length"
+            icon="streamline-ultimate:time-daily-1-bold"
+            iconColor="#374151"
+            class="ml-2"
+          />
           <!-- Beautiful Search Input with Flowbite styling (right) -->
-          <div class="relative">
-            <div class="absolute inset-y-0 left-0 flex items-center pl-2 pointer-events-none">
-              <Icon icon="mdi:magnify" class="w-3.5 h-3.5 text-gray-500 dark:text-gray-400" />
-            </div>
-            <input v-model="searchText" type="text" placeholder="ค้นหา รหัสสินค้า หรือ ชื่อสินค้า"
-              class="block w-64 p-2 pl-8 text-xs text-gray-900 border border-gray-300 rounded-md bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-all duration-200 hover:bg-white hover:border-gray-400 focus:bg-white" />
-            <div class="absolute inset-y-0 right-0 flex items-center pr-2">
-              <button v-if="searchText" @click="searchText = ''" type="button"
-                class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200">
-                <Icon icon="mdi:close-circle" class="w-3.5 h-3.5" />
-              </button>
+          <div class="flex items-center gap-2">
+            <button type="button" @click="downloadData" :disabled="!rowData.length || storeLoading"
+              class="text-white bg-green-600 hover:bg-green-700 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-xs px-3 py-1.5 text-center inline-flex items-center justify-center dark:focus:ring-green-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+              <Icon icon="file-icons:microsoft-excel" width="16" height="16" class="mr-1.5" />
+              Export Excel
+            </button>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 flex items-center pl-2 pointer-events-none">
+                <Icon icon="mdi:magnify" class="w-3.5 h-3.5 text-gray-500 dark:text-gray-400" />
+              </div>
+              <input v-model="searchText" type="text" placeholder="ค้นหา รหัสสินค้า หรือ ชื่อสินค้า"
+                class="block w-64 p-2 pl-8 text-xs text-gray-900 border border-gray-300 rounded-md bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-all duration-200 hover:bg-white hover:border-gray-400 focus:bg-white" />
+              <div class="absolute inset-y-0 right-0 flex items-center pr-2">
+                <button v-if="searchText" @click="searchText = ''" type="button"
+                  class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200">
+                  <Icon icon="mdi:close-circle" class="w-3.5 h-3.5" />
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -127,6 +112,7 @@ import { saveAs } from 'file-saver';
 import { useReportTmsStore } from '@/stores/modules/reportTms';
 import { AgGridVue } from 'ag-grid-vue3';
 import { themeQuartz } from 'ag-grid-community';
+import ResultCount from '@/components/ResultCount.vue';
 
 // Store
 const reportTmsStore = useReportTmsStore();

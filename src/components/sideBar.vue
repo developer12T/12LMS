@@ -35,9 +35,10 @@
             isCollapsed ? 'justify-center' : 'justify-between',
             isCollapsed && isActiveSystem(system, data) ? 'bg-sky-600' : ''
           ]">
-          <div class="flex items-center space-x-3">
+          <div class="flex items-center" :class="isCollapsed ? 'flex-col justify-center' : 'flex-row space-x-3'">
             <Icon :icon="data.icon" class="w-5 h-5" />
-            <span v-if="!isCollapsed" class="font-medium">{{ system }}</span>
+            <span v-if="!isCollapsed" class="font-medium">{{ data.label }}</span>
+            <span v-else class="font-medium text-xs text-center">{{ system }}</span>
           </div>
           <Icon v-if="!isCollapsed" :icon="expandedMenus[system] ? 'mdi:chevron-down' : 'mdi:chevron-right'"
             class="w-4 h-4" />
@@ -131,13 +132,32 @@
       </button>
     </div>
 
-    <!-- Modal ยืนยัน logout (Best Practice) -->
+    <!-- Logout Modal -->
     <div v-if="showLogoutModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-      <div class="bg-white rounded-lg shadow-xl w-full max-w-xs p-6 relative">
-        <h3 class="text-lg font-semibold mb-4 text-center">ยืนยันการออกจากระบบ</h3>
+      <div class="bg-white rounded-lg shadow-xl w-full flex flex-col items-center justify-center max-w-xs p-6 relative">
+        <template v-if="!isProcessingLogout">
+          <Icon icon="mdi:logout" class="w-10 h-10 text-red-400 mb-2" />
+        </template>
+        <template v-else>
+          <svg class="animate-spin w-10 h-10 text-sky-500 mb-2" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+          </svg>
+        </template>
+        <h3 class="text-lg font-semibold text-gray-900 mb-2 text-center">ยืนยันการออกจากระบบ</h3>
+        <template v-if="!isProcessingLogout">
+          <p class="text-center text-gray-500 mb-4">คุณต้องการออกจากระบบใช่หรือไม่?</p>
+        </template>
+        <template v-else>
+          <p class="text-center text-gray-500 mb-4">{{ logoutMessages[logoutStep] }}</p>
+        </template>
         <div class="flex justify-end space-x-2 mt-2">
-          <button @click="cancelLogout" class="px-3 py-1 rounded bg-gray-200 text-gray-700">ยกเลิก</button>
-          <button @click="proceedLogout" class="px-3 py-1 rounded bg-sky-600 text-white">ตกลง</button>
+          <button v-if="!isProcessingLogout" @click="cancelLogout"
+            class="px-3 py-1 rounded bg-gray-200 text-gray-700">ยกเลิก</button>
+          <button v-if="!isProcessingLogout" @click="proceedLogout"
+            class="px-3 py-1 rounded bg-red-600 text-white">ออกจากระบบ</button>
+          <button v-else disabled
+            class="px-3 py-1 rounded bg-gray-300 text-gray-400 cursor-not-allowed">โปรดรอ...</button>
         </div>
       </div>
     </div>
@@ -174,23 +194,30 @@ const activeMiniMenu = ref(null);
 const expandedMenus = ref({});
 const authStore = useAuthStore();
 const showLogoutModal = ref(false);
+const logoutStep = ref(0);
+const logoutMessages = [
+  'กำลังเตรียมการ...',
+  'กำลังเคลียร์ข้อมูล...',
+  'กำลังนำท่านออกจากระบบ...'
+];
+const isProcessingLogout = ref(false);
 
 const menuData = {
   OMS: {
-    icon: 'lets-icons:order-fill',
+    icon: 'lsicon:order-edit-filled',
     label: 'Order Management',
     items: {
       'รายงาน': {
         icon: 'mdi:file-document',
         children: [
-          // '%เติมสินค้าเข้า DC',
+          '%เติมสินค้าเข้า DC',
           // 'Stock On Hand',
           'Daily Stock',
           'รายการที่ไม่ได้วางบิล',
           // 'สินค้าที่ยังไม่ได้เปิด Invoice',
           // 'ออเดอร์ค้างส่ง(หน่วยรถ)',
           // 'วางแผน',
-          // 'วางแผนรวม',
+          'วางแผนรวม',
           // 'อายุสินค้าคงเหลือ',
           'ค่าขนส่ง(shipment)',
           // '% ontime'
@@ -391,12 +418,28 @@ const handleLogout = async () => {
 // สำหรับ modal
 const confirmLogout = () => {
   showLogoutModal.value = true;
+  logoutStep.value = 0;
+  isProcessingLogout.value = false;
 };
 const cancelLogout = () => {
   showLogoutModal.value = false;
+  logoutStep.value = 0;
+  isProcessingLogout.value = false;
 };
 const proceedLogout = async () => {
+  isProcessingLogout.value = true;
+  logoutStep.value = 0;
+  // Step 1: กำลังเตรียมการ...
+  await new Promise(r => setTimeout(r, 500));
+  logoutStep.value = 1;
+  // Step 2: กำลังเคลียร์ข้อมูล...
+  await new Promise(r => setTimeout(r, 750));
+  logoutStep.value = 2;
+  // Step 3: กำลังนำท่านออกจากระบบ
+  await new Promise(r => setTimeout(r, 750));
   showLogoutModal.value = false;
+  isProcessingLogout.value = false;
+  logoutStep.value = 0;
   await handleLogout();
 };
 </script>

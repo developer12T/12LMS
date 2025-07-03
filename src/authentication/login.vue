@@ -75,7 +75,7 @@
           <button
             type="submit"
             :disabled="loading || !form.username || !form.password"
-            class="w-full flex justify-center py-2 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-[#00569D] hover:bg-[#004080] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+            class="w-full flex justify-center py-2 px-4 border border-transparent items-center rounded-lg shadow-sm text-sm font-medium text-white bg-[#00569D] hover:bg-[#004080] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
           >
             <Icon
               v-if="loading"

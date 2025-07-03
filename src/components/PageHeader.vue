@@ -1,5 +1,5 @@
 <template>
-  <div v-if="route.meta.breadcrumb" :class="route.path === '/tms/manage/backlog' || route.path === '/tms/report/shipment-cost' || route.path === '/tms/manage/shipcost-edit' ? 'mb-2' : 'mb-6'" class="flex justify-between items-center">
+  <div v-if="route.meta.breadcrumb"  class="flex mb-2 justify-between items-center">
     <nav class="flex" aria-label="Breadcrumb">
       <ol class="inline-flex items-center space-x-1 md:space-x-3">
         <li class="inline-flex items-center">

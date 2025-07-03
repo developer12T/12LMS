@@ -1,19 +1,23 @@
 <template>
     <div class="flex-1 bg-gray-50 min-h-screen">
-    
+
         <!-- Filter and Action Section -->
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-2">
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 py-4 mb-2">
             <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
                 <!-- Filter Section -->
                 <div class="flex flex-col sm:flex-row gap-3 flex-1">
                     <div class="flex-1 min-w-0">
-                        <label for="mh-select" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                        <label for="mh-select" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white flex items-center gap-2">
+                            <Icon icon="mdi:warehouse" class="w-4 h-4 text-[#00569D]" />
                             ศูนย์กระจายสินค้า
                         </label>
-                        <select id="mh-select" v-model="selectedWarehouse" @change="onWarehouseChange" :disabled="isLoadingWarehouses"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-                            <option value="" disabled>{{ isLoadingWarehouses ? 'กำลังโหลด...' : 'เลือกศูนย์กระจายสินค้า' }}</option>
-                            <option v-for="warehouse in warehousesOptions" :key="warehouse.value" :value="warehouse.value">
+                        <select id="mh-select" v-model="selectedWarehouse" @change="onWarehouseChange"
+                            :disabled="isLoadingWarehouses"
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-1 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                            <option value="" disabled>{{ isLoadingWarehouses ? 'กำลังโหลด...' : 'เลือกศูนย์กระจายสินค้า'
+                                }}</option>
+                            <option v-for="warehouse in warehousesOptions" :key="warehouse.value"
+                                :value="warehouse.value">
                                 {{ warehouse.display }}
                             </option>
                         </select>
@@ -22,12 +26,15 @@
                         </p>
                     </div>
                     <div class="flex-1 min-w-0">
-                        <label for="status-select" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                        <label for="status-select" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white flex items-center gap-2">
+                            <Icon icon="eos-icons:route" class="w-4 h-4 text-[#00569D]" />
                             เส้นทางขนส่ง
                         </label>
-                        <select id="status-select" v-model="selectedRoute" @change="onRouteChange" :disabled="isLoadingRoutes || !selectedWarehouse"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-                            <option value="" disabled>{{ !selectedWarehouse ? 'กรุณาเลือกศูนย์กระจายสินค้าก่อน' : (isLoadingRoutes ? 'กำลังโหลด...' : 'เลือกเส้นทางขนส่ง') }}</option>
+                        <select id="status-select" v-model="selectedRoute" @change="onRouteChange"
+                            :disabled="isLoadingRoutes || !selectedWarehouse"
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-1 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                            <option value="" disabled>{{ !selectedWarehouse ? 'กรุณาเลือกศูนย์กระจายสินค้าก่อน' :
+                                (isLoadingRoutes ? 'กำลังโหลด...' : 'เลือกเส้นทางขนส่ง') }}</option>
                             <option v-for="route in routesOptions" :key="route.value" :value="route.value">
                                 {{ route.display || route.label }}
                             </option>
@@ -37,30 +44,27 @@
                         </p>
                     </div>
                     <div class="flex-1 min-w-0">
-                        <label for="start-date" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                        <label for="start-date" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white flex items-center gap-2">
+                            <Icon icon="mdi:calendar-start" class="w-4 h-4 text-[#00569D]" />
                             จากวันที่
                         </label>
                         <input id="start-date" type="date" v-model="startDate" @change="saveValues"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-colors" />
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-1 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-colors" />
                     </div>
                     <div class="flex-1 min-w-0">
-                        <label for="end-date" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                        <label for="end-date" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white flex items-center gap-2">
+                            <Icon icon="mdi:calendar-end" class="w-4 h-4 text-[#00569D]" />
                             ถึงวันที่
                         </label>
                         <input id="end-date" type="date" v-model="endDate" @change="saveValues"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-colors" />
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-1 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-colors" />
                     </div>
                 </div>
                 <!-- Action Buttons -->
                 <div class="flex flex-row gap-3 flex-shrink-0">
-                    <button type="button" @click="exportToExcel" :disabled="isLoading || !selectedWarehouse || !selectedRoute"
-                        class="text-white bg-green-600 hover:bg-green-700 focus:ring-4 focus:ring-[#00569D]/30 font-medium rounded-lg text-sm px-6 py-2 min-w-[140px] dark:bg-[#00569D] dark:hover:bg-[#004080] focus:outline-none dark:focus:ring-[#00569D]/30 transition-colors inline-flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed">
-                        <Icon v-if="isLoading" icon="mdi:loading" class="animate-spin w-4 h-4 mr-2" />
-                        <Icon v-else icon="file-icons:microsoft-excel" width="16" height="16" class="mr-2" />
-                        {{ isLoading ? 'กำลังโหลด...' : 'Export Excel' }}
-                    </button>
-                    <button type="button" @click="loadData" :disabled="isLoading || !selectedWarehouse || !selectedRoute"
-                        class="text-white bg-[#00569D] hover:bg-[#004080] focus:ring-4 focus:ring-[#00569D]/30 font-medium rounded-lg text-sm px-6 py-2 min-w-[140px] dark:bg-[#00569D] dark:hover:bg-[#004080] focus:outline-none dark:focus:ring-[#00569D]/30 transition-colors inline-flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed">
+                    <button type="button" @click="loadData"
+                        :disabled="isLoading || !selectedWarehouse || !selectedRoute"
+                        class="text-white bg-[#00569D] hover:bg-[#004080] focus:ring-4 focus:ring-[#00569D]/30 font-medium rounded-lg text-sm px-6 py-1.5  dark:bg-[#00569D] dark:hover:bg-[#004080] focus:outline-none dark:focus:ring-[#00569D]/30 transition-colors inline-flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed">
                         <Icon v-if="isLoading" icon="mdi:loading" class="animate-spin w-4 h-4 mr-2" />
                         <Icon v-else icon="mdi:magnify" width="16" height="16" class="mr-2" />
                         {{ isLoading ? 'กำลังโหลด...' : 'ดึงข้อมูล' }}
@@ -71,39 +75,85 @@
 
         <!-- Table Section -->
         <div class="bg-white rounded-lg shadow-sm ">
-            <div v-if="isLoadingCostTable" class="flex items-center justify-center p-8">
-                <div class="animate-spin rounded-full h-8 w-8"></div>
-            </div>
-            <div v-else-if="costTableError" class="p-8 text-center text-red-500">
-                {{ costTableError }}
-            </div>
-            <div v-else>
-                <!-- Search and Record Count -->
-                <div class="p-2">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center space-x-4">
-                            <h3 class="text-sm font-medium text-gray-700">
-                                รายการค่าขนส่ง
-                            </h3>
-                            <span class="text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full">
-                                {{ searchQuery ? `${filteredCostTableData.length}/${costTableData.length}` : costTableData.length }} รายการ
+            <div v-if="!hasLoadedData" class="p-8 text-center">
+                <div class="text-gray-500">
+                    <Icon icon="mdi:clipboard-text-outline" class="w-12 h-12 mx-auto mb-4" />
+                    <p class="text-lg font-medium mb-2">กรุณาเลือกเงื่อนไขและกดปุ่ม "ดึงข้อมูล"</p>
+                    <p class="text-sm">เลือกศูนย์กระจายสินค้า, เส้นทางขนส่ง, วันที่ แล้วกดปุ่ม "ดึงข้อมูล"
+                        เพื่อแสดงข้อมูล</p>
+                    <div class="mt-4 flex flex-col items-center space-y-2 text-xs">
+                        <div class="flex items-center space-x-2">
+                            <Icon :icon="selectedWarehouse ? 'mdi:check-circle' : 'mdi:circle-outline'"
+                                :class="selectedWarehouse ? 'text-green-500' : 'text-gray-400'" class="w-4 h-4" />
+                            <span :class="selectedWarehouse ? 'text-gray-700' : 'text-gray-400'">
+                                ศูนย์กระจายสินค้า: {{ selectedWarehouse ? getSelectedWarehouseName() : 'ยังไม่เลือก' }}
                             </span>
                         </div>
-                        <div class="relative">
-                            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                                <Icon icon="mdi:magnify" class="w-4 h-4 text-gray-400" />
-                            </div>
-                            <input type="text" v-model="searchQuery" placeholder="ค้นหา..."
-                                class="w-64 pl-10 pr-3 py-1.5 text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        <div class="flex items-center space-x-2">
+                            <Icon :icon="selectedRoute ? 'mdi:check-circle' : 'mdi:circle-outline'"
+                                :class="selectedRoute ? 'text-green-500' : 'text-gray-400'" class="w-4 h-4" />
+                            <span :class="selectedRoute ? 'text-gray-700' : 'text-gray-400'">
+                                เส้นทางขนส่ง: {{ selectedRoute ? getSelectedRouteName() : 'ยังไม่เลือก' }}
+                            </span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <Icon :icon="startDate ? 'mdi:check-circle' : 'mdi:circle-outline'"
+                                :class="startDate ? 'text-green-500' : 'text-gray-400'" class="w-4 h-4" />
+                            <span :class="startDate ? 'text-gray-700' : 'text-gray-400'">
+                                จากวันที่: {{ startDate ? startDate : 'ยังไม่เลือก' }}
+                            </span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <Icon :icon="endDate ? 'mdi:check-circle' : 'mdi:circle-outline'"
+                                :class="endDate ? 'text-green-500' : 'text-gray-400'" class="w-4 h-4" />
+                            <span :class="endDate ? 'text-gray-700' : 'text-gray-400'">
+                                ถึงวันที่: {{ endDate ? endDate : 'ยังไม่เลือก' }}
+                            </span>
+                        </div>
                     </div>
                 </div>
             </div>
+            <div v-else>
+                <div v-if="isLoadingCostTable" class="flex items-center justify-center p-8">
+                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+                </div>
+                <div v-else>
+                    <!-- Search and Record Count -->
+                    <div class="p-2 pb-0">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-4">
+                                <ResultCount :label="'ผลลัพธ์:'"
+                                    :current="searchQuery ? filteredCostTableData.length : null"
+                                    :total="costTableData.length" icon="tdesign:map-setting-filled"
+                                    iconColor="#00569D" />
+                            </div>
 
+                            <div class="flex items-center gap-2">
+                                <button type="button" @click="exportToExcel"
+                                    :disabled="isLoading || !selectedWarehouse || !selectedRoute"
+                                    class="text-white bg-green-600 hover:bg-green-700 focus:ring-4 focus:ring-[#00569D]/30 font-medium rounded-lg text-xs px-4 py-2 min-w-[140px] dark:bg-[#00569D] dark:hover:bg-[#004080] focus:outline-none dark:focus:ring-[#00569D]/30 transition-colors inline-flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed">
+                                    <Icon v-if="isLoading" icon="mdi:loading" class="animate-spin w-4 h-4 mr-2" />
+                                    <Icon v-else icon="file-icons:microsoft-excel" width="16" height="16"
+                                        class="mr-2" />
+                                    {{ isLoading ? 'กำลังโหลด...' : 'Export Excel' }}
+                                </button>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                        <Icon icon="mdi:magnify" class="w-4 h-4 text-gray-400" />
+                                    </div>
+                                    <input type="text" v-model="searchQuery" placeholder="ค้นหา..."
+                                        class="w-64 pl-10 pr-3 py-1.5 text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <!-- Virtual Scroll Table -->
-                <div class="relative shadow-md sm:rounded-lg custom-scrollbar overflow-x-auto overflow-y-hidden" style="max-height: calc(100vh - 300px);">
-                    <div class="virtual-table-container overflow-auto p-2" 
-                         style="height: calc(100vh - 300px);" 
-                     @scroll="handleScroll">
+                <div v-if="hasLoadedData && !isLoadingCostTable"
+                    class="relative shadow-md sm:rounded-lg custom-scrollbar overflow-x-auto overflow-y-hidden"
+                    style="max-height: calc(100vh - 250px);">
+                    <div class="virtual-table-container overflow-auto p-2" style="height: calc(100vh - 250px);"
+                        @scroll="handleScroll">
                         <table class="min-w-full text-xs text-center border  border-gray-200 bg-white">
                             <thead class="sticky top-0 z-10 bg-gray-100">
                                 <tr>
@@ -119,29 +169,32 @@
                                     <th class="px-2 py-2 border">จำนวนบิล</th>
                                     <th class="px-2 py-2 border">ชื่อขนส่ง</th>
                                     <th class="px-2 py-2 border">จัดการ</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <!-- Top padding for virtual scrolling -->
-                            <tr v-if="topPadding > 0">
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Top padding for virtual scrolling -->
+                                <tr v-if="topPadding > 0">
                                     <td :colspan="12" :style="{ height: topPadding + 'px', padding: 0 }"></td>
-                            </tr>
-                            
+                                </tr>
+
                                 <tr v-if="virtualScrollData.length === 0" class="bg-white">
                                     <td colspan="12" class="py-6 text-gray-400">ไม่พบข้อมูล</td>
-                            </tr>
-                                <tr v-else v-for="(row, rowIndex) in virtualScrollData" :key="row.OQCONN" :class="{'bg-gray-50': rowIndex % 2 === 1}">
+                                </tr>
+                                <tr v-else v-for="(row, rowIndex) in virtualScrollData" :key="row.OQCONN"
+                                    :class="{ 'bg-gray-50': rowIndex % 2 === 1 }">
                                     <td class="border px-2 py-1">{{ row.OQDSDT }}</td>
                                     <td class="border px-2 py-1">{{ row.OQWHLO }}</td>
                                     <td class="border px-2 py-1">{{ row.OQROUT }}</td>
                                     <td class="border px-2 py-1 text-center">
                                         <span class="inline-flex items-center gap-1">
-                                            <span :class="[row.COST === 0 ? 'bg-red-500' : 'bg-green-500', 'w-2 h-2 rounded-full inline-block']"></span>
-                                            <span :class="[row.COST === 0 ? 'text-red-600 font-bold' : 'text-blue-900 font-bold']">
+                                            <span
+                                                :class="[row.COST === 0 ? 'bg-red-500' : 'bg-green-500', 'w-2 h-2 rounded-full inline-block']"></span>
+                                            <span
+                                                :class="[row.COST === 0 ? 'text-red-600 font-bold' : 'text-blue-900 font-bold']">
                                                 {{ row.OQCONN }}
                                             </span>
-                                    </span>
-                                </td>
+                                        </span>
+                                    </td>
                                     <td class="border px-2 py-1">{{ row.URPLQA }}</td>
                                     <td class="border px-2 py-1">{{ row.URPRQA }}</td>
                                     <td class="border px-2 py-1">{{ formatNumber(row.COST) }}</td>
@@ -150,20 +203,21 @@
                                     <td class="border px-2 py-1">{{ row.cBill }}</td>
                                     <td class="border px-2 py-1">{{ row.Drive_name }}</td>
                                     <td class="border px-2 py-1 flex justify-center">
-                                        <button @click="editShipment(row)" 
+                                        <button @click="editShipment(row)"
                                             class="text-slate-500 text-center hover:text-blue-700 hover:bg-blue-50 px-2 py-1 rounded transition-all bg-yellow-300 duration-200 group flex items-center gap-1"
                                             title="ตั้งค่า/แก้ไข">
-                                            <Icon icon="mdi:cog" class="w-5 h-5 group-hover:rotate-90 transition-transform text-black hover:text-blue-700" />
-                                    </button>
-                                </td>
-                            </tr>
-                            
-                            <!-- Bottom padding for virtual scrolling -->
-                            <tr v-if="bottomPadding > 0">
+                                            <Icon icon="mdi:cog"
+                                                class="w-5 h-5 group-hover:rotate-90 transition-transform text-black hover:text-blue-700" />
+                                        </button>
+                                    </td>
+                                </tr>
+
+                                <!-- Bottom padding for virtual scrolling -->
+                                <tr v-if="bottomPadding > 0">
                                     <td :colspan="12" :style="{ height: bottomPadding + 'px', padding: 0 }"></td>
-                            </tr>
-                        </tbody>
-                    </table>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
@@ -173,12 +227,13 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed, nextTick } from 'vue';
+import { ref, onMounted, computed, nextTick, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { Icon } from '@iconify/vue';
 import { useTransportStore } from '@/stores';
 import { showError } from '@/utils/toast';
 import ExcelJS from 'exceljs';
+import ResultCount from '@/components/ResultCount.vue';
 
 // Router
 const router = useRouter();
@@ -214,7 +269,7 @@ const loadSavedValues = () => {
     const savedRoute = localStorage.getItem('shipcost_route');
     const savedStartDate = localStorage.getItem('shipcost_startDate');
     const savedEndDate = localStorage.getItem('shipcost_endDate');
-    
+
     if (savedWarehouse) selectedWarehouse.value = savedWarehouse;
     if (savedRoute) selectedRoute.value = savedRoute;
     if (savedStartDate) startDate.value = savedStartDate;
@@ -257,10 +312,10 @@ const filteredCostTableData = computed(() => {
 // คำนวณแถวที่ควรแสดงจาก scroll position
 const virtualScrollData = computed(() => {
     if (!filteredCostTableData.value) return [];
-    
+
     const startIndex = Math.floor(scrollTop.value / rowHeight);
     const endIndex = Math.min(startIndex + visibleRows, filteredCostTableData.value.length);
-    
+
     return filteredCostTableData.value.slice(startIndex, endIndex).map((row, index) => ({
         ...row,
         virtualIndex: startIndex + index,
@@ -299,12 +354,12 @@ const setContainerHeight = () => {
 onMounted(async () => {
     await loadWarehousesData();
     loadSavedValues();
-    
+
     // If there's a saved warehouse, load its routes
     if (selectedWarehouse.value) {
         await loadRoutesData(selectedWarehouse.value);
     }
-    
+
     // ตั้งค่าความสูง container สำหรับ virtual scrolling
     nextTick(() => {
         setContainerHeight();
@@ -332,10 +387,10 @@ const onWarehouseChange = async () => {
     const selectedWarehouseData = transportStore.getWarehouseById(selectedWarehouse.value);
     if (selectedWarehouseData) {
         console.log('Selected warehouse data:', selectedWarehouseData);
-        
+
         // Reset route selection when warehouse changes
         selectedRoute.value = '';
-        
+
         // Load routes for the selected warehouse
         if (selectedWarehouse.value) {
             await loadRoutesData(selectedWarehouse.value);
@@ -579,7 +634,7 @@ const editShipment = (row) => {
         type_no: row.type_no || '',
         helpper: row.helpper || ''
     };
-    
+
     router.push({
         name: 'shipcost-edit',
         query: params

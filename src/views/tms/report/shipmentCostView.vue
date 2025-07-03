@@ -11,10 +11,12 @@
               class="w-full py-1.5 text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
           </div>
           <div class="flex-1 flex flex-row gap-1 min-w-0 items-center">
-            <label for="roudcos-select" class="block mb-1 text-sm whitespace-nowrap font-sm text-gray-900 dark:text-white">
+            <label for="roudcos-select"
+              class="block mb-1 text-sm whitespace-nowrap font-sm text-gray-900 dark:text-white">
               ช่องทาง :
             </label>
-            <select id="roudcos-select" v-model="selectedRoudcosPay" class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-1.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-colors">
+            <select id="roudcos-select" v-model="selectedRoudcosPay"
+              class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-1.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-colors">
               <option value="">เลือกช่องทาง</option>
               <option v-for="item in roudcosPayOptions" :key="item.ROUDCOS_ID" :value="item.ROUDCOS_ID">
                 {{ item.ROUDCOS_NAME }}
@@ -22,10 +24,12 @@
             </select>
           </div>
           <div class="flex-1 flex flex-row gap-1 min-w-0 items-center">
-            <label for="code-truck-select" class="block mb-1 text-sm whitespace-nowrap font-sm text-gray-900 dark:text-white">
+            <label for="code-truck-select"
+              class="block mb-1 text-sm whitespace-nowrap font-sm text-gray-900 dark:text-white">
               รถร่วม :
             </label>
-            <select id="code-truck-select" v-model="selectedCodeTruck" class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-1.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-colors">
+            <select id="code-truck-select" v-model="selectedCodeTruck"
+              class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-1.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-colors">
               <option value="">เลือกรถร่วม</option>
               <option v-for="item in codeTruckOptions" :key="item.code_id" :value="item.code_id">
                 {{ item.code_name }}
@@ -71,10 +75,12 @@
               class="font-normal text-blue-700">{{ summaryData.calpallet.FG_AMOUNT?.toLocaleString() || '0.00' }}</span>
           </div>
           <div class="flex justify-between min-w-[220px]"><span class="font-bold text-gray-600">Total:</span> <span
-              class="font-normal text-blue-700">{{ summaryData.calpallet.Total_cost?.toLocaleString() || '0.00' }}</span>
+              class="font-normal text-blue-700">{{ summaryData.calpallet.Total_cost?.toLocaleString() || '0.00'
+              }}</span>
           </div>
           <div class="flex justify-between min-w-[220px]"><span class="font-bold text-gray-600">(0)อัตตราลด
-              (1)อัตตราเพิ่ม:</span> <span class="font-normal text-gray-700">{{ summaryData.calpallet.ISPERCEN || '-' }}</span></div>
+              (1)อัตตราเพิ่ม:</span> <span class="font-normal text-gray-700">{{ summaryData.calpallet.ISPERCEN || '-'
+              }}</span></div>
           <div class="flex justify-between min-w-[220px]"><span class="font-bold text-gray-600">ปรับลดค่าน้ำมัน:</span>
             <span class="font-normal text-gray-700">{{ summaryData.calpallet.OILRETENTION || '0' }}%</span>
           </div>
@@ -82,13 +88,16 @@
         <!-- Right Column -->
         <div class="flex flex-col gap-2">
           <div class="flex justify-between min-w-[220px]"><span class="font-bold text-gray-600">ค่าพาเลท:</span> <span
-              class="font-normal text-gray-700">{{ summaryData.calpallet.palletcost?.toLocaleString() || '0.00' }}</span>
+              class="font-normal text-gray-700">{{ summaryData.calpallet.palletcost?.toLocaleString() || '0.00'
+              }}</span>
           </div>
           <div class="flex justify-between min-w-[220px]"><span class="font-bold text-gray-600">ค่าเด็กรถ:</span> <span
-              class="font-normal text-gray-700">{{ summaryData.calpallet.helper_cost?.toLocaleString() || '0.00' }}</span>
+              class="font-normal text-gray-700">{{ summaryData.calpallet.helper_cost?.toLocaleString() || '0.00'
+              }}</span>
           </div>
           <div class="flex justify-between min-w-[220px]"><span class="font-bold text-gray-600">Extra:</span> <span
-              class="font-normal text-green-700">{{ summaryData.calpallet.EXTRA?.toLocaleString() || '0.00' }}</span></div>
+              class="font-normal text-green-700">{{ summaryData.calpallet.EXTRA?.toLocaleString() || '0.00' }}</span>
+          </div>
           <div class="flex justify-between min-w-[220px]"><span class="font-bold text-gray-600">Grand Total:</span>
             <span class="font-normal text-green-700">{{ summaryData.calpallet.COST?.toLocaleString() || '0.00' }}</span>
           </div>
@@ -131,6 +140,30 @@
       </div>
       <!-- Data Table with Custom Scrollbar -->
       <div v-else>
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between px-4 pt-4">
+          <div class="flex items-center justify-center flex-row">
+            <!-- Record Count -->
+            <ResultCount :label="'ผลลัพธ์:'" :current="searchQuery ? filteredTransportCostData.length : null"
+              :total="transportCostData.length" icon="mdi:table" iconColor="#00569D" class="" />
+          </div>
+          <div class="flex items-center gap-2">
+
+            <button type="button" @click="exportToExcel" :disabled="!filteredTransportCostData.length"
+              class="text-white bg-green-600 hover:bg-green-700 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-xs px-3 py-1.5 text-center inline-flex items-center justify-center dark:focus:ring-green-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+              <Icon icon="file-icons:microsoft-excel" width="16" height="16" class="mr-1.5" />
+              Export Excel
+            </button>
+
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                <Icon icon="mdi:magnify" class="w-4 h-4 text-gray-400" />
+              </div>
+              <input type="text" v-model="searchQuery" placeholder="ค้นหา..."
+                class="w-64 pl-10 pr-3 py-1.5 text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400">
+            </div>
+          </div>
+        </div>
+
         <div class="relative shadow-md sm:rounded-lg custom-scrollbar p-2 overflow-x-auto overflow-y-hidden"
           style="max-height: calc(100vh - 260px);">
           <div class="virtual-table-container rounded-t-lg  overflow-auto" style="height: calc(100vh - 260px);"
@@ -139,38 +172,7 @@
               class="w-full text-xs text-left text-gray-500 dark:text-gray-400 border border-gray-300 dark:border-gray-600 mb-4">
               <thead
                 class="text-xs text-gray-700 uppercase bg-gray-100 dark:bg-gray-700 dark:text-gray-400 sticky top-0 z-10">
-                <tr>
-                  <th colspan="16" class="px-4 py-3 border-b border-gray-200 dark:border-gray-600">
-                    <div class="flex items-center justify-between">
-                      <div class="flex items-center justify-center flex-row">
-                        <h3 class="text-sm font-medium text-gray-700  dark:text-gray-300">
-                          รายการค่าขนส่ง Shipment Cost
-                        </h3>
-                        <!-- Record Count -->
-                        <span class="text-xs ms-2 bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full">
-                          {{ searchQuery ? `${filteredTransportCostData.length}/${transportCostData.length}`
-                          : transportCostData.length }} รายการ
-                        </span>
-                      </div>
-                      <div class="flex items-center space-x-4">
-                        <div class=" flex flex-row gap-1 items-center">
-                          <button type="button" @click="exportToExcel" :disabled="!filteredTransportCostData.length"
-                            class="text-white bg-green-600 hover:bg-green-700 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-xs px-3 py-1.5 text-center inline-flex items-center justify-center dark:focus:ring-green-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-                            <Icon icon="file-icons:microsoft-excel" width="16" height="16" class="mr-1.5" />
-                            Export Excel
-                          </button>
-                        </div>
-                        <div class="relative">
-                          <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                            <Icon icon="mdi:magnify" class="w-4 h-4 text-gray-400" />
-                          </div>
-                          <input type="text" v-model="searchQuery" placeholder="ค้นหา..."
-                            class="w-64 pl-10 pr-3 py-1.5 text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400">
-                        </div>
-                      </div>
-                    </div>
-                  </th>
-                </tr>
+
                 <tr>
                   <th class="border border-gray-300 dark:border-gray-600 px-1 py-1 text-center w-6">No</th>
                   <th class="border border-gray-300 dark:border-gray-600 px-1 py-1 text-center w-8">อำเภอ</th>
@@ -185,7 +187,8 @@
               </thead>
               <tbody>
                 <tr v-if="filteredTransportCostData.length === 0">
-                  <td colspan="9" class="border border-gray-300 dark:border-gray-600 px-4 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
+                  <td colspan="9"
+                    class="border border-gray-300 dark:border-gray-600 px-4 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
                     <Icon icon="mdi:database-off" class="w-8 h-8 mx-auto mb-2" />
                     ไม่พบข้อมูลค้นหา
                   </td>
@@ -195,11 +198,17 @@
                   <td class="border border-gray-300 dark:border-gray-600 px-1 py-0.5 text-center">{{ item.ROUDES }}</td>
                   <td class="border border-gray-300 dark:border-gray-600 px-1 py-0.5 text-center">{{ item.ORTP }}</td>
                   <td class="border border-gray-300 dark:border-gray-600 px-1 py-0.5 text-center">{{ item.ORNO }}</td>
-                  <td class="border border-gray-300 dark:border-gray-600 px-1 py-0.5 text-center">{{ item.FG_AMOUNT }}</td>
-                  <td class="border border-gray-300 dark:border-gray-600 px-1 py-0.5 text-center">{{ item.FORCOST }}</td>
-                  <td class="border border-gray-300 dark:border-gray-600 px-1 py-0.5 text-center">{{ item.Cost_transport }}</td>
-                  <td class="border border-gray-300 dark:border-gray-600 px-1 py-0.5 text-center">{{ item.SP_Cost }}</td>
-                  <td class="border border-gray-300 dark:border-gray-600 px-1 py-0.5 text-center">{{ item.Total_cost }}</td>
+                  <td class="border border-gray-300 dark:border-gray-600 px-1 py-0.5 text-center">{{ item.FG_AMOUNT }}
+                  </td>
+                  <td class="border border-gray-300 dark:border-gray-600 px-1 py-0.5 text-center">{{ item.FORCOST }}
+                  </td>
+                  <td class="border border-gray-300 dark:border-gray-600 px-1 py-0.5 text-center">{{ item.Cost_transport
+                  }}
+                  </td>
+                  <td class="border border-gray-300 dark:border-gray-600 px-1 py-0.5 text-center">{{ item.SP_Cost }}
+                  </td>
+                  <td class="border border-gray-300 dark:border-gray-600 px-1 py-0.5 text-center">{{ item.Total_cost }}
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -213,6 +222,7 @@
 <script setup>
 import { ref, onMounted, computed, watch } from 'vue';
 import { Icon } from '@iconify/vue';
+import ResultCount from '@/components/ResultCount.vue';
 import { useReportTmsStore } from '@/stores/modules/reportTms';
 import { storeToRefs } from 'pinia';
 import { showError } from '@/utils/toast';
@@ -261,15 +271,15 @@ const handleSearch = async () => {
       channelId: selectedRoudcosPay.value,
       truckId: selectedCodeTruck.value,
     });
-    
+
     // Extract data from response
     if (response && response.data) {
       transportCostData.value = response.data.show_data || [];
-      
+
       // Extract summary data
       if (response.data.summaryDataObj) {
         const summary = response.data.summaryDataObj;
-        
+
         // Truck info
         if (summary.show_truck && summary.show_truck.length > 0) {
           summaryData.value.truckInfo = {
@@ -278,7 +288,7 @@ const handleSearch = async () => {
             DAE0B4: summary.show_truck[0].DAE0B4 || ''
           };
         }
-        
+
         // Calpallet info
         if (summary.calpallet && summary.calpallet.length > 0) {
           const calpallet = summary.calpallet[0];
@@ -326,7 +336,7 @@ const filteredTransportCostData = computed(() => {
 
 onMounted(() => {
   fetchTransportCostOptions();
-  
+
   // Restore values from localStorage
   shipmentNo.value = localStorage.getItem('shipment_cost_shipmentNo') || '';
   selectedRoudcosPay.value = localStorage.getItem('shipment_cost_roudcosPay') || '';
@@ -350,7 +360,7 @@ const exportToExcel = async () => {
   if (!filteredTransportCostData.value.length) return;
   const summary = summaryData.value;
   const now = new Date();
-  const dateStr = now.getFullYear().toString() + (now.getMonth()+1).toString().padStart(2,'0') + now.getDate().toString().padStart(2,'0');
+  const dateStr = now.getFullYear().toString() + (now.getMonth() + 1).toString().padStart(2, '0') + now.getDate().toString().padStart(2, '0');
   const filename = `shipment_cost_report_${summary.calpallet.CONN || dateStr}.xlsx`;
 
   // สร้าง workbook/worksheet
@@ -381,8 +391,8 @@ const exportToExcel = async () => {
   });
 
   // Sum row
-  const sumQty = filteredTransportCostData.value.reduce((sum, r) => sum + (Number(r.FG_AMOUNT)||0), 0);
-  const sumTotal = filteredTransportCostData.value.reduce((sum, r) => sum + (Number(r.Total_cost)||0), 0);
+  const sumQty = filteredTransportCostData.value.reduce((sum, r) => sum + (Number(r.FG_AMOUNT) || 0), 0);
+  const sumTotal = filteredTransportCostData.value.reduce((sum, r) => sum + (Number(r.Total_cost) || 0), 0);
   sheet.addRow(['', '', '', sumQty, '', '', '', sumTotal]);
 
   // ช่องว่าง
@@ -408,11 +418,11 @@ const exportToExcel = async () => {
   const typeMap = {};
   filteredTransportCostData.value.forEach(item => {
     if (!typeMap[item.ORTP]) typeMap[item.ORTP] = { qty: 0, total: 0 };
-    typeMap[item.ORTP].qty += Number(item.FG_AMOUNT)||0;
-    typeMap[item.ORTP].total += Number(item.Total_cost)||0;
+    typeMap[item.ORTP].qty += Number(item.FG_AMOUNT) || 0;
+    typeMap[item.ORTP].total += Number(item.Total_cost) || 0;
   });
-  sheet.addRow([`รวมจำนวนแยกตามประเภท: A11(011)=0, 021=0, 921=0, 041=${typeMap['041']?.qty||0}, 941=0, T05=${typeMap['T05']?.qty||0}`]);
-  sheet.addRow([`รวมค่าขนส่งแยกตามประเภท: A11(011)=0.00, 021=0.00, 921=0.00, 041=${typeMap['041']?.total?.toFixed(2)||'0.00'}, 941=0.00, T05=${typeMap['T05']?.total?.toFixed(2)||'0.00'}`]);
+  sheet.addRow([`รวมจำนวนแยกตามประเภท: A11(011)=0, 021=0, 921=0, 041=${typeMap['041']?.qty || 0}, 941=0, T05=${typeMap['T05']?.qty || 0}`]);
+  sheet.addRow([`รวมค่าขนส่งแยกตามประเภท: A11(011)=0.00, 021=0.00, 921=0.00, 041=${typeMap['041']?.total?.toFixed(2) || '0.00'}, 941=0.00, T05=${typeMap['T05']?.total?.toFixed(2) || '0.00'}`]);
 
   // Merge cells (ตาม layout เดิม)
   sheet.mergeCells('D1:H1'); // รายงานค่าขนส่ง
@@ -425,16 +435,16 @@ const exportToExcel = async () => {
   const tableStart = 5;
   const tableEnd = tableStart + filteredTransportCostData.value.length - 1;
   const sumRowIdx = tableEnd + 1;
-  sheet.mergeCells(`A${sumRowIdx+1}:C${sumRowIdx+1}`);
+  sheet.mergeCells(`A${sumRowIdx + 1}:C${sumRowIdx + 1}`);
   // ช่องเซ็นชื่อ
   const signRowIdx = sumRowIdx + 8;
-  sheet.mergeCells(`A${signRowIdx+1}:D${signRowIdx+1}`);
-  sheet.mergeCells(`E${signRowIdx+1}:I${signRowIdx+1}`);
+  sheet.mergeCells(`A${signRowIdx + 1}:D${signRowIdx + 1}`);
+  sheet.mergeCells(`E${signRowIdx + 1}:I${signRowIdx + 1}`);
   // หมายเหตุ
   const note1RowIdx = signRowIdx + 3;
   const note2RowIdx = note1RowIdx + 1;
-  sheet.mergeCells(`A${note1RowIdx+1}:H${note1RowIdx+1}`);
-  sheet.mergeCells(`A${note2RowIdx+1}:H${note2RowIdx+1}`);
+  sheet.mergeCells(`A${note1RowIdx + 1}:H${note1RowIdx + 1}`);
+  sheet.mergeCells(`A${note2RowIdx + 1}:H${note2RowIdx + 1}`);
 
   // Set column widths
   sheet.columns = [
@@ -446,10 +456,10 @@ const exportToExcel = async () => {
     for (let c = 1; c <= 8; ++c) {
       const cell = sheet.getRow(r).getCell(c);
       cell.border = {
-        top:    { style: 'thin' },
+        top: { style: 'thin' },
         bottom: { style: 'thin' },
-        left:   { style: 'thin' },
-        right:  { style: 'thin' }
+        left: { style: 'thin' },
+        right: { style: 'thin' }
       };
     }
   }
@@ -458,10 +468,10 @@ const exportToExcel = async () => {
   [4, 8].forEach(c => {
     const cell = sumRow.getCell(c);
     cell.border = {
-      top:    { style: 'thin' },
+      top: { style: 'thin' },
       bottom: { style: 'thin' },
-      left:   { style: 'thin' },
-      right:  { style: 'thin' }
+      left: { style: 'thin' },
+      right: { style: 'thin' }
     };
   });
 

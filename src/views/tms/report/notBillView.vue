@@ -1,33 +1,42 @@
 <template>
     <div class="flex-1 bg-gray-50 min-h-screen">
         <!-- Filter and Action Section -->
-        <div class="space-y-6">
+        <div class="space-y-2">
             <!-- Sticky Filter Controls -->
             <div class=" bg-gray-100 dark:bg-gray-800">
                 <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
                     <div class="flex flex-wrap items-end gap-x-4 gap-y-2 justify-between">
                         <!-- ปุ่ม Export Excel ด้านซ้าย -->
                         <div class="flex flex-col justify-start">
-
                         </div>
                         <!-- Filter Form -->
                         <div class="flex flex-wrap items-end gap-x-4 gap-y-2 justify-center">
                             <div class="flex flex-col">
                                 <label
-                                    class="mb-1 text-xs font-medium text-gray-900 dark:text-white">วันที่เริ่มต้น</label>
+                                    class="mb-1 text-xs font-medium text-gray-900 dark:text-white flex items-center gap-1">
+                                    <Icon icon="mdi:calendar-start" class="w-4 h-4 text-[#00569D]" />
+                                    วันที่เริ่มต้น
+                                </label>
                                 <input type="date" v-model="startDate"
-                                    class="h-10 w-48 px-3 border border-gray-300 text-xs rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+                                    class="h-8 w-36 px-2 border border-gray-300 text-xs rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
                             </div>
                             <div class="flex flex-col">
                                 <label
-                                    class="mb-1 text-xs font-medium text-gray-900 dark:text-white">วันที่สิ้นสุด</label>
+                                    class="mb-1 text-xs font-medium text-gray-900 dark:text-white flex items-center gap-1">
+                                    <Icon icon="mdi:calendar-end" class="w-4 h-4 text-[#00569D]" />
+                                    วันที่สิ้นสุด
+                                </label>
                                 <input type="date" v-model="endDate"
-                                    class="h-10 w-48 px-3 border border-gray-300 text-xs rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+                                    class="h-8 w-36 px-2 border border-gray-300 text-xs rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
                             </div>
                             <div class="flex flex-col">
-                                <label class="mb-1 text-xs font-medium text-gray-900 dark:text-white">เลือก DC</label>
+                                <label
+                                    class="mb-1 text-xs font-medium text-gray-900 dark:text-white flex items-center gap-1">
+                                    <Icon icon="mdi:warehouse" class="w-4 h-4 text-[#00569D]" />
+                                    เลือก DC
+                                </label>
                                 <select v-model="selectedDC" @change="onDCChange" :disabled="isLoadingTransport"
-                                    class="h-10 w-48 px-3 border border-gray-300 text-xs rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                    class="h-8 w-36 px-2 border border-gray-300 text-xs rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                                     <option value="" disabled>{{ isLoadingTransport ? 'กำลังโหลด...' : 'เลือก DC' }}
                                     </option>
                                     <option v-for="dc in reportTmsStore.nobillWhList.data || []" :key="dc.who_no"
@@ -39,12 +48,13 @@
                                     {{ transportError }}
                                 </p>
                             </div>
-
-                            <div>
+                            <div class="flex flex-col">
+                                <label class="mb-1 text-xs font-medium text-transparent select-none">ค้นหา</label>
                                 <button type="button" @click="loadData"
-                                    class="h-10 px-6 text-white bg-[#00569D] hover:bg-[#004080] font-medium rounded-lg text-xs flex items-center justify-center">
-                                    <Icon v-if="isLoading" icon="mdi:loading" class="animate-spin w-4 h-4 mr-1.5" />
-                                    <Icon v-else icon="mdi:magnify" width="14" height="14" class="mr-1.5" />
+                                    class="h-8 px-3 text-white bg-[#00569D] hover:bg-[#004080] font-medium rounded-lg text-xs flex items-center justify-center focus:ring-2 focus:ring-[#00569D]">
+                                    <Icon v-if="isLoading" icon="mdi:loading"
+                                        class="animate-spin w-4 h-4 mr-1.5 text-white" />
+                                    <Icon v-else icon="mdi:magnify" width="14" height="14" class="mr-1.5 text-white" />
                                     {{ isLoading ? 'กำลังโหลด...' : 'ดึงข้อมูล' }}
                                 </button>
                             </div>
@@ -136,49 +146,40 @@
                 <div v-else-if="reportTmsStore.nobillList"
                     class="relative shadow-md sm:rounded-lg custom-scrollbar p-2 overflow-x-auto overflow-y-hidden"
                     style="max-height: calc(100vh - 240px);">
-                    <div class="virtual-table-container rounded-t-lg overflow-auto" style="height: calc(100vh - 200px);"
-                        @scroll="handleScroll">
+
+                    <div class="flex flex-col md:flex-row md:items-center md:justify-between px-2 pt-2">
+                        <div class="flex items-center justify-center flex-row">
+                            <!-- Record Count -->
+                            <ResultCount :label="'ผลลัพธ์:'" :current="searchQuery ? filteredNoBillData.length : null"
+                                :total="nobillData.length" icon="mdi:clipboard-list-outline" iconColor="#00569D"
+                                class="" />
+                        </div>
+                        <div class="flex items-center space-x-4">
+
+                            <div class=" flex flex-row gap-1 items-center">
+                                <button type="button" @click="exportToExcel" :disabled="!(filteredNoBillData?.length)"
+                                    class="h-7 px-5 text-white bg-green-600 hover:bg-green-700 font-medium rounded-lg text-xs flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed">
+                                    <Icon icon="file-icons:microsoft-excel" width="12" height="12" class="mr-2" />
+                                    Export Excel
+                                </button>
+                            </div>
+                            <!-- Search Input -->
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                    <Icon icon="mdi:magnify" class="w-4 h-4 text-gray-400" />
+                                </div>
+                                <input type="text" v-model="searchQuery" placeholder="ค้นหา..."
+                                    class="w-64 pl-10 pr-3 py-1.5 text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400">
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="virtual-table-container rounded-t-lg overflow-auto mt-2"
+                        style="height: calc(100vh - 200px);" @scroll="handleScroll">
                         <table
                             class="w-full text-xs text-left text-gray-500 dark:text-gray-400 border-collapse border border-gray-300 dark:border-gray-600">
                             <thead
                                 class="text-xs text-gray-700 uppercase bg-gray-100 dark:bg-gray-700 dark:text-gray-400 sticky top-0 z-10">
-                                <tr>
-                                    <th colspan="12" class="px-4 py-3 border-b border-gray-200 dark:border-gray-600">
-                                        <div class="flex items-center justify-between">
-                                            <div class="flex items-center justify-center flex-row">
-                                                <h3 class="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                                    รายการออร์เดอร์ค้างส่งที่ไม่ได้วางบิล
-                                                </h3>
-                                                <!-- Record Count -->
-                                                <span
-                                                    class="text-xs ms-2 bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full">
-                                                    {{ searchQuery ? `${filteredNoBillData.length}/${nobillData.length}`
-                                                    : nobillData.length }} รายการ
-                                                </span>
-                                            </div>
-                                            <div class="flex items-center space-x-4">
-                                                <div class=" flex flex-row gap-1 items-center">
-                                                    <button type="button" @click="exportToExcel"
-                                                        :disabled="!(filteredNoBillData?.length)"
-                                                        class="h-7 px-5 text-white bg-green-600 hover:bg-green-700 font-medium rounded-lg text-xs flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed">
-                                                        <Icon icon="file-icons:microsoft-excel" width="12" height="12"
-                                                            class="mr-2" />
-                                                        Export Excel
-                                                    </button>
-                                                </div>
-                                                <!-- Search Input -->
-                                                <div class="relative">
-                                                    <div
-                                                        class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                                                        <Icon icon="mdi:magnify" class="w-4 h-4 text-gray-400" />
-                                                    </div>
-                                                    <input type="text" v-model="searchQuery" placeholder="ค้นหา..."
-                                                        class="w-64 pl-10 pr-3 py-1.5 text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400">
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </th>
-                                </tr>
                                 <tr>
                                     <th scope="col"
                                         class="px-1 py-1 text-center w-6 border border-gray-300 dark:border-gray-600">No
@@ -303,6 +304,7 @@ import { useReportTmsStore } from '@/stores/modules/reportTms';
 import { showError, showWarning, showSuccess } from '@/utils/toast';
 import * as XLSX from 'xlsx';
 import axios from 'axios';
+import ResultCount from '@/components/ResultCount.vue';
 
 
 // Stores
@@ -341,9 +343,6 @@ onMounted(() => {
     selectedDC.value = localStorage.getItem('notbill_selectedDC') || '';
     startDate.value = localStorage.getItem('notbill_startDate') || '';
     endDate.value = localStorage.getItem('notbill_endDate') || '';
-    if (selectedDC.value && startDate.value && endDate.value) {
-        loadData();
-    }
     reportTmsStore.fetchNoBillWhList();
 });
 

@@ -1,47 +1,109 @@
 <template>
   <div class="flex-1 bg-gray-50 min-h-screen">
     <!-- Filter Section -->
-    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6 flex flex-col md:flex-row md:items-end gap-4">
-      <div class="flex flex-col md:flex-row gap-2 flex-wrap flex-1">
-        <div>
-          <label class="block text-xs font-medium mb-1">Select DC:</label>
-          <select v-model="filter.dc" class="border border-gray-300 rounded px-2 py-1 text-xs">
-            <option value="101">101 | คลังนครปฐม</option>
-            <option value="102">102 | คลังอื่น</option>
-          </select>
+    <div class=" bg-gray-100 dark:bg-gray-800 mb-2">
+      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+        <div class="flex flex-wrap items-end gap-x-4 gap-y-2 justify-between">
+          <!-- ปุ่ม Export Excel ด้านซ้าย -->
+          <div class="flex flex-col justify-start">
+          </div>
+          <!-- Filter Form -->
+          <div class="flex flex-wrap items-end gap-x-4 gap-y-2 justify-center">
+            <div>
+              <label class="block text-xs font-medium mb-1 flex items-center gap-2">
+                <Icon icon="mdi:warehouse" class="w-4 h-4 text-[#00569D]" />
+                ศูนย์กระจายสินค้า
+              </label>
+              <select v-model="filter.dc" class="border border-gray-300 rounded px-2 py-1 text-xs">
+                <option value="101">101 | คลังนครปฐม</option>
+                <option value="102">102 | คลังอื่น</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-medium mb-1 flex items-center gap-2">
+                <Icon icon="mdi:calendar" class="w-4 h-4 text-[#00569D]" />
+                ปี
+              </label>
+              <select v-model="filter.year" class="border border-gray-300 rounded px-2 py-1 text-xs">
+                <option value="2568">2568</option>
+                <option value="2567">2567</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-medium mb-1 flex items-center gap-2">
+                <Icon icon="mdi:calendar-month" class="w-4 h-4 text-[#00569D]" />
+                เดือน
+              </label>
+              <select v-model="filter.month" class="border border-gray-300 rounded px-2 py-1 text-xs">
+                <option value="1">มกราคม</option>
+                <option value="2">กุมภาพันธ์</option>
+                <option value="3">มีนาคม</option>
+                <option value="4">เมษายน</option>
+                <option value="5">พฤษภาคม</option>
+                <option value="6">มิถุนายน</option>
+                <option value="7">กรกฎาคม</option>
+                <option value="8">สิงหาคม</option>
+                <option value="9">กันยายน</option>
+                <option value="10">ตุลาคม</option>
+                <option value="11">พฤศจิกายน</option>
+                <option value="12">ธันวาคม</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-medium mb-1 flex items-center gap-2">
+                <Icon icon="mdi:filter" class="w-4 h-4 text-[#00569D]" />
+                ตัวกรอง
+              </label>
+              <select v-model="filter.week" class="border border-gray-300 rounded px-2 py-1 text-xs">
+                <option value="all">All Week</option>
+                <option value="1">Week 1</option>
+                <option value="2">Week 2</option>
+                <option value="2">Week 3</option>
+                <option value="2">Week 4</option>
+              </select>
+            </div>
+            <div class="flex flex-col">
+              <label class="mb-1 text-xs font-medium text-transparent select-none">ค้นหา</label>
+              <button type="button" @click="loadData"
+                class="h-8 px-3 text-white bg-[#00569D] hover:bg-[#004080] font-medium rounded-lg text-xs flex items-center justify-center focus:ring-2 focus:ring-[#00569D]">
+                <Icon v-if="isLoading" icon="mdi:loading" class="animate-spin w-4 h-4 mr-1.5 text-white" />
+                <Icon v-else icon="mdi:magnify" width="14" height="14" class="mr-1.5 text-white" />
+                {{ isLoading ? 'กำลังโหลด...' : 'ดึงข้อมูล' }}
+              </button>
+            </div>
+          </div>
         </div>
-        <div>
-          <label class="block text-xs font-medium mb-1">Select Week:</label>
-          <select v-model="filter.week" class="border border-gray-300 rounded px-2 py-1 text-xs">
-            <option value="all">All Week</option>
-            <option value="1">Week 1</option>
-            <option value="2">Week 2</option>
-          </select>
-        </div>
-        <div>
-          <label class="block text-xs font-medium mb-1">Select month:</label>
-          <select v-model="filter.month" class="border border-gray-300 rounded px-2 py-1 text-xs">
-            <option value="6">มิถุนายน</option>
-            <option value="7">กรกฎาคม</option>
-          </select>
-        </div>
-        <div>
-          <label class="block text-xs font-medium mb-1">Select year:</label>
-          <select v-model="filter.year" class="border border-gray-300 rounded px-2 py-1 text-xs">
-            <option value="2568">2568</option>
-            <option value="2567">2567</option>
-          </select>
-        </div>
-      </div>
-      <div class="flex gap-2 mt-2 md:mt-0">
-        <button @click="applyFilter" class="bg-[#00569D] hover:bg-[#004080] text-white text-xs font-medium rounded px-4 py-1.5 transition-colors">Go</button>
-        <button @click="exportExcel" class="text-xs text-blue-600 hover:underline">Export data to Excel</button>
       </div>
     </div>
 
     <!-- Table Section -->
     <div class="bg-white rounded-lg shadow-sm border border-gray-200">
-      <div class="relative overflow-x-auto shadow-md sm:rounded-lg" style="max-height: calc(100vh - 300px);">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between px-2 pt-2 mb-2">
+        <div class="flex items-center justify-center flex-row">
+          <!-- Record Count -->
+          <ResultCount :label="'ผลลัพธ์:'" :current="tableData.length" :total="tableData.length"
+            icon="mdi:clipboard-list-outline" iconColor="#00569D" class="" />
+        </div>
+        <div class="flex items-center space-x-4">
+
+          <div class=" flex flex-row gap-1 items-center">
+            <button type="button" @click="exportToExcel" :disabled="!(tableData?.length)"
+              class="h-7 px-5 text-white bg-green-600 hover:bg-green-700 font-medium rounded-lg text-xs flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed">
+              <Icon icon="file-icons:microsoft-excel" width="12" height="12" class="mr-2" />
+              Export Excel
+            </button>
+          </div>
+          <!-- Search Input -->
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+              <Icon icon="mdi:magnify" class="w-4 h-4 text-gray-400" />
+            </div>
+            <input type="text" v-model="searchQuery" placeholder="ค้นหา..."
+              class="w-64 pl-10 pr-3 py-1.5 text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400">
+          </div>
+        </div>
+      </div>
+      <div class="relative overflow-x-auto shadow-md sm:rounded-lg p-2 pt-0" style="max-height: calc(100vh - 240px);">
         <table class="w-full text-xs text-left text-gray-500 border-collapse border border-gray-300">
           <thead class="text-xs text-gray-700 uppercase bg-gray-50 sticky top-0">
             <tr>
@@ -84,6 +146,7 @@
 <script setup>
 import { ref } from 'vue';
 import { Icon } from '@iconify/vue';
+import ResultCount from '@/components/ResultCount.vue';
 
 const filter = ref({
   dc: '101',
@@ -107,6 +170,91 @@ const tableData = ref([
   { productCode: '10010401012', productName: 'ผงปรุงรส รสไก่ ตราเต็มพิก 165 ก. 1*4', group: 'B', forecast: 0, co: 0, carry: 0, fill: 488, onHand: 488, forecastVsOnHand: 'Infinity%', coVsOnHand: 'Infinity%' },
   { productCode: '10020101008', productName: 'ผงปรุงรส รสหมู ตราทองคิวทอง 850 ก. 1*6', group: 'B', forecast: 0, co: 0, carry: 0, fill: 0, onHand: 0, forecastVsOnHand: 'NaN%', coVsOnHand: 'NaN%' },
   { productCode: '10052001002', productName: 'ผงชูรส ตราภากษะ 1 kg 1*12', group: 'B', forecast: 0, co: 0, carry: 0, fill: 0, onHand: 757, forecastVsOnHand: 'Infinity%', coVsOnHand: 'Infinity%' },
+  { productCode: '10052001002', productName: 'ผงชูรส ตราภากษะ 1 kg 1*12', group: 'B', forecast: 0, co: 0, carry: 0, fill: 0, onHand: 757, forecastVsOnHand: 'Infinity%', coVsOnHand: 'Infinity%' },
+  { productCode: '10052001002', productName: 'ผงชูรส ตราภากษะ 1 kg 1*12', group: 'B', forecast: 0, co: 0, carry: 0, fill: 0, onHand: 757, forecastVsOnHand: 'Infinity%', coVsOnHand: 'Infinity%' },
+  { productCode: '10052001002', productName: 'ผงชูรส ตราภากษะ 1 kg 1*12', group: 'B', forecast: 0, co: 0, carry: 0, fill: 0, onHand: 757, forecastVsOnHand: 'Infinity%', coVsOnHand: 'Infinity%' },
+  { productCode: '10052001002', productName: 'ผงชูรส ตราภากษะ 1 kg 1*12', group: 'B', forecast: 0, co: 0, carry: 0, fill: 0, onHand: 757, forecastVsOnHand: 'Infinity%', coVsOnHand: 'Infinity%' },
+  { productCode: '10052001002', productName: 'ผงชูรส ตราภากษะ 1 kg 1*12', group: 'B', forecast: 0, co: 0, carry: 0, fill: 0, onHand: 757, forecastVsOnHand: 'Infinity%', coVsOnHand: 'Infinity%' },
+  { productCode: '10052001002', productName: 'ผงชูรส ตราภากษะ 1 kg 1*12', group: 'B', forecast: 0, co: 0, carry: 0, fill: 0, onHand: 757, forecastVsOnHand: 'Infinity%', coVsOnHand: 'Infinity%' },
+  { productCode: '10052001002', productName: 'ผงชูรส ตราภากษะ 1 kg 1*12', group: 'B', forecast: 0, co: 0, carry: 0, fill: 0, onHand: 757, forecastVsOnHand: 'Infinity%', coVsOnHand: 'Infinity%' },
+  { productCode: '10052001002', productName: 'ผงชูรส ตราภากษะ 1 kg 1*12', group: 'B', forecast: 0, co: 0, carry: 0, fill: 0, onHand: 757, forecastVsOnHand: 'Infinity%', coVsOnHand: 'Infinity%' },
+  { productCode: '10052001002', productName: 'ผงชูรส ตราภากษะ 1 kg 1*12', group: 'B', forecast: 0, co: 0, carry: 0, fill: 0, onHand: 757, forecastVsOnHand: 'Infinity%', coVsOnHand: 'Infinity%' },
+  { productCode: '10052001002', productName: 'ผงชูรส ตราภากษะ 1 kg 1*12', group: 'B', forecast: 0, co: 0, carry: 0, fill: 0, onHand: 757, forecastVsOnHand: 'Infinity%', coVsOnHand: 'Infinity%' },
+  { productCode: '10052001002', productName: 'ผงชูรส ตราภากษะ 1 kg 1*12', group: 'B', forecast: 0, co: 0, carry: 0, fill: 0, onHand: 757, forecastVsOnHand: 'Infinity%', coVsOnHand: 'Infinity%' },
+  { productCode: '10052001002', productName: 'ผงชูรส ตราภากษะ 1 kg 1*12', group: 'B', forecast: 0, co: 0, carry: 0, fill: 0, onHand: 757, forecastVsOnHand: 'Infinity%', coVsOnHand: 'Infinity%' },
+  { productCode: '10052001002', productName: 'ผงชูรส ตราภากษะ 1 kg 1*12', group: 'B', forecast: 0, co: 0, carry: 0, fill: 0, onHand: 757, forecastVsOnHand: 'Infinity%', coVsOnHand: 'Infinity%' },
+  { productCode: '10052001002', productName: 'ผงชูรส ตราภากษะ 1 kg 1*12', group: 'B', forecast: 0, co: 0, carry: 0, fill: 0, onHand: 757, forecastVsOnHand: 'Infinity%', coVsOnHand: 'Infinity%' },
+  { productCode: '10052001002', productName: 'ผงชูรส ตราภากษะ 1 kg 1*12', group: 'B', forecast: 0, co: 0, carry: 0, fill: 0, onHand: 757, forecastVsOnHand: 'Infinity%', coVsOnHand: 'Infinity%' },
+  { productCode: '10052001002', productName: 'ผงชูรส ตราภากษะ 1 kg 1*12', group: 'B', forecast: 0, co: 0, carry: 0, fill: 0, onHand: 757, forecastVsOnHand: 'Infinity%', coVsOnHand: 'Infinity%' },
+  { productCode: '10052001002', productName: 'ผงชูรส ตราภากษะ 1 kg 1*12', group: 'B', forecast: 0, co: 0, carry: 0, fill: 0, onHand: 757, forecastVsOnHand: 'Infinity%', coVsOnHand: 'Infinity%' },
+  { productCode: '10052001002', productName: 'ผงชูรส ตราภากษะ 1 kg 1*12', group: 'B', forecast: 0, co: 0, carry: 0, fill: 0, onHand: 757, forecastVsOnHand: 'Infinity%', coVsOnHand: 'Infinity%' },
+  { productCode: '10052001002', productName: 'ผงชูรส ตราภากษะ 1 kg 1*12', group: 'B', forecast: 0, co: 0, carry: 0, fill: 0, onHand: 757, forecastVsOnHand: 'Infinity%', coVsOnHand: 'Infinity%' },
+  { productCode: '10052001002', productName: 'ผงชูรส ตราภากษะ 1 kg 1*12', group: 'B', forecast: 0, co: 0, carry: 0, fill: 0, onHand: 757, forecastVsOnHand: 'Infinity%', coVsOnHand: 'Infinity%' },
+  { productCode: '10052001002', productName: 'ผงชูรส ตราภากษะ 1 kg 1*12', group: 'B', forecast: 0, co: 0, carry: 0, fill: 0, onHand: 757, forecastVsOnHand: 'Infinity%', coVsOnHand: 'Infinity%' },
+  { productCode: '10052001002', productName: 'ผงชูรส ตราภากษะ 1 kg 1*12', group: 'B', forecast: 0, co: 0, carry: 0, fill: 0, onHand: 757, forecastVsOnHand: 'Infinity%', coVsOnHand: 'Infinity%' },
+  { productCode: '10052001002', productName: 'ผงชูรส ตราภากษะ 1 kg 1*12', group: 'B', forecast: 0, co: 0, carry: 0, fill: 0, onHand: 757, forecastVsOnHand: 'Infinity%', coVsOnHand: 'Infinity%' },
+  { productCode: '10052001002', productName: 'ผงชูรส ตราภากษะ 1 kg 1*12', group: 'B', forecast: 0, co: 0, carry: 0, fill: 0, onHand: 757, forecastVsOnHand: 'Infinity%', coVsOnHand: 'Infinity%' },
+  { productCode: '10052001002', productName: 'ผงชูรส ตราภากษะ 1 kg 1*12', group: 'B', forecast: 0, co: 0, carry: 0, fill: 0, onHand: 757, forecastVsOnHand: 'Infinity%', coVsOnHand: 'Infinity%' },
+  { productCode: '10052001002', productName: 'ผงชูรส ตราภากษะ 1 kg 1*12', group: 'B', forecast: 0, co: 0, carry: 0, fill: 0, onHand: 757, forecastVsOnHand: 'Infinity%', coVsOnHand: 'Infinity%' },
+  { productCode: '10052001002', productName: 'ผงชูรส ตราภากษะ 1 kg 1*12', group: 'B', forecast: 0, co: 0, carry: 0, fill: 0, onHand: 757, forecastVsOnHand: 'Infinity%', coVsOnHand: 'Infinity%' },
+  { productCode: '10052001002', productName: 'ผงชูรส ตราภากษะ 1 kg 1*12', group: 'B', forecast: 0, co: 0, carry: 0, fill: 0, onHand: 757, forecastVsOnHand: 'Infinity%', coVsOnHand: 'Infinity%' },
+  { productCode: '10052001002', productName: 'ผงชูรส ตราภากษะ 1 kg 1*12', group: 'B', forecast: 0, co: 0, carry: 0, fill: 0, onHand: 757, forecastVsOnHand: 'Infinity%', coVsOnHand: 'Infinity%' },
+  { productCode: '10052001002', productName: 'ผงชูรส ตราภากษะ 1 kg 1*12', group: 'B', forecast: 0, co: 0, carry: 0, fill: 0, onHand: 757, forecastVsOnHand: 'Infinity%', coVsOnHand: 'Infinity%' },
+  { productCode: '10052001002', productName: 'ผงชูรส ตราภากษะ 1 kg 1*12', group: 'B', forecast: 0, co: 0, carry: 0, fill: 0, onHand: 757, forecastVsOnHand: 'Infinity%', coVsOnHand: 'Infinity%' },
+  { productCode: '10052001002', productName: 'ผงชูรส ตราภากษะ 1 kg 1*12', group: 'B', forecast: 0, co: 0, carry: 0, fill: 0, onHand: 757, forecastVsOnHand: 'Infinity%', coVsOnHand: 'Infinity%' },
+  { productCode: '10052001002', productName: 'ผงชูรส ตราภากษะ 1 kg 1*12', group: 'B', forecast: 0, co: 0, carry: 0, fill: 0, onHand: 757, forecastVsOnHand: 'Infinity%', coVsOnHand: 'Infinity%' },
+  { productCode: '10052001002', productName: 'ผงชูรส ตราภากษะ 1 kg 1*12', group: 'B', forecast: 0, co: 0, carry: 0, fill: 0, onHand: 757, forecastVsOnHand: 'Infinity%', coVsOnHand: 'Infinity%' },
+  { productCode: '10052001002', productName: 'ผงชูรส ตราภากษะ 1 kg 1*12', group: 'B', forecast: 0, co: 0, carry: 0, fill: 0, onHand: 757, forecastVsOnHand: 'Infinity%', coVsOnHand: 'Infinity%' },
+  { productCode: '10052001002', productName: 'ผงชูรส ตราภากษะ 1 kg 1*12', group: 'B', forecast: 0, co: 0, carry: 0, fill: 0, onHand: 757, forecastVsOnHand: 'Infinity%', coVsOnHand: 'Infinity%' },
+  { productCode: '10052001002', productName: 'ผงชูรส ตราภากษะ 1 kg 1*12', group: 'B', forecast: 0, co: 0, carry: 0, fill: 0, onHand: 757, forecastVsOnHand: 'Infinity%', coVsOnHand: 'Infinity%' },
+  { productCode: '10052001002', productName: 'ผงชูรส ตราภากษะ 1 kg 1*12', group: 'B', forecast: 0, co: 0, carry: 0, fill: 0, onHand: 757, forecastVsOnHand: 'Infinity%', coVsOnHand: 'Infinity%' },
+  { productCode: '10052001002', productName: 'ผงชูรส ตราภากษะ 1 kg 1*12', group: 'B', forecast: 0, co: 0, carry: 0, fill: 0, onHand: 757, forecastVsOnHand: 'Infinity%', coVsOnHand: 'Infinity%' },
+  { productCode: '10052001002', productName: 'ผงชูรส ตราภากษะ 1 kg 1*12', group: 'B', forecast: 0, co: 0, carry: 0, fill: 0, onHand: 757, forecastVsOnHand: 'Infinity%', coVsOnHand: 'Infinity%' },
+  { productCode: '10052001002', productName: 'ผงชูรส ตราภากษะ 1 kg 1*12', group: 'B', forecast: 0, co: 0, carry: 0, fill: 0, onHand: 757, forecastVsOnHand: 'Infinity%', coVsOnHand: 'Infinity%' },
+  { productCode: '10052001002', productName: 'ผงชูรส ตราภากษะ 1 kg 1*12', group: 'B', forecast: 0, co: 0, carry: 0, fill: 0, onHand: 757, forecastVsOnHand: 'Infinity%', coVsOnHand: 'Infinity%' },
+  { productCode: '10052001002', productName: 'ผงชูรส ตราภากษะ 1 kg 1*12', group: 'B', forecast: 0, co: 0, carry: 0, fill: 0, onHand: 757, forecastVsOnHand: 'Infinity%', coVsOnHand: 'Infinity%' },
+  { productCode: '10052001002', productName: 'ผงชูรส ตราภากษะ 1 kg 1*12', group: 'B', forecast: 0, co: 0, carry: 0, fill: 0, onHand: 757, forecastVsOnHand: 'Infinity%', coVsOnHand: 'Infinity%' },
+  { productCode: '10052001002', productName: 'ผงชูรส ตราภากษะ 1 kg 1*12', group: 'B', forecast: 0, co: 0, carry: 0, fill: 0, onHand: 757, forecastVsOnHand: 'Infinity%', coVsOnHand: 'Infinity%' },
+  { productCode: '10052001002', productName: 'ผงชูรส ตราภากษะ 1 kg 1*12', group: 'B', forecast: 0, co: 0, carry: 0, fill: 0, onHand: 757, forecastVsOnHand: 'Infinity%', coVsOnHand: 'Infinity%' },
+  { productCode: '10052001002', productName: 'ผงชูรส ตราภากษะ 1 kg 1*12', group: 'B', forecast: 0, co: 0, carry: 0, fill: 0, onHand: 757, forecastVsOnHand: 'Infinity%', coVsOnHand: 'Infinity%' },
+  { productCode: '10052001002', productName: 'ผงชูรส ตราภากษะ 1 kg 1*12', group: 'B', forecast: 0, co: 0, carry: 0, fill: 0, onHand: 757, forecastVsOnHand: 'Infinity%', coVsOnHand: 'Infinity%' },
+  { productCode: '10052001002', productName: 'ผงชูรส ตราภากษะ 1 kg 1*12', group: 'B', forecast: 0, co: 0, carry: 0, fill: 0, onHand: 757, forecastVsOnHand: 'Infinity%', coVsOnHand: 'Infinity%' },
+  { productCode: '10052001002', productName: 'ผงชูรส ตราภากษะ 1 kg 1*12', group: 'B', forecast: 0, co: 0, carry: 0, fill: 0, onHand: 757, forecastVsOnHand: 'Infinity%', coVsOnHand: 'Infinity%' },
+  { productCode: '10052001002', productName: 'ผงชูรส ตราภากษะ 1 kg 1*12', group: 'B', forecast: 0, co: 0, carry: 0, fill: 0, onHand: 757, forecastVsOnHand: 'Infinity%', coVsOnHand: 'Infinity%' },
+  { productCode: '10052001002', productName: 'ผงชูรส ตราภากษะ 1 kg 1*12', group: 'B', forecast: 0, co: 0, carry: 0, fill: 0, onHand: 757, forecastVsOnHand: 'Infinity%', coVsOnHand: 'Infinity%' },
+  { productCode: '10052001002', productName: 'ผงชูรส ตราภากษะ 1 kg 1*12', group: 'B', forecast: 0, co: 0, carry: 0, fill: 0, onHand: 757, forecastVsOnHand: 'Infinity%', coVsOnHand: 'Infinity%' },
+  { productCode: '10052001002', productName: 'ผงชูรส ตราภากษะ 1 kg 1*12', group: 'B', forecast: 0, co: 0, carry: 0, fill: 0, onHand: 757, forecastVsOnHand: 'Infinity%', coVsOnHand: 'Infinity%' },
+  { productCode: '10052001002', productName: 'ผงชูรส ตราภากษะ 1 kg 1*12', group: 'B', forecast: 0, co: 0, carry: 0, fill: 0, onHand: 757, forecastVsOnHand: 'Infinity%', coVsOnHand: 'Infinity%' },
+  { productCode: '10052001002', productName: 'ผงชูรส ตราภากษะ 1 kg 1*12', group: 'B', forecast: 0, co: 0, carry: 0, fill: 0, onHand: 757, forecastVsOnHand: 'Infinity%', coVsOnHand: 'Infinity%' },
+  { productCode: '10052001002', productName: 'ผงชูรส ตราภากษะ 1 kg 1*12', group: 'B', forecast: 0, co: 0, carry: 0, fill: 0, onHand: 757, forecastVsOnHand: 'Infinity%', coVsOnHand: 'Infinity%' },
+  { productCode: '10052001002', productName: 'ผงชูรส ตราภากษะ 1 kg 1*12', group: 'B', forecast: 0, co: 0, carry: 0, fill: 0, onHand: 757, forecastVsOnHand: 'Infinity%', coVsOnHand: 'Infinity%' },
+  { productCode: '10052001002', productName: 'ผงชูรส ตราภากษะ 1 kg 1*12', group: 'B', forecast: 0, co: 0, carry: 0, fill: 0, onHand: 757, forecastVsOnHand: 'Infinity%', coVsOnHand: 'Infinity%' },
+  { productCode: '10052001002', productName: 'ผงชูรส ตราภากษะ 1 kg 1*12', group: 'B', forecast: 0, co: 0, carry: 0, fill: 0, onHand: 757, forecastVsOnHand: 'Infinity%', coVsOnHand: 'Infinity%' },
+  { productCode: '10052001002', productName: 'ผงชูรส ตราภากษะ 1 kg 1*12', group: 'B', forecast: 0, co: 0, carry: 0, fill: 0, onHand: 757, forecastVsOnHand: 'Infinity%', coVsOnHand: 'Infinity%' },
+  { productCode: '10052001002', productName: 'ผงชูรส ตราภากษะ 1 kg 1*12', group: 'B', forecast: 0, co: 0, carry: 0, fill: 0, onHand: 757, forecastVsOnHand: 'Infinity%', coVsOnHand: 'Infinity%' },
+  { productCode: '10052001002', productName: 'ผงชูรส ตราภากษะ 1 kg 1*12', group: 'B', forecast: 0, co: 0, carry: 0, fill: 0, onHand: 757, forecastVsOnHand: 'Infinity%', coVsOnHand: 'Infinity%' },
+  { productCode: '10052001002', productName: 'ผงชูรส ตราภากษะ 1 kg 1*12', group: 'B', forecast: 0, co: 0, carry: 0, fill: 0, onHand: 757, forecastVsOnHand: 'Infinity%', coVsOnHand: 'Infinity%' },
+  { productCode: '10052001002', productName: 'ผงชูรส ตราภากษะ 1 kg 1*12', group: 'B', forecast: 0, co: 0, carry: 0, fill: 0, onHand: 757, forecastVsOnHand: 'Infinity%', coVsOnHand: 'Infinity%' },
+  { productCode: '10052001002', productName: 'ผงชูรส ตราภากษะ 1 kg 1*12', group: 'B', forecast: 0, co: 0, carry: 0, fill: 0, onHand: 757, forecastVsOnHand: 'Infinity%', coVsOnHand: 'Infinity%' },
+  { productCode: '10052001002', productName: 'ผงชูรส ตราภากษะ 1 kg 1*12', group: 'B', forecast: 0, co: 0, carry: 0, fill: 0, onHand: 757, forecastVsOnHand: 'Infinity%', coVsOnHand: 'Infinity%' },
+  { productCode: '10052001002', productName: 'ผงชูรส ตราภากษะ 1 kg 1*12', group: 'B', forecast: 0, co: 0, carry: 0, fill: 0, onHand: 757, forecastVsOnHand: 'Infinity%', coVsOnHand: 'Infinity%' },
+  { productCode: '10052001002', productName: 'ผงชูรส ตราภากษะ 1 kg 1*12', group: 'B', forecast: 0, co: 0, carry: 0, fill: 0, onHand: 757, forecastVsOnHand: 'Infinity%', coVsOnHand: 'Infinity%' },
+  { productCode: '10052001002', productName: 'ผงชูรส ตราภากษะ 1 kg 1*12', group: 'B', forecast: 0, co: 0, carry: 0, fill: 0, onHand: 757, forecastVsOnHand: 'Infinity%', coVsOnHand: 'Infinity%' },
+  { productCode: '10052001002', productName: 'ผงชูรส ตราภากษะ 1 kg 1*12', group: 'B', forecast: 0, co: 0, carry: 0, fill: 0, onHand: 757, forecastVsOnHand: 'Infinity%', coVsOnHand: 'Infinity%' },
+  { productCode: '10052001002', productName: 'ผงชูรส ตราภากษะ 1 kg 1*12', group: 'B', forecast: 0, co: 0, carry: 0, fill: 0, onHand: 757, forecastVsOnHand: 'Infinity%', coVsOnHand: 'Infinity%' },
+  { productCode: '10052001002', productName: 'ผงชูรส ตราภากษะ 1 kg 1*12', group: 'B', forecast: 0, co: 0, carry: 0, fill: 0, onHand: 757, forecastVsOnHand: 'Infinity%', coVsOnHand: 'Infinity%' },
+  { productCode: '10052001002', productName: 'ผงชูรส ตราภากษะ 1 kg 1*12', group: 'B', forecast: 0, co: 0, carry: 0, fill: 0, onHand: 757, forecastVsOnHand: 'Infinity%', coVsOnHand: 'Infinity%' },
+  { productCode: '10052001002', productName: 'ผงชูรส ตราภากษะ 1 kg 1*12', group: 'B', forecast: 0, co: 0, carry: 0, fill: 0, onHand: 757, forecastVsOnHand: 'Infinity%', coVsOnHand: 'Infinity%' },
+  { productCode: '10052001002', productName: 'ผงชูรส ตราภากษะ 1 kg 1*12', group: 'B', forecast: 0, co: 0, carry: 0, fill: 0, onHand: 757, forecastVsOnHand: 'Infinity%', coVsOnHand: 'Infinity%' },
+  { productCode: '10052001002', productName: 'ผงชูรส ตราภากษะ 1 kg 1*12', group: 'B', forecast: 0, co: 0, carry: 0, fill: 0, onHand: 757, forecastVsOnHand: 'Infinity%', coVsOnHand: 'Infinity%' },
+  { productCode: '10052001002', productName: 'ผงชูรส ตราภากษะ 1 kg 1*12', group: 'B', forecast: 0, co: 0, carry: 0, fill: 0, onHand: 757, forecastVsOnHand: 'Infinity%', coVsOnHand: 'Infinity%' },
+  { productCode: '10052001002', productName: 'ผงชูรส ตราภากษะ 1 kg 1*12', group: 'B', forecast: 0, co: 0, carry: 0, fill: 0, onHand: 757, forecastVsOnHand: 'Infinity%', coVsOnHand: 'Infinity%' },
+  { productCode: '10052001002', productName: 'ผงชูรส ตราภากษะ 1 kg 1*12', group: 'B', forecast: 0, co: 0, carry: 0, fill: 0, onHand: 757, forecastVsOnHand: 'Infinity%', coVsOnHand: 'Infinity%' },
+  { productCode: '10052001002', productName: 'ผงชูรส ตราภากษะ 1 kg 1*12', group: 'B', forecast: 0, co: 0, carry: 0, fill: 0, onHand: 757, forecastVsOnHand: 'Infinity%', coVsOnHand: 'Infinity%' },
+  { productCode: '10052001002', productName: 'ผงชูรส ตราภากษะ 1 kg 1*12', group: 'B', forecast: 0, co: 0, carry: 0, fill: 0, onHand: 757, forecastVsOnHand: 'Infinity%', coVsOnHand: 'Infinity%' },
+  { productCode: '10052001002', productName: 'ผงชูรส ตราภากษะ 1 kg 1*12', group: 'B', forecast: 0, co: 0, carry: 0, fill: 0, onHand: 757, forecastVsOnHand: 'Infinity%', coVsOnHand: 'Infinity%' },
+  { productCode: '10052001002', productName: 'ผงชูรส ตราภากษะ 1 kg 1*12', group: 'B', forecast: 0, co: 0, carry: 0, fill: 0, onHand: 757, forecastVsOnHand: 'Infinity%', coVsOnHand: 'Infinity%' },
+  { productCode: '10052001002', productName: 'ผงชูรส ตราภากษะ 1 kg 1*12', group: 'B', forecast: 0, co: 0, carry: 0, fill: 0, onHand: 757, forecastVsOnHand: 'Infinity%', coVsOnHand: 'Infinity%' },
 ]);
 
 function applyFilter() {
@@ -128,4 +276,4 @@ function getPercentClass(val) {
 
 <style scoped>
 /* Add any additional custom styles here */
-</style> 
+</style>
