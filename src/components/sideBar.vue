@@ -68,7 +68,8 @@
               </div>
               <div class="ml-3">
                 <router-link v-for="item in categoryData.children" :key="item"
-                  :to="getRoutePath(system, category, item)" :class="[
+                  :to="getRoutePath(system, category, item)" @click="activeMiniMenu = null"
+                  :class="[
                     'block px-3 py-1.5 text-xs text-gray-400 hover:text-white hover:bg-sky-600 rounded transition-colors relative',
                     isActiveRoute(system, category, item) ? 'bg-slate-700 text-white font-semibold' : ''
                   ]" v-show="isItemVisible(system, category, item)">
@@ -121,6 +122,14 @@
       ]">
         <Icon icon="mdi:home" class="w-6 h-6" />
         <span v-if="!isCollapsed">หน้าหลัก</span>
+      </router-link>
+
+      <router-link v-if="canSeeUserManage" :to="'/manage/user'" :class="[
+        'w-full flex items-center space-x-3 px-2 py-2 hover:bg-sky-600 rounded transition-colors text-sm',
+        isCollapsed ? 'justify-center' : ''
+      ]">
+        <Icon icon="mdi:account-group" class="w-6 h-6" />
+        <span v-if="!isCollapsed">จัดการสิทธิ์การใช้งาน</span>
       </router-link>
 
       <button @click="confirmLogout" :class="[
@@ -201,6 +210,7 @@ const logoutMessages = [
   'กำลังนำท่านออกจากระบบ...'
 ];
 const isProcessingLogout = ref(false);
+const canSeeUserManage = computed(() => authStore.userDepartment === 'Information Technology Department');
 
 const menuData = {
   OMS: {
@@ -216,7 +226,7 @@ const menuData = {
           'รายการที่ไม่ได้วางบิล',
           // 'สินค้าที่ยังไม่ได้เปิด Invoice',
           // 'ออเดอร์ค้างส่ง(หน่วยรถ)',
-          // 'วางแผน',
+          'วางแผน',
           'วางแผนรวม',
           // 'อายุสินค้าคงเหลือ',
           'ค่าขนส่ง(shipment)',
