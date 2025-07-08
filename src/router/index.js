@@ -39,6 +39,24 @@ const routes = [
     component: () => import('@/views/tms/report/OrderDetailView.vue'),
     props: route => ({ productCode: route.params.productCode, productName: route.query.productName })
   },
+  {
+    path: '/tms/report/plan-total-detail',
+    name: 'plan-total-detail',
+    component: () => import('@/views/tms/report/planTotalDetailView.vue'),
+    props: route => ({ column: route.query.column })
+  },
+  {
+    path: '/tms/report/plan-total-co-list',
+    name: 'plan-total-co-list',
+    component: () => import('@/views/tms/report/PlanTotalCoList.vue'),
+    props: route => ({ productCode: route.query.productCode, productName: route.query.productName })
+  },
+  {
+    path: '/tms/report/plan-total-van',
+    name: 'plan-total-van',
+    component: () => import('@/views/tms/report/PlanTotalVan.vue'),
+    props: route => ({ productCode: route.query.productCode, productName: route.query.productName })
+  },
   { path: '/:pathMatch(.*)*', redirect: '/' } 
 ];
 

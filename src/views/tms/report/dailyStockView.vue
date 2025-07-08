@@ -1,40 +1,56 @@
 <template>
-  <div class="mx-auto w-full px-4" style="max-width: calc(100vw - 100px);">
-    <!-- Filter and Action Section -->
+  <div class="flex-1 bg-gray-50 min-h-screen">
     <div class="space-y-2">
-      <!-- Sticky Filter Controls -->
-      <div class="bg-gray-100 dark:bg-gray-800">
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-2 py-4 w-full">
-          <!-- Error Message -->
-          <div v-if="storeError" class="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
-            <div class="flex items-center">
-              <Icon icon="mdi:alert-circle" class="mr-2" />
-              {{ storeError }}
-              <button @click="reportTmsStore.clearError()" class="ml-auto text-red-500 hover:text-red-700">
-                <Icon icon="mdi:close" />
+      <!-- Filter and Action Section -->
+      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+        <div class="flex flex-wrap items-end gap-x-4 gap-y-2 justify-between">
+          <!-- ซ้าย: ResultCount -->
+          <div class="flex items-center">
+            <ResultCount :label="'ผลลัพธ์:'" :current="debouncedSearchText ? filteredRowData.length : null"
+              :total="rowData.length" icon="mdi:table" iconColor="#00569D" class="" />
+              <div class="flex gap-2 ml-2">  
+              <button v-for="wh in warehouses" :key="wh.who_no" @click="scrollToWarehouse(wh.who_no)"
+                class="h-7 px-3 rounded-md shadow text-xs font-medium flex items-center hover:scale-105 transition-transform"
+                :style="{ background: wh.color, color: '#222', minWidth: '48px' }">
+                {{ wh.who_no }}<span v-if="wh.name">-{{ wh.name }}</span>
               </button>
             </div>
           </div>
-
-          <div class="flex flex-col lg:flex-row gap-4 lg:justify-end lg:items-end">
-            <!-- Action Section (Backlog style) -->
-            <div class="flex flex-col sm:flex-row gap-3 items-start sm:items-end">
-              <button type="button" @click="fetchData" :disabled="storeLoading"
-                class="text-white bg-red-600 hover:bg-red-700 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-xs px-3 py-1.5 text-center inline-flex items-center justify-center dark:focus:ring-red-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-                <Icon v-if="storeLoading" icon="mdi:loading" class="animate-spin mr-1.5" width="16" height="16" />
-                <Icon v-else icon="mdi:database-sync" width="16" height="16" class="mr-1.5" />
-                {{ storeLoading ? 'กำลังดึงข้อมูล...' : 'ดึงข้อมูลใหม่' }}
-              </button>
-              <button type="button" @click="refreshPage" :disabled="storeLoading"
-                class="text-white bg-gray-500 hover:bg-gray-600 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-xs px-3 py-1.5 text-center inline-flex items-center justify-center dark:focus:ring-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-                <Icon icon="mdi:refresh" width="16" height="16" class="mr-1.5" />
-                รีเฟรชข้อมูล
-              </button>
+          <!-- ขวา: Tabs, Export, Search -->
+          <div class="flex flex-row gap-2 items-center">
+            <!-- Warehouse Tabs -->
+           
+            <!-- Export Excel -->
+            <button type="button" @click="downloadData" :disabled="!rowData.length"
+              class="text-white bg-green-600 hover:bg-green-700 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-xs px-3 py-1.5 text-center inline-flex items-center justify-center dark:focus:ring-green-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+              <Icon icon="file-icons:microsoft-excel" width="16" height="16" class="mr-1.5" />
+              Export Excel
+            </button>
+            <!-- ดึงข้อมูลใหม่ -->
+            <button @click="fetchData" :disabled="storeLoading"
+              class="text-white bg-red-700 hover:bg-red-700 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-xs px-3 py-1.5 text-center inline-flex items-center justify-center dark:focus:ring-red-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+              <Icon v-if="storeLoading" icon="mdi:loading" class="animate-spin w-4 h-4" />
+              <Icon v-else icon="mdi:database-sync" width="16" height="16" />
+              {{ storeLoading ? 'กำลังดึงข้อมูล...' : 'ดึงข้อมูลใหม่' }}
+            </button>
+            <!-- รีเฟรชข้อมูล -->
+            <button @click="fetchData" :disabled="storeLoading"
+              class="text-white bg-[#00569D] hover:bg-[#00569D] focus:ring-4 focus:outline-none focus:ring-[#00569D] font-medium rounded-lg text-xs px-3 py-1.5 text-center inline-flex items-center justify-center dark:focus:ring-[#00569D] transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+              <Icon icon="mdi:refresh" width="16" height="16" />
+              รีเฟรช
+            </button>
+            <!-- Search -->
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                <Icon icon="mdi:magnify" class="w-4 h-4 text-gray-400" />
+              </div>
+              <input type="text" v-model="searchText" @input="debouncedSearch($event.target.value)" placeholder="ค้นหา..."
+                class="w-48 pl-10 pr-3 py-1.5 text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400">
             </div>
+            
           </div>
         </div>
       </div>
-
       <!-- Table Section -->
       <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-0 w-full">
         <!-- Loading State -->
@@ -44,10 +60,9 @@
             <p class="text-gray-600">กำลังโหลดข้อมูล...</p>
           </div>
         </div>
-
         <!-- Empty State -->
         <div v-else-if="!rowData || !rowData.length">
-          <div class="text-center">
+          <div class="text-center p-8">
             <Icon icon="mdi:database-off" class="text-gray-400 mb-2" width="48" height="48" />
             <p class="text-gray-600">ไม่พบข้อมูล</p>
             <button @click="fetchData" class="mt-2 text-blue-600 hover:text-blue-800">
@@ -55,49 +70,94 @@
             </button>
           </div>
         </div>
-
         <!-- Table Content -->
-        <div v-else class="mb-2 flex justify-between items-center mt-2 mr-2">
-          <!-- Result count (left) -->
-          <ResultCount
-            :label="'ผลลัพธ์:'"
-            :current="searchText ? filteredRowData.length : null"
-            :total="rowData.length"
-            icon="streamline-ultimate:time-daily-1-bold"
-            iconColor="#374151"
-            class="ml-2"
-          />
-          <!-- Beautiful Search Input with Flowbite styling (right) -->
-          <div class="flex items-center gap-2">
-            <button type="button" @click="downloadData" :disabled="!rowData.length || storeLoading"
-              class="text-white bg-green-600 hover:bg-green-700 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-xs px-3 py-1.5 text-center inline-flex items-center justify-center dark:focus:ring-green-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-              <Icon icon="file-icons:microsoft-excel" width="16" height="16" class="mr-1.5" />
-              Export Excel
-            </button>
-            <div class="relative">
-              <div class="absolute inset-y-0 left-0 flex items-center pl-2 pointer-events-none">
-                <Icon icon="mdi:magnify" class="w-3.5 h-3.5 text-gray-500 dark:text-gray-400" />
-              </div>
-              <input v-model="searchText" type="text" placeholder="ค้นหา รหัสสินค้า หรือ ชื่อสินค้า"
-                class="block w-64 p-2 pl-8 text-xs text-gray-900 border border-gray-300 rounded-md bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-all duration-200 hover:bg-white hover:border-gray-400 focus:bg-white" />
-              <div class="absolute inset-y-0 right-0 flex items-center pr-2">
-                <button v-if="searchText" @click="searchText = ''" type="button"
-                  class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200">
-                  <Icon icon="mdi:close-circle" class="w-3.5 h-3.5" />
-                </button>
-              </div>
-            </div>
+        <div v-if="!storeLoading && rowData && rowData.length">
+          <div ref="tableContainer" class="virtual-table-container rounded-t-lg overflow-x-auto overflow-y-auto"
+            style="height: calc(100vh - 180px); width: calc(100vw - 120px); will-change: scroll-position;" @scroll="handleScroll">
+            <!-- Top spacer -->
+            <div v-if="spacerHeight > 0" :style="{ height: spacerHeight + 'px' }"></div>
+            <table class="min-w-max text-xs text-left text-gray-500 border border-gray-300 ">
+              <thead class="text-xs text-gray-700 uppercase bg-gray-50 ">
+                <tr>
+                  <th
+                    class="px-2 py-2 text-center font-semibold sticky top-0 left-0 z-20 bg-gray-50 border border-gray-300"
+                    style="min-width: 120px;">รหัสสินค้า</th>
+                  <th
+                    class="px-2 py-2 text-center font-semibold sticky top-0 left-[120px] z-20 bg-gray-50 border border-gray-300"
+                    style="min-width: 200px;">ชื่อสินค้า</th>
+                  <th class="px-2 py-2 text-center  bg-gray-50 font-semibold border border-gray-300">On Hand
+                  </th>
+                  <th class="px-2 py-2 text-center bg-gray-50 font-semibold border border-gray-300">
+                    Allocated</th>
+                  <th class="px-2 py-2 text-center sticky top-0 bg-gray-50 font-semibold border border-gray-300">
+                    Allocatable</th>
+                  <th class="px-2 py-2 text-center sticky top-0 bg-gray-50 font-semibold border border-gray-300">In
+                    Transit</th>
+                  <th class="px-2 py-2 text-center sticky top-0 bg-gray-50 font-semibold border border-gray-300">CO</th>
+                  <th class="px-2 py-2 text-center sticky top-0 bg-gray-50 font-semibold border border-gray-300">
+                    สินค้ารอจัดส่ง</th>
+                  <!-- Warehouse Columns - Grouped by Warehouse -->
+                  <template v-for="wh in warehouses" :key="wh.who_no">
+                    <th :ref="el => setWarehouseRef(wh.who_no, el)"
+                      class="px-2 py-2 text-center sticky top-0 font-semibold border border-gray-300"
+                      :style="{ backgroundColor: wh.color, minWidth: '80px', color: 'black' }">{{ wh.who_no }} - On Hand
+                    </th>
+                    <th class="px-2 py-2 text-center sticky top-0 font-semibold border border-gray-300"
+                      :style="{ backgroundColor: wh.color, minWidth: '80px', color: 'black' }">{{ wh.who_no }} -
+                      Allocated</th>
+                    <th class="px-2 py-2 text-center sticky top-0 font-semibold border border-gray-300"
+                      :style="{ backgroundColor: wh.color, minWidth: '80px', color: 'black' }">{{ wh.who_no }} -
+                      Allocatable</th>
+                    <th class="px-2 py-2 text-center sticky top-0 font-semibold border border-gray-300"
+                      :style="{ backgroundColor: wh.color, minWidth: '80px', color: 'black' }">{{ wh.who_no }} - In
+                      Transit</th>
+                    <th class="px-2 py-2 text-center sticky top-0 font-semibold border border-gray-300"
+                      :style="{ backgroundColor: wh.color, minWidth: '80px', color: 'black' }">{{ wh.who_no }} - CO</th>
+                    <th class="px-2 py-2 text-center sticky top-0 font-semibold border border-gray-300"
+                      :style="{ backgroundColor: wh.color, minWidth: '80px', color: 'black' }">{{ wh.who_no }} -
+                      สินค้ารอจัดส่ง</th>
+                  </template>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(row, idx) in filteredRowData" :key="row.item_no"
+                  :class="idx % 2 === 1 ? 'bg-gray-50' : 'bg-white'">
+                  <td class="px-2 py-1 text-center sticky left-0 z-10 bg-white border border-gray-300"
+                    style="min-width: 120px;">{{
+                    row.item_no }}</td>
+                  <td class="px-2 py-1 sticky left-[120px] z-10 bg-white border border-gray-300"
+                    style="min-width: 200px;">{{
+                    row.item_name }}</td>
+                  <td class="px-2 py-1 text-right border border-gray-300">{{ formattedRowData[idx].onhand_fmt }}</td>
+                  <td class="px-2 py-1 text-right border border-gray-300">{{ formattedRowData[idx].allocated_fmt }}</td>
+                  <td class="px-2 py-1 text-right border border-gray-300">{{ formattedRowData[idx].allocatable_fmt }}</td>
+                  <td class="px-2 py-1 text-right border border-gray-300">{{ formattedRowData[idx].in_transit_fmt }}</td>
+                  <td class="px-2 py-1 text-right border border-gray-300">{{ formattedRowData[idx].co_fmt }}</td>
+                  <td class="px-2 py-1 text-right border border-gray-300">{{ formattedRowData[idx].waiting_fmt }}</td>
+                  <!-- Warehouse Data - Grouped by Warehouse -->
+                  <template v-for="wh in warehouses" :key="wh.who_no">
+                    <td class="px-2 py-1 text-right border border-gray-300"
+                      :style="{ backgroundColor: wh.color + '20' }">{{ formattedRowData[idx][`${wh.who_no}_onhand_fmt`] }}</td>
+                    <td class="px-2 py-1 text-right border border-gray-300"
+                      :style="{ backgroundColor: wh.color + '20' }">{{ formattedRowData[idx][`${wh.who_no}_allocated_fmt`] }}
+                    </td>
+                    <td class="px-2 py-1 text-right border border-gray-300"
+                      :style="{ backgroundColor: wh.color + '20' }">{{ formattedRowData[idx][`${wh.who_no}_allocatable_fmt`] }}
+                    </td>
+                    <td class="px-2 py-1 text-right border border-gray-300"
+                      :style="{ backgroundColor: wh.color + '20' }">{{ formattedRowData[idx][`${wh.who_no}_in_transit_fmt`] }}
+                    </td>
+                    <td class="px-2 py-1 text-right border border-gray-300"
+                      :style="{ backgroundColor: wh.color + '20' }">{{ formattedRowData[idx][`${wh.who_no}_co_fmt`] }}</td>
+                    <td class="px-2 py-1 text-right border border-gray-300"
+                      :style="{ backgroundColor: wh.color + '20' }">{{ formattedRowData[idx][`${wh.who_no}_waiting_fmt`] }}</td>
+                  </template>
+                </tr>
+              </tbody>
+            </table>
+            <!-- Bottom spacer -->
+            <div v-if="bottomSpacerHeight > 0" :style="{ height: bottomSpacerHeight + 'px' }"></div>
           </div>
-        </div>
-        <div
-          v-if="!storeLoading && rowData && rowData.length"
-          class="ag-theme-alpine m-2"
-          style="width: calc(100% - 16px); height: calc(100vh - 300px);"
-        >
-          <ag-grid-vue :rowData="filteredRowData" :columnDefs="columnDefs" :defaultColDef="defaultColDef" theme="legacy"
-            :pagination="false" :animateRows="false" :suppressHorizontalScroll="false" :localeText="{
-              noRowsToShow: 'ไม่พบข้อมูลที่ค้นหา',
-            }" style="width: 100%; height: calc(100vh - 300px);"  />
         </div>
       </div>
     </div>
@@ -105,69 +165,73 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, nextTick, onUnmounted } from 'vue';
 import { Icon } from '@iconify/vue';
 import ExcelJS from 'exceljs';
 import { saveAs } from 'file-saver';
 import { useReportTmsStore } from '@/stores/modules/reportTms';
-import { AgGridVue } from 'ag-grid-vue3';
-import { themeQuartz } from 'ag-grid-community';
 import ResultCount from '@/components/ResultCount.vue';
+
+// Debounce function
+function debounce(func, wait) {
+  let timeout;
+  return function executedFunction(...args) {
+    const later = () => {
+      clearTimeout(timeout);
+      func(...args);
+    };
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+  };
+}
 
 // Store
 const reportTmsStore = useReportTmsStore();
-
-const myTheme = themeQuartz
-  .withParams({
-    browserColorScheme: "light",
-    columnBorder: true,
-    headerFontSize: 14
-  });
 
 // ใช้ข้อมูลจาก store โดยตรง
 const rowData = computed(() => reportTmsStore.getDailyStockData || []);
 const storeLoading = computed(() => reportTmsStore.loading);
 const storeError = computed(() => reportTmsStore.error);
 
+// Pre-format data for better performance
+const formattedRowData = computed(() => {
+  return rowData.value.map(row => {
+    const formatted = { ...row };
+    
+    // Format main columns
+    formatted.onhand_fmt = formatNumber(row.onhand);
+    formatted.allocated_fmt = formatNumber(row.allocated);
+    formatted.allocatable_fmt = formatNumber(row.allocatable);
+    formatted.in_transit_fmt = formatNumber(row.in_transit);
+    formatted.co_fmt = formatNumber(row.co);
+    formatted.waiting_fmt = formatNumber(row.waiting);
+    
+    // Format warehouse columns
+    warehouses.forEach(wh => {
+      formatted[`${wh.who_no}_onhand_fmt`] = formatNumber(row[`${wh.who_no}_onhand`]);
+      formatted[`${wh.who_no}_allocated_fmt`] = formatNumber(row[`${wh.who_no}_allocated`]);
+      formatted[`${wh.who_no}_allocatable_fmt`] = formatNumber(row[`${wh.who_no}_allocatable`]);
+      formatted[`${wh.who_no}_in_transit_fmt`] = formatNumber(row[`${wh.who_no}_in_transit`]);
+      formatted[`${wh.who_no}_co_fmt`] = formatNumber(row[`${wh.who_no}_co`]);
+      formatted[`${wh.who_no}_waiting_fmt`] = formatNumber(row[`${wh.who_no}_waiting`]);
+    });
+    
+    return formatted;
+  });
+});
+
 // warehouses กำหนดเอง (หรือจะดึงจาก API ก็ได้)
 const warehouses = [
-  { who_no: 'NP', color: '#ffa07a' },
-  { who_no: 'MH', color: '#87cefa' },
-  { who_no: 'LP', color: '#f08080' },
-  { who_no: 'ST', color: '#b0c4de' },
-  { who_no: 'BN', color: '#90ee90' },
-  { who_no: 'NS', color: '#4c8af8' },
-  { who_no: 'KR', color: '#fff163' },
-  { who_no: 'NON', color: '#778899' },
-  { who_no: 'NP2', color: '#ffb6c1' },
+  { who_no: 'NP', name: '101', color: '#ffa07a' },
+  { who_no: 'MH', name: '102', color: '#87cefa' },
+  { who_no: 'LP', name: '103', color: '#f08080' },
+  { who_no: 'ST', name: '104', color: '#b0c4de' },
+  { who_no: 'BN', name: '105', color: '#90ee90' },
+  { who_no: 'NS', name: '106', color: '#4c8af8' },
+  { who_no: 'KR', name: '109', color: '#fff163' },
+  { who_no: 'NON', name: '', color: '#778899' },
+  { who_no: 'NP2', name: '111', color: '#ffb6c1' },
 ];
-
-const columnDefs = [
-  { headerName: 'รหัสสินค้า', field: 'item_no', pinned: 'left', autoWidth: true },
-  { headerName: 'ชื่อสินค้า', field: 'item_name', pinned: 'left', cellStyle: { whiteSpace: 'nowrap', textOverflow: 'unset', overflow: 'visible' }, autoHeight: true, autoWidth: true },
-  { headerName: 'On Hand', field: 'onhand', minWidth: 60, valueFormatter: p => formatNumber(p.value), cellClass: 'ag-right-aligned-cell' },
-  { headerName: 'Allocated', field: 'allocated', minWidth: 60, valueFormatter: p => formatNumber(p.value), cellClass: 'ag-right-aligned-cell' },
-  { headerName: 'Allocatable', field: 'allocatable', minWidth: 60, valueFormatter: p => formatNumber(p.value), cellClass: 'ag-right-aligned-cell' },
-  { headerName: 'In Transit', field: 'in_transit', minWidth: 60, valueFormatter: p => formatNumber(p.value), cellClass: 'ag-right-aligned-cell' },
-  { headerName: 'CO', field: 'co', minWidth: 60, valueFormatter: p => formatNumber(p.value), cellClass: 'ag-right-aligned-cell' },
-  { headerName: 'สินค้ารอจัดส่ง', field: 'waiting', minWidth: 60, valueFormatter: p => formatNumber(p.value), cellClass: 'ag-right-aligned-cell' },
-  ...warehouses.flatMap(wh => [
-    { headerName: `${wh.who_no} - On Hand`, field: `${wh.who_no}_onhand`, minWidth: 60, valueFormatter: p => formatNumber(p.value), cellStyle: { background: wh.color, opacity: 0.8 }, cellClass: 'ag-right-aligned-cell' },
-    { headerName: `${wh.who_no} - Allocated`, field: `${wh.who_no}_allocated`, minWidth: 60, valueFormatter: p => formatNumber(p.value), cellStyle: { background: wh.color, opacity: 0.8 }, cellClass: 'ag-right-aligned-cell' },
-    { headerName: `${wh.who_no} - Allocatable`, field: `${wh.who_no}_allocatable`, minWidth: 60, valueFormatter: p => formatNumber(p.value), cellStyle: { background: wh.color, opacity: 0.8 }, cellClass: 'ag-right-aligned-cell' },
-    { headerName: `${wh.who_no} - In Transit`, field: `${wh.who_no}_in_transit`, minWidth: 60, valueFormatter: p => formatNumber(p.value), cellStyle: { background: wh.color, opacity: 0.8 }, cellClass: 'ag-right-aligned-cell' },
-    { headerName: `${wh.who_no} - CO`, field: `${wh.who_no}_co`, minWidth: 60, valueFormatter: p => formatNumber(p.value), cellStyle: { background: wh.color, opacity: 0.8 }, cellClass: 'ag-right-aligned-cell' },
-    { headerName: `${wh.who_no} - สินค้ารอจัดส่ง`, field: `${wh.who_no}_waiting`, minWidth: 60, valueFormatter: p => formatNumber(p.value), cellStyle: { background: wh.color, opacity: 0.8 }, cellClass: 'ag-right-aligned-cell' }
-  ])
-];
-
-const defaultColDef = {
-  resizable: false,
-  sortable: true,
-  filter: false,
-  minWidth: 20,
-  flex: undefined
-};
 
 function formatNumber(value) {
   if (value === null || value === undefined || value === '' || value === 0) {
@@ -279,7 +343,6 @@ function downloadData() {
     }
   });
 
-
   // Set column widths
   const colWidths = [
     15, 40, 12, 12, 12, 12, 10, 15
@@ -299,30 +362,60 @@ async function fetchData() {
   await reportTmsStore.fetchDailyStockData();
 }
 
-function refreshPage() {
-  window.location.reload();
-}
-
 const searchText = ref('');
+const debouncedSearchText = ref('');
+
+const debouncedSearch = debounce((value) => {
+  debouncedSearchText.value = value;
+}, 300);
 
 const filteredRowData = computed(() => {
-  if (!searchText.value) return rowData.value;
-  const search = searchText.value.toLowerCase();
-  return rowData.value.filter(
+  if (!debouncedSearchText.value) return formattedRowData.value;
+  const search = debouncedSearchText.value.toLowerCase();
+  return formattedRowData.value.filter(
     row =>
       (row.item_no && row.item_no.toLowerCase().includes(search)) ||
       (row.item_name && row.item_name.toLowerCase().includes(search))
   );
 });
 
-const gridApi = ref(null);
+const tableContainer = ref(null);
+const warehouseRefs = ref({});
+const activeWarehouse = ref(null); // จำ tab ล่าสุดที่เลือก
 
-function onGridReady(params) {
-  gridApi.value = params.api;
-  // Auto size เฉพาะคอลัมน์ชื่อสินค้า
-  params.columnApi.autoSizeColumn('item_no', false);
-  params.columnApi.autoSizeColumn('item_name');
+function setWarehouseRef(who_no, el) {
+  if (el) warehouseRefs.value[who_no] = el;
 }
+
+function scrollToWarehouse(who_no) {
+  const container = tableContainer.value;
+  const th = warehouseRefs.value[who_no];
+  if (container && th) {
+    // ความกว้างของ 2 คอลัมน์แรก (sticky)
+    const stickyWidth = 120 + 390; // min-width ของ 2 th แรก (px)
+    const containerRect = container.getBoundingClientRect();
+    const thRect = th.getBoundingClientRect();
+    // เลื่อน scrollLeft ให้ th อยู่ถัดจาก sticky column (smooth)
+    const targetScrollLeft = container.scrollLeft + thRect.left - containerRect.left - stickyWidth;
+    container.scrollTo({ left: targetScrollLeft, behavior: 'smooth' });
+    activeWarehouse.value = who_no;
+  }
+}
+
+function handleResize() {
+  if (activeWarehouse.value) {
+    // รอ layout เสร็จก่อน scroll
+    nextTick(() => scrollToWarehouse(activeWarehouse.value));
+  }
+}
+
+onMounted(() => {
+  window.addEventListener('resize', handleResize);
+});
+onUnmounted(() => {
+  window.removeEventListener('resize', handleResize);
+});
+
 
 onMounted(async () => {
   await fetchData();
@@ -330,46 +423,26 @@ onMounted(async () => {
 </script>
 
 <style>
-@import "ag-grid-community/styles/ag-grid.css";
-@import "ag-grid-community/styles/ag-theme-alpine.css";
-
-.ag-theme-alpine {
-  font-size: 10px !important;
-  --ag-borders: solid;
-  --ag-border-color: #d1d5db;
-  --ag-row-border-width: 1px;
-  --ag-header-column-separator-display: block;
-  --ag-header-column-separator-height: 100%;
-  --ag-header-column-separator-width: 1px;
+.virtual-table-container {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e0 #f7fafc;
 }
 
-.ag-theme-alpine .ag-header-cell-label {
-  font-size: 13px;
-  white-space: nowrap;
-  overflow: visible;
-  text-overflow: unset;
+.virtual-table-container::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
 }
 
-.ag-theme-alpine .ag-body-cell {
-  font-size: 10px !important;
+.virtual-table-container::-webkit-scrollbar-track {
+  background: #f7fafc;
 }
 
-.ag-theme-alpine .ag-cell,
-.ag-theme-alpine .ag-header-cell,
-.ag-theme-alpine .ag-header-group-cell {
-  border-right: 1px solid #d1d5db !important;
-  /* เส้นแนวตั้ง */
-  border-bottom: 1px solid #d1d5db !important;
-  /* เส้นแนวนอน */
-  padding-left: 4px !important;
-  padding-right: 4px !important;
+.virtual-table-container::-webkit-scrollbar-thumb {
+  background: #cbd5e0;
+  border-radius: 4px;
 }
 
-.ag-theme-alpine .ag-row {
-  border-bottom: 1px solid #d1d5db !important;
-}
-
-.ag-theme-alpine .ag-header-row {
-  border-bottom: 1.5px solid #bdbdbd !important;
+.virtual-table-container::-webkit-scrollbar-thumb:hover {
+  background: #a0aec0;
 }
 </style>

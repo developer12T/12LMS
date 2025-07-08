@@ -145,7 +145,7 @@
                 <!-- Data Table with Custom Scrollbar -->
                 <div v-else-if="reportTmsStore.nobillList"
                     class="relative shadow-md sm:rounded-lg custom-scrollbar p-2 overflow-x-auto overflow-y-hidden"
-                    style="max-height: calc(100vh - 240px);">
+                    style="max-height: calc(100vh - 220px);">
 
                     <div class="flex flex-col md:flex-row md:items-center md:justify-between px-2 pt-2">
                         <div class="flex items-center justify-center flex-row">
@@ -175,7 +175,7 @@
                         </div>
                     </div>
                     <div class="virtual-table-container rounded-t-lg overflow-auto mt-2"
-                        style="height: calc(100vh - 200px);" @scroll="handleScroll">
+                        style="height: calc(100vh - 280px);" @scroll="handleScroll">
                         <table
                             class="w-full text-xs text-left text-gray-500 dark:text-gray-400 border-collapse border border-gray-300 dark:border-gray-600">
                             <thead

@@ -1,7 +1,8 @@
 <template>
   <!-- Collapsible Sidebar -->
   <div :class="[
-    'bg-sky-700 text-white transition-all duration-300 relative h-screen flex flex-col',
+    overlayMode && !isCollapsed ? 'fixed left-0 top-0 z-50 h-screen' : 'relative',
+    'bg-sky-700 text-white transition-all duration-300 flex flex-col',
     isCollapsed ? 'w-16' : 'w-72'
   ]">
     <!-- Header with Logo -->
@@ -21,7 +22,7 @@
     <div v-if="!isCollapsed" class="p-4 flex-shrink-0">
       <div class="relative">
         <Icon icon="mdi:magnify" class="w-4 h-4 absolute left-3 top-3 text-gray-300" />
-        <input v-model="searchTerm" type="text" placeholder="12Pilots..."
+        <input v-model="searchTerm" type="text" placeholder="ค้นหาเมนู..."
           class="w-full pl-10 pr-4 py-2 bg-sky-800 border border-sky-700 rounded-lg text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-white" />
       </div>
     </div>
@@ -195,9 +196,14 @@ import { Icon } from '@iconify/vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/modules/auth';
 
+defineProps({
+  overlayMode: { type: Boolean, default: false }
+});
+
 const route = useRoute();
 const router = useRouter();
 const isCollapsed = ref(true);
+defineExpose({ isCollapsed });
 const searchTerm = ref('');
 const activeMiniMenu = ref(null);
 const expandedMenus = ref({});
@@ -239,7 +245,7 @@ const menuData = {
           'ออเดอร์ค้างส่ง',
           // 'ออเดอร์ค้างส่ง(หน่วยรถ)',
           // 'กำหนดปริมาตรและน้ำหนักรถบรรทุก',
-          'จัดการค่าขนส่ง',
+          // 'จัดการค่าขนส่ง',
           // 'กำหนดค่าขนส่ง'
         ]
       }

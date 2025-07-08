@@ -114,30 +114,44 @@
               <tr>
                 <th class="px-2 py-2 text-center">รหัสสินค้า</th>
                 <th class="px-2 py-2 text-center">ชื่อสินค้า</th>
-                <th class="px-2 py-2 text-center">วางแผนผลิต</th>
-                <th class="px-2 py-2 text-center">จำนวนสินค้าที่ผลิตจริง</th>
-                <th class="px-2 py-2 text-center">On Hand</th>
-                <th class="px-2 py-2 text-center">จำนวนสั่งซื้อ</th>
-                <th class="px-2 py-2 text-center">จำนวนผลต่าง</th>
-                <th class="px-2 py-2 text-center">Safety Stock</th>
-                <th class="px-2 py-2 text-center">Sale Forecast</th>
-                <th class="px-2 py-2 text-center">Stock Cover Day</th>
-                <th class="px-2 py-2 text-center">Safety Stock Cover Day</th>
+                <th class="px-2 py-2 text-center">F-plus นครปฐม</th>
+                <th class="px-2 py-2 text-center">Balance 12 T</th>
+                <th class="px-2 py-2 text-center">นครปฐม</th>
+                <th class="px-2 py-2 text-center">สารคาม</th>
+                <th class="px-2 py-2 text-center">ลำพูน</th>
+                <th class="px-2 py-2 text-center">สุราษฎร์</th>
+                <th class="px-2 py-2 text-center">บางนา</th>
+                <th class="px-2 py-2 text-center">นครราชสีมา</th>
+                <th class="px-2 py-2 text-center">นนทบุรี</th>
+                <th class="px-2 py-2 text-center">นครปฐม2</th>
+                <th class="px-2 py-2 text-center">1-ส.ค.</th>
+                <th class="px-2 py-2 text-center">2-ส.ค.</th>
+                <th class="px-2 py-2 text-center">3-ส.ค.</th>
+                <th class="px-2 py-2 text-center">4-ส.ค.</th>
+                <th class="px-2 py-2 text-center">5-ส.ค.</th>
+                <th class="px-2 py-2 text-center">6-ส.ค.</th>
               </tr>
             </thead>
             <tbody>
               <tr v-for="(item, idx) in tableData" :key="idx" :class="idx % 2 === 1 ? 'bg-gray-100' : 'bg-white'" class="cursor-pointer hover:bg-blue-100 transition-colors duration-100" @click="openModal(item)">
                 <td class="px-2 py-1 text-center">{{ item.productCode }}</td>
                 <td class="px-2 py-1">{{ item.productName }}</td>
-                <td class="px-2 py-1 text-center">{{ item.plan }}</td>
-                <td class="px-2 py-1 text-center">{{ item.actual }}</td>
-                <td class="px-2 py-1 text-center">{{ item.onHand }}</td>
-                <td class="px-2 py-1 text-center">{{ item.poQty }}</td>
-                <td class="px-2 py-1 text-center" :class="item.diff < 0 ? 'text-red-500' : ''">{{ item.diff }}</td>
-                <td class="px-2 py-1 text-center">{{ item.safetyStock }}</td>
-                <td class="px-2 py-1 text-center">{{ item.saleForecast }}</td>
-                <td class="px-2 py-1 text-center">{{ item.stockCoverDay }}</td>
-                <td class="px-2 py-1 text-center">{{ item.safetyStockCoverDay }}</td>
+                <td class="px-2 py-1 text-center text-blue-600 underline cursor-pointer" @click.stop="handleCellClick(item, 'fplusNakhonPathom')">{{ item.fplusNakhonPathom }}</td>
+                <td class="px-2 py-1 text-center text-blue-600 underline cursor-pointer" @click.stop="handleCellClick(item, 'balance12T')">{{ item.balance12T }}</td>
+                <td class="px-2 py-1 text-center text-blue-600 underline cursor-pointer" @click.stop="handleCellClick(item, 'nakhonPathom')">{{ item.nakhonPathom }}</td>
+                <td class="px-2 py-1 text-center text-blue-600 underline cursor-pointer" @click.stop="handleCellClick(item, 'sarakham')" :class="item.sarakham < 0 ? 'text-red-500' : ''">{{ item.sarakham }}</td>
+                <td class="px-2 py-1 text-center text-blue-600 underline cursor-pointer" @click.stop="handleCellClick(item, 'lamphun')">{{ item.lamphun }}</td>
+                <td class="px-2 py-1 text-center text-blue-600 underline cursor-pointer" @click.stop="handleCellClick(item, 'surat')">{{ item.surat }}</td>
+                <td class="px-2 py-1 text-center text-blue-600 underline cursor-pointer" @click.stop="handleCellClick(item, 'bangna')">{{ item.bangna }}</td>
+                <td class="px-2 py-1 text-center text-blue-600 underline cursor-pointer" @click.stop="handleCellClick(item, 'nakhonRatchasima')">{{ item.nakhonRatchasima }}</td>
+                <td class="px-2 py-1 text-center text-blue-600 underline cursor-pointer" @click.stop="handleCellClick(item, 'nonthaburi')" :class="item.nonthaburi < 0 ? 'text-red-500' : ''">{{ item.nonthaburi }}</td>
+                <td class="px-2 py-1 text-center text-blue-600 underline cursor-pointer" @click.stop="handleCellClick(item, 'nakhonPathom2')">{{ item.nakhonPathom2 }}</td>
+                <td class="px-2 py-1 text-center">{{ item.aug1 }}</td>
+                <td class="px-2 py-1 text-center">{{ item.aug2 }}</td>
+                <td class="px-2 py-1 text-center">{{ item.aug3 }}</td>
+                <td class="px-2 py-1 text-center">{{ item.aug4 }}</td>
+                <td class="px-2 py-1 text-center">{{ item.aug5 }}</td>
+                <td class="px-2 py-1 text-center">{{ item.aug6 }}</td>
               </tr>
             </tbody>
           </table>
@@ -175,6 +189,7 @@
 import { ref, computed } from 'vue';
 import { Icon } from '@iconify/vue';
 import ResultCount from '@/components/ResultCount.vue';
+import { useRouter } from 'vue-router';
 
 const filter = ref({
   dc: '102',
@@ -186,15 +201,266 @@ const filter = ref({
 });
 
 const tableData = ref([
-  { productCode: '10010101034', productName: 'ฟ้าไทยผงปรุงรสหมู 75g', plan: '-', actual: 33967, onHand: 164, poQty: 69, diff: 95, safetyStock: '-', saleForecast: '-', stockCoverDay: '-', safetyStockCoverDay: '-' },
-  { productCode: '10010101035', productName: 'ฟ้าไทยผงปรุงรสหมู 165g', plan: '-', actual: 85396, onHand: 64, poQty: 118, diff: -54, safetyStock: '-', saleForecast: '-', stockCoverDay: '-', safetyStockCoverDay: '-' },
-  { productCode: '10010101050', productName: 'ฟ้าไทยผงปรุงรสหมู 1500g', plan: '-', actual: 21276, onHand: 111, poQty: 7, diff: 104, safetyStock: '-', saleForecast: '-', stockCoverDay: '-', safetyStockCoverDay: '-' },
-  { productCode: '10010101067', productName: 'ฟ้าไทยผงปรุงรสหมู 12g', plan: '-', actual: 515, onHand: '-', poQty: 300, diff: -300, safetyStock: '-', saleForecast: '-', stockCoverDay: '-', safetyStockCoverDay: '-' },
-  { productCode: '10010101092', productName: 'ฟ้าไทยผงปรุงรสหมู 800g x10ซอง', plan: '-', actual: 75309, onHand: 862, poQty: 9, diff: 853, safetyStock: '-', saleForecast: '-', stockCoverDay: '-', safetyStockCoverDay: '-' },
-  { productCode: '10010101094', productName: 'ฟ้าไทยผงปรุงรสหมู 1200g x10ซอง', plan: '-', actual: 25057, onHand: 276, poQty: 27, diff: 249, safetyStock: '-', saleForecast: '-', stockCoverDay: '-', safetyStockCoverDay: '-' },
-  { productCode: '10010201018', productName: 'ฟ้าไทยผงปรุงรสไก่ 75g', plan: '-', actual: 4437, onHand: 53, poQty: 2, diff: 51, safetyStock: '-', saleForecast: '-', stockCoverDay: '-', safetyStockCoverDay: '-' },
-  { productCode: '10010201019', productName: 'ฟ้าไทยผงปรุงรสไก่ 75g', plan: '-', actual: 2687, onHand: 98, poQty: 3, diff: 95, safetyStock: 80, saleForecast: '-', stockCoverDay: '-', safetyStockCoverDay: 1.23 },
-  { productCode: '10010301018', productName: 'ฟ้าไทยผงปรุงรสเนื้อ 165g', plan: '-', actual: 9206, onHand: 150, poQty: 3, diff: 147, safetyStock: 72, saleForecast: '-', stockCoverDay: '-', safetyStockCoverDay: 2.08 },
+  {
+    productCode: '10010201053',
+    productName: 'ผงปรุงรสไก่ ฟ้าไทย 12g x12x20',
+    fplusNakhonPathom: 0,
+    balance12T: 81,
+    nakhonPathom: 0,
+    sarakham: -2,
+    lamphun: 11,
+    surat: 11,
+    bangna: 0,
+    nakhonRatchasima: 0,
+    nonthaburi: 21,
+    nakhonPathom2: 40,
+    aug1: 0,
+    aug2: 0,
+    aug3: 0,
+    aug4: 0,
+    aug5: 0,
+    aug6: 320,
+  },
+  {
+    productCode: '10010201054',
+    productName: 'ผงปรุงรสไก่ ฟ้าไทย 12g x24x10 ชนิดเผ็ด',
+    fplusNakhonPathom: 0,
+    balance12T: 77,
+    nakhonPathom: 0,
+    sarakham: -1,
+    lamphun: 14,
+    surat: 3,
+    bangna: 3,
+    nakhonRatchasima: 0,
+    nonthaburi: 13,
+    nakhonPathom2: 12,
+    aug1: 600,
+    aug2: 450,
+    aug3: 600,
+    aug4: 0,
+    aug5: 0,
+    aug6: 0,
+  },
+  {
+    productCode: '10010201011',
+    productName: 'ผงกะหรี่ญี่ปุ่นข้น ฟ้าไทย 75g x10x8',
+    fplusNakhonPathom: 0,
+    balance12T: 154,
+    nakhonPathom: 276,
+    sarakham: 192,
+    lamphun: 117,
+    surat: 117,
+    bangna: 0,
+    nakhonRatchasima: 226,
+    nonthaburi: 190,
+    nakhonPathom2: 193,
+    aug1: 1200,
+    aug2: 900,
+    aug3: 0,
+    aug4: 0,
+    aug5: 0,
+    aug6: 0,
+  },
+  {
+    productCode: '10010201013',
+    productName: 'ผงปรุงรสไก่ เติมทิพ ฟ้าไทย 75g x10x8',
+    fplusNakhonPathom: 585,
+    balance12T: 3674,
+    nakhonPathom: 2,
+    sarakham: 3,
+    lamphun: 12,
+    surat: 3048,
+    bangna: -164,
+    nakhonRatchasima: 13,
+    nonthaburi: 41,
+    nakhonPathom2: 356,
+    aug1: 0,
+    aug2: 0,
+    aug3: 0,
+    aug4: 0,
+    aug5: 0,
+    aug6: 1400,
+  },
+  {
+    productCode: '10010201008',
+    productName: 'ผงปรุงรสไก่ เติมทิพ ฟ้าไทย 75g x10x8',
+    fplusNakhonPathom: 0,
+    balance12T: 469,
+    nakhonPathom: 61,
+    sarakham: 4,
+    lamphun: 3,
+    surat: 284,
+    bangna: 33,
+    nakhonRatchasima: 33,
+    nonthaburi: -26,
+    nakhonPathom2: 46,
+    aug1: 0,
+    aug2: 0,
+    aug3: 700,
+    aug4: 0,
+    aug5: 0,
+    aug6: 0,
+  },
+  {
+    productCode: '10010201018',
+    productName: 'ผงปรุงรสไก่ ฟ้าไทย 75g x10x8 แถมช้อนส้อม',
+    fplusNakhonPathom: 1,
+    balance12T: 209,
+    nakhonPathom: 0,
+    sarakham: 2,
+    lamphun: 10,
+    surat: 32,
+    bangna: 0,
+    nakhonRatchasima: 56,
+    nonthaburi: 74,
+    nakhonPathom2: 31,
+    aug1: 0,
+    aug2: 0,
+    aug3: 0,
+    aug4: 0,
+    aug5: 0,
+    aug6: 0,
+  },
+  {
+    productCode: '10010201017',
+    productName: 'ผงปรุงรสไก่ ฟ้าไทย 165g x6x6 แถมช้อนส้อม',
+    fplusNakhonPathom: 753,
+    balance12T: 3681,
+    nakhonPathom: 0,
+    sarakham: -289,
+    lamphun: 677,
+    surat: 45,
+    bangna: 441,
+    nakhonRatchasima: 677,
+    nonthaburi: -461,
+    nakhonPathom2: 1091,
+    aug1: 0,
+    aug2: 0,
+    aug3: 0,
+    aug4: 0,
+    aug5: 0,
+    aug6: 0,
+  },
+  {
+    productCode: '10010301019',
+    productName: 'ผงปรุงรสไก่ เติมทิพ ฟ้าไทย 165g x6x6',
+    fplusNakhonPathom: 1374,
+    balance12T: 1236,
+    nakhonPathom: 54,
+    sarakham: 104,
+    lamphun: 217,
+    surat: 92,
+    bangna: 135,
+    nakhonRatchasima: 135,
+    nonthaburi: 194,
+    nakhonPathom2: 254,
+    aug1: 0,
+    aug2: 0,
+    aug3: 0,
+    aug4: 900,
+    aug5: 900,
+    aug6: 0,
+  },
+  {
+    productCode: '10010601012',
+    productName: 'ผงกะหรี่ญี่ปุ่นข้น ฟ้าไทย 165g x6x6',
+    fplusNakhonPathom: 590,
+    balance12T: 1596,
+    nakhonPathom: 248,
+    sarakham: 349,
+    lamphun: 15,
+    surat: 16,
+    bangna: -40,
+    nakhonRatchasima: 56,
+    nonthaburi: 37,
+    nakhonPathom2: 87,
+    aug1: 0,
+    aug2: 0,
+    aug3: 0,
+    aug4: 900,
+    aug5: 900,
+    aug6: 0,
+  },
+  {
+    productCode: '10010201014',
+    productName: 'ผงปรุงรสไก่ ฟ้าไทย 165g x6x6 แถมช้อนส้อม',
+    fplusNakhonPathom: 0,
+    balance12T: 172,
+    nakhonPathom: 0,
+    sarakham: 0,
+    lamphun: 15,
+    surat: 16,
+    bangna: 0,
+    nakhonRatchasima: 0,
+    nonthaburi: 0,
+    nakhonPathom2: 0,
+    aug1: 0,
+    aug2: 0,
+    aug3: 0,
+    aug4: 300,
+    aug5: 300,
+    aug6: 0,
+  },
+  {
+    productCode: '10010401018',
+    productName: 'ฟ้าไทยผงปรุงรสหมู 185g MT',
+    fplusNakhonPathom: 0,
+    balance12T: 840,
+    nakhonPathom: 0,
+    sarakham: 0,
+    lamphun: 0,
+    surat: 0,
+    bangna: 0,
+    nakhonRatchasima: 0,
+    nonthaburi: 0,
+    nakhonPathom2: 0,
+    aug1: 0,
+    aug2: 0,
+    aug3: 155,
+    aug4: 0,
+    aug5: 0,
+    aug6: 0,
+  },
+  {
+    productCode: '10010201053',
+    productName: 'ผงปรุงรสไก่ ฟ้าไทย 165g x6x6 (Export)',
+    fplusNakhonPathom: 0,
+    balance12T: 30,
+    nakhonPathom: 0,
+    sarakham: 0,
+    lamphun: 0,
+    surat: 0,
+    bangna: 0,
+    nakhonRatchasima: 0,
+    nonthaburi: 0,
+    nakhonPathom2: 0,
+    aug1: 0,
+    aug2: 0,
+    aug3: 154,
+    aug4: 0,
+    aug5: 0,
+    aug6: 0,
+  },
+  {
+    productCode: '10010401017',
+    productName: 'ผงกะหรี่ญี่ปุ่นข้น ฟ้าไทย 425g x12',
+    fplusNakhonPathom: 300,
+    balance12T: 309,
+    nakhonPathom: 0,
+    sarakham: 0,
+    lamphun: 0,
+    surat: 0,
+    bangna: 0,
+    nakhonRatchasima: 49,
+    nonthaburi: 15,
+    nakhonPathom2: 83,
+    aug1: 0,
+    aug2: 0,
+    aug3: 0,
+    aug4: 0,
+    aug5: 0,
+    aug6: 0,
+  },
 ]);
 
 const searchQuery = ref('');
@@ -213,6 +479,15 @@ const selectedRow = ref({})
 function openModal(row) {
   selectedRow.value = row
   showModal.value = true
+}
+
+const router = useRouter();
+
+function handleCellClick(item, column) {
+  router.push({
+    name: 'plan-total-detail',
+    query: { column }
+  });
 }
 
 function downloadData() {

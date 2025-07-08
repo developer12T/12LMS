@@ -1,6 +1,5 @@
 <template>
   <div class="p-4 bg-gray-50 w-full">
-    PageHeader
     <!-- Header Section -->
     <!-- <div class="mb-2">
       <div class="text-center">
@@ -125,7 +124,7 @@
                   <p class="text-xs text-gray-500 dark:text-gray-400">จัดการออเดอร์ค้างส่ง</p>
                 </router-link>
 
-                <router-link to="/tms/manage/shipcost-management"
+                <!-- <router-link to="/tms/manage/shipcost-management"
                   class="bg-gray-50 dark:bg-gray-700 rounded-lg p-3 border border-gray-200 dark:border-gray-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:border-blue-300 dark:hover:border-blue-500 transition-all duration-200 group">
                   <div class="flex items-center space-x-2 mb-2">
                     <div
@@ -138,14 +137,14 @@
                     </span>
                   </div>
                   <p class="text-xs text-gray-500 dark:text-gray-400">ตั้งค่าต้นทุนการขนส่ง</p>
-                </router-link>
+                </router-link> -->
               </div>
             </div>
           </div>
         </div>
 
         <!-- TMS - Transport Management System -->
-        <div
+        <!-- <div
           class="bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 overflow-hidden">
           <div class="bg-gradient-to-r from-green-600 to-green-700 p-1 px-2">
             <div class="flex items-center space-x-3">
@@ -167,10 +166,10 @@
               </p>
             </div>
           </div>
-        </div>
+        </div> -->
 
         <!-- WMS - Warehouse Management System -->
-        <div
+        <!-- <div
           class="bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 overflow-hidden">
           <div class="bg-gradient-to-r from-purple-600 to-purple-700 p-1 px-2">
             <div class="flex items-center space-x-3">
@@ -192,10 +191,10 @@
               </p>
             </div>
           </div>
-        </div>
+        </div> -->
 
         <!-- PMS - Planning Management System -->
-        <div
+        <!-- <div
           class="bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 overflow-hidden">
           <div class="bg-gradient-to-r from-orange-600 to-orange-700 p-1 px-2">
             <div class="flex items-center space-x-3">
@@ -217,7 +216,7 @@
               </p>
             </div>
           </div>
-        </div>
+        </div> -->
       </div>
     </div>
 

@@ -109,7 +109,7 @@
           </div>
         </div>
         <div class="relative overflow-x-auto shadow-md sm:rounded-lg max-h-[70vh] p-4 py-2">
-          <table class="w-full text-xs text-left text-gray-500 border-collapse border border-gray-300 min-w-[1200px]">
+          <table class="w-full text-xs text-left text-gray-500 border-collapse border border-gray-300">
             <thead class="text-xs text-gray-700 uppercase bg-gray-50 sticky top-0">
               <tr>
                 <th class="px-2 py-2 text-center">รหัสสินค้า</th>
