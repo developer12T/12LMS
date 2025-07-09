@@ -69,13 +69,19 @@
               </div>
               <div class="ml-3">
                 <router-link v-for="item in categoryData.children" :key="item"
-                  :to="getRoutePath(system, category, item)" @click="activeMiniMenu = null"
+                  :to="getRoutePath(system, category, item)" @click="handleMenuClick(system, category, item)"
                   :class="[
                     'block px-3 py-1.5 text-xs text-gray-400 hover:text-white hover:bg-sky-600 rounded transition-colors relative',
                     isActiveRoute(system, category, item) ? 'bg-slate-700 text-white font-semibold' : ''
                   ]" v-show="isItemVisible(system, category, item)">
                   <div class="flex items-center justify-between">
                     <span>{{ item }}</span>
+                    <div v-if="isLoading && loadingRoute === getRoutePath(system, category, item)" class="ml-2">
+                      <svg class="animate-spin w-3 h-3 text-sky-400" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                      </svg>
+                    </div>
                   </div>
                 </router-link>
               </div>
@@ -101,12 +107,19 @@
 
             <div v-if="expandedMenus[`${system}-${category}`]" class="ml-6">
               <router-link v-for="item in categoryData.children" :key="item" :to="getRoutePath(system, category, item)"
+                @click="handleMenuClick(system, category, item)"
                 :class="[
                   'block px-4 py-2 text-xs text-gray-200 hover:text-white hover:bg-sky-600 rounded transition-colors relative',
                   isActiveRoute(system, category, item) ? 'bg-sky-800 text-white font-semibold' : ''
                 ]" v-show="isItemVisible(system, category, item)">
                 <div class="flex items-center justify-between">
                   <span>{{ item }}</span>
+                  <div v-if="isLoading && loadingRoute === getRoutePath(system, category, item)" class="ml-2">
+                    <svg class="animate-spin w-3 h-3 text-sky-400" fill="none" viewBox="0 0 24 24">
+                      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                    </svg>
+                  </div>
                 </div>
               </router-link>
             </div>
@@ -117,20 +130,32 @@
 
     <!-- Footer - Always show home icon when collapsed -->
     <div class="p-4 border-t border-sky-800 flex-shrink-0">
-      <router-link :to="'/dashboard'" :class="[
+      <router-link :to="'/dashboard'" @click="handleMenuClick('', '', 'dashboard')" :class="[
         'w-full flex items-center space-x-3 px-2 py-2 hover:bg-sky-600 rounded transition-colors text-sm',
         isCollapsed ? 'justify-center' : ''
       ]">
         <Icon icon="mdi:home" class="w-6 h-6" />
         <span v-if="!isCollapsed">หน้าหลัก</span>
+        <div v-if="isLoading && loadingRoute === '/dashboard'" class="ml-2">
+          <svg class="animate-spin w-3 h-3 text-sky-400" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+          </svg>
+        </div>
       </router-link>
 
-      <router-link v-if="canSeeUserManage" :to="'/manage/user'" :class="[
+      <router-link v-if="canSeeUserManage" :to="'/manage/user'" @click="handleMenuClick('', '', 'user-manage')" :class="[
         'w-full flex items-center space-x-3 px-2 py-2 hover:bg-sky-600 rounded transition-colors text-sm',
         isCollapsed ? 'justify-center' : ''
       ]">
         <Icon icon="mdi:account-group" class="w-6 h-6" />
         <span v-if="!isCollapsed">จัดการสิทธิ์การใช้งาน</span>
+        <div v-if="isLoading && loadingRoute === '/manage/user'" class="ml-2">
+          <svg class="animate-spin w-3 h-3 text-sky-400" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+          </svg>
+        </div>
       </router-link>
 
       <button @click="confirmLogout" :class="[
@@ -217,6 +242,10 @@ const logoutMessages = [
 ];
 const isProcessingLogout = ref(false);
 const canSeeUserManage = computed(() => authStore.userDepartment === 'Information Technology Department');
+
+// Loading state for menu navigation
+const isLoading = ref(false);
+const loadingRoute = ref('');
 
 const menuData = {
   OMS: {
@@ -424,6 +453,32 @@ function isActiveSystem(system, data) {
     }
   }
   return false;
+}
+
+function handleMenuClick(system, category, item) {
+  const targetRoute = getRoutePath(system, category, item);
+  
+  // Only show loading if navigating to a different route
+  if (route.path !== targetRoute) {
+    isLoading.value = true;
+    loadingRoute.value = targetRoute;
+    
+    // Hide loading after a short delay to show the indicator
+    setTimeout(() => {
+      isLoading.value = false;
+      loadingRoute.value = '';
+      
+      // Close mini menu after loading is complete
+      if (activeMiniMenu.value) {
+        activeMiniMenu.value = null;
+      }
+    }, 1000); // Show loading for at least 1 second
+  } else {
+    // If clicking the same route, just close mini menu immediately
+    if (activeMiniMenu.value) {
+      activeMiniMenu.value = null;
+    }
+  }
 }
 
 const handleLogout = async () => {
