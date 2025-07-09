@@ -38,9 +38,13 @@
           </div>
           <div class="flex-shrink-0 sm:self-end">
             <button type="button" @click="handleSearch"
-              :disabled="!shipmentNo || !selectedRoudcosPay || !selectedCodeTruck"
+              :disabled="isLoading || !shipmentNo || !selectedRoudcosPay || !selectedCodeTruck"
               class="w-full sm:w-auto text-white bg-[#00569D] hover:bg-[#004080] focus:ring-4 focus:ring-[#00569D]/30 font-medium rounded-lg text-xs px-4 py-1.5 dark:bg-[#00569D] dark:hover:bg-[#004080] focus:outline-none dark:focus:ring-[#00569D]/30 transition-colors inline-flex items-center justify-center min-w-[100px] disabled:opacity-50 disabled:cursor-not-allowed">
-              <Icon icon="mdi:magnify" width="14" height="14" class="mr-1.5" />
+              <Icon v-if="!isLoading" icon="mdi:magnify" width="14" height="14" class="mr-1.5" />
+              <svg v-else class="animate-spin mr-1.5" width="14" height="14" viewBox="0 0 24 24" fill="none">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"/>
+              </svg>
               ค้นหา
             </button>
           </div>
@@ -165,8 +169,8 @@
         </div>
 
         <div class="relative shadow-md sm:rounded-lg custom-scrollbar p-2 overflow-x-auto overflow-y-hidden"
-          style="max-height: calc(100vh - 260px);">
-          <div class="virtual-table-container rounded-t-lg  overflow-auto" style="height: calc(100vh - 260px);"
+          style="max-height: calc(100vh - 320px);">
+          <div class="virtual-table-container rounded-t-lg  overflow-auto" style="height: calc(100vh - 320px);"
             @scroll="handleScroll">
             <table
               class="w-full text-xs text-left text-gray-500 dark:text-gray-400 border border-gray-300 dark:border-gray-600 mb-4">
@@ -262,7 +266,7 @@ const summaryData = ref({
   }
 });
 
-const handleSearch = async () => {
+async function handleSearch() {
   hasSearched.value = true;
   isLoading.value = true;
   try {

@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
-import axios from 'axios';
+import api from '@/utils/api';
 
 export const useUserStore = defineStore('user', () => {
   const users = ref([]);
@@ -11,7 +11,7 @@ export const useUserStore = defineStore('user', () => {
     loading.value = true;
     error.value = null;
     try {
-      const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL || ''}/api/user`);
+      const res = await api.get(`${import.meta.env.VITE_API_BASE_URL || ''}/api/user`);
       const arr = res.data?.data;
       if (Array.isArray(arr)) {
         users.value = arr;
@@ -38,7 +38,7 @@ export const useUserStore = defineStore('user', () => {
 
   async function updateUserRole(employeeID, role) {
     try {
-      const res = await axios.put(`${import.meta.env.VITE_API_BASE_URL || ''}/api/user/${employeeID}/role`, { role });
+      const res = await api.put(`${import.meta.env.VITE_API_BASE_URL || ''}/api/user/${employeeID}/role`, { role });
       return res.data;
     } catch (e) {
       throw e;

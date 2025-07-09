@@ -57,6 +57,7 @@ const routes = [
     component: () => import('@/views/tms/report/PlanTotalVan.vue'),
     props: route => ({ productCode: route.query.productCode, productName: route.query.productName })
   },
+  { path: '/monitor-log', name: 'monitor-log', component: () => import('../views/monitorLog.vue'), meta: { requiresAuth: true, breadcrumb: 'Monitor Log' } },
   { path: '/:pathMatch(.*)*', redirect: '/' } 
 ];
 

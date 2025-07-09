@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
-import axios from 'axios';
+import api from '@/utils/api';
 import { useAuthStore } from './auth';
 import { showError } from '@/utils/toast';
 
@@ -62,7 +62,7 @@ export const useTransportStore = defineStore('transport', () => {
     try {
       const authStore = useAuthStore();
       
-      const response = await axios.get(`${API_BASE_URL}/api/transport`, {
+      const response = await api.get(`${API_BASE_URL}/api/transport`, {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${authStore.token}`
@@ -112,7 +112,7 @@ export const useTransportStore = defineStore('transport', () => {
     try {
       const authStore = useAuthStore();
       
-      const response = await axios.get(`${API_BASE_URL}/api/transport/cost/warehouses`, {
+      const response = await api.get(`${API_BASE_URL}/api/transport/cost/warehouses`, {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${authStore.token}`
@@ -162,7 +162,7 @@ export const useTransportStore = defineStore('transport', () => {
     try {
       const authStore = useAuthStore();
       
-      const response = await axios.post(`${API_BASE_URL}/api/transport/cost/routes`, {
+      const response = await api.post(`${API_BASE_URL}/api/transport/cost/routes`, {
         who_no: warehouseId
       }, {
         headers: {
@@ -219,7 +219,7 @@ export const useTransportStore = defineStore('transport', () => {
     try {
       const authStore = useAuthStore();
       
-      const response = await axios.post(`${API_BASE_URL}/api/transport/gen-back-order`, params, {
+      const response = await api.post(`${API_BASE_URL}/api/transport/gen-back-order`, params, {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${authStore.token}`

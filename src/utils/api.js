@@ -1,7 +1,33 @@
 import { useAuthStore } from '@/stores/modules/auth';
+import axios from 'axios';
 
 // Base API configuration
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
+
+// Add Axios request interceptor for employee headers
+const api = axios.create({
+  // Add base URL
+  baseURL: API_BASE_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+api.interceptors.request.use(config => {
+  const userStr = localStorage.getItem('user');
+  let user = {};
+  try {
+    user = userStr ? JSON.parse(userStr) : {};
+  } catch (e) {
+    user = {};
+  }
+  config.headers.employeeID = user.employeeID || '';
+  config.headers.fullName = user.fullName || '';
+  config.headers.fullNameThai = '';
+  config.headers.department = user.department || '';
+  config.headers.position = user.position || '';
+  return config;
+}, error => Promise.reject(error));
 
 // Create fetch wrapper with authentication
 export const apiClient = {
@@ -121,4 +147,4 @@ export const authAPI = {
 };
 
 // Export default API client
-export default apiClient; 
+export default api; 

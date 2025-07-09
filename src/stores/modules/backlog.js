@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
-import axios from 'axios';
+import api from '@/utils/api';
 import { useAuthStore } from './auth';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
@@ -48,7 +48,7 @@ export const useBacklogStore = defineStore('backlog', () => {
       // Update filters
       filters.value = { wh, status };
       
-      const response = await axios.get(`${API_BASE_URL}/api/transport/backlog`, {
+      const response = await api.get(`/api/transport/backlog`, {
         params: {
           wh: wh,
           status: status
@@ -106,7 +106,7 @@ export const useBacklogStore = defineStore('backlog', () => {
 
     try {
       const authStore = useAuthStore();
-      const response = await axios.get(`${API_BASE_URL}/api/transport/po-details`, {
+      const response = await api.get(`/transport/po-details`, {
         params: {
           po_no: po_no,
           wh_node: wh_no
@@ -136,7 +136,7 @@ export const useBacklogStore = defineStore('backlog', () => {
     reasonsError.value = null;
     try {
       const authStore = useAuthStore();
-      const response = await axios.get(`${API_BASE_URL}/api/transport/reasons`, {
+      const response = await api.get(`/transport/reasons`, {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${authStore.token}`
@@ -174,7 +174,7 @@ export const useBacklogStore = defineStore('backlog', () => {
         const itemData = items[i];
         try {
             const payload = _preparePayload(itemData, authStore);
-            const response = await axios.post(`${API_BASE_URL}/api/transport/backlog/update`, payload, {
+            const response = await api.post(`/transport/backlog/update`, payload, {
                 headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${authStore.token}` }
             });
 
@@ -219,7 +219,7 @@ export const useBacklogStore = defineStore('backlog', () => {
         const authStore = useAuthStore();
         const payload = _preparePayload(itemData, authStore);
 
-        const response = await axios.post(`${API_BASE_URL}/api/transport/backlog/update`, payload, {
+        const response = await api.post(`/transport/backlog/update`, payload, {
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${authStore.token}`

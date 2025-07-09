@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
-import axios from 'axios';
+import api from '@/utils/api';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
 
@@ -26,7 +26,7 @@ export const useAuthStore = defineStore('auth', () => {
     loading.value = true;
     error.value = null;
     try {
-      const response = await axios.post(`${API_BASE_URL}/api/auth/login`, credentials, {
+      const response = await api.post(`${API_BASE_URL}/api/auth/login`, credentials, {
         headers: { 'Content-Type': 'application/json' }
       });
       const data = response.data;
@@ -64,7 +64,7 @@ export const useAuthStore = defineStore('auth', () => {
   const logout = async () => {
     try {
       if (token.value) {
-        await axios.post(`${API_BASE_URL}/api/auth/logout`, {}, {
+        await api.post(`${API_BASE_URL}/api/auth/logout`, {}, {
           headers: { Authorization: `Bearer ${token.value}` }
         });
       }
@@ -84,7 +84,7 @@ export const useAuthStore = defineStore('auth', () => {
     loading.value = true;
     error.value = null;
     try {
-      await axios.post(`${API_BASE_URL}/api/auth/change-password`, {
+      await api.post(`${API_BASE_URL}/api/auth/change-password`, {
         username,
         oldPassword,
         newPassword

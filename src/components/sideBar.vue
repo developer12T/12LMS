@@ -143,6 +143,19 @@
           </svg>
         </div>
       </router-link>
+      <router-link :to="'/monitor-log'" @click="handleMenuClick('', '', 'monitor-log')" :class="[
+        'w-full flex items-center space-x-3 px-2 py-2 hover:bg-sky-600 rounded transition-colors text-sm',
+        isCollapsed ? 'justify-center' : ''
+      ]">
+        <Icon icon="mdi:file-document" class="w-6 h-6" />
+        <span v-if="!isCollapsed">รายการบันทึก</span>
+        <div v-if="isLoading && loadingRoute === '/monitor-log'" class="ml-2">
+          <svg class="animate-spin w-3 h-3 text-sky-400" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+          </svg>
+        </div>
+      </router-link>
 
       <router-link v-if="canSeeUserManage" :to="'/manage/user'" @click="handleMenuClick('', '', 'user-manage')" :class="[
         'w-full flex items-center space-x-3 px-2 py-2 hover:bg-sky-600 rounded transition-colors text-sm',
@@ -257,11 +270,11 @@ const menuData = {
         children: [
           '%เติมสินค้าเข้า DC',
           // 'Stock On Hand',
-          'Daily Stock',
+          // 'Daily Stock',
           'รายการที่ไม่ได้วางบิล',
           // 'สินค้าที่ยังไม่ได้เปิด Invoice',
           // 'ออเดอร์ค้างส่ง(หน่วยรถ)',
-          'วางแผน',
+          // 'วางแผน',
           'วางแผนรวม',
           // 'อายุสินค้าคงเหลือ',
           'ค่าขนส่ง(shipment)',

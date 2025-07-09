@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
-import axios from 'axios';
+import api from '@/utils/api';
 import { useAuthStore } from './auth';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
@@ -43,7 +43,7 @@ export const useReportTmsStore = defineStore('reportTms', () => {
     error.value = null;
     try {
       const authStore = useAuthStore();
-      const response = await axios.get(`${API_BASE_URL}/api/report-tms/daily-stock`, {
+      const response = await api.get(`${API_BASE_URL}/api/report-tms/daily-stock`, {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${authStore.token}`
@@ -84,7 +84,7 @@ export const useReportTmsStore = defineStore('reportTms', () => {
       const authStore = useAuthStore();
       // console.log(API_BASE_URL);
       
-      const response = await axios.get(`${API_BASE_URL}/api/report-tms/nobill`, {
+      const response = await api.get(`${API_BASE_URL}/api/report-tms/nobill`, {
         params: { warehouse, dateStart, dateEnd },
         headers: {
           'Content-Type': 'application/json',
@@ -134,7 +134,7 @@ export const useReportTmsStore = defineStore('reportTms', () => {
     loadingNoBillWh.value = true;
     errorNoBillWh.value = null;
     try {
-      const response = await axios.get(`${API_BASE_URL}/api/report-tms/nobill-wh`);
+      const response = await api.get(`${API_BASE_URL}/api/report-tms/nobill-wh`);
       nobillWhList.value = response.data || [];
       console.log(nobillWhList.value);
     } catch (err) {
@@ -147,7 +147,7 @@ export const useReportTmsStore = defineStore('reportTms', () => {
 
   const fetchTransportCostOptions = async () => {
     try {
-      const res = await axios.get(`${API_BASE_URL}/api/report-tms/transport-cost`);
+      const res = await api.get(`${API_BASE_URL}/api/report-tms/transport-cost`);
       const data = res.data;
       if (data.status && data.status.code === 200) {
         roudcosPayOptions.value = data.data.roudcos_pay || [];
@@ -162,7 +162,7 @@ export const useReportTmsStore = defineStore('reportTms', () => {
 
   const fetchTransportCostData = async ({ shipmentId, channelId, truckId }) => {
     try {
-      const res = await axios.get(`${API_BASE_URL}/api/report-tms/transport-cost/show-data?shipmentId=${shipmentId}&channelId=${channelId}&truckId=${truckId}`);
+      const res = await api.get(`${API_BASE_URL}/api/report-tms/transport-cost/show-data?shipmentId=${shipmentId}&channelId=${channelId}&truckId=${truckId}`);
       const data = res.data;
       if (data.status && data.status.code === 200) {
         return data;
