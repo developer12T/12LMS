@@ -69,8 +69,7 @@
               </div>
               <div class="ml-3">
                 <router-link v-for="item in categoryData.children" :key="item"
-                  :to="getRoutePath(system, category, item)" @click="handleMenuClick(system, category, item)"
-                  :class="[
+                  :to="getRoutePath(system, category, item)" @click="handleMenuClick(system, category, item)" :class="[
                     'block px-3 py-1.5 text-xs text-gray-400 hover:text-white hover:bg-sky-600 rounded transition-colors relative',
                     isActiveRoute(system, category, item) ? 'bg-slate-700 text-white font-semibold' : ''
                   ]" v-show="isItemVisible(system, category, item)">
@@ -78,7 +77,8 @@
                     <span>{{ item }}</span>
                     <div v-if="isLoading && loadingRoute === getRoutePath(system, category, item)" class="ml-2">
                       <svg class="animate-spin w-3 h-3 text-sky-400" fill="none" viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+                        </circle>
                         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
                       </svg>
                     </div>
@@ -107,8 +107,7 @@
 
             <div v-if="expandedMenus[`${system}-${category}`]" class="ml-6">
               <router-link v-for="item in categoryData.children" :key="item" :to="getRoutePath(system, category, item)"
-                @click="handleMenuClick(system, category, item)"
-                :class="[
+                @click="handleMenuClick(system, category, item)" :class="[
                   'block px-4 py-2 text-xs text-gray-200 hover:text-white hover:bg-sky-600 rounded transition-colors relative',
                   isActiveRoute(system, category, item) ? 'bg-sky-800 text-white font-semibold' : ''
                 ]" v-show="isItemVisible(system, category, item)">
@@ -143,12 +142,12 @@
           </svg>
         </div>
       </router-link>
-      <router-link :to="'/monitor-log'" @click="handleMenuClick('', '', 'monitor-log')" :class="[
+      <router-link v-if="canSeeUserManage" :to="'/monitor-log'" @click="handleMenuClick('', '', 'monitor-log')" :class="[
         'w-full flex items-center space-x-3 px-2 py-2 hover:bg-sky-600 rounded transition-colors text-sm',
         isCollapsed ? 'justify-center' : ''
       ]">
-        <Icon icon="mdi:file-document" class="w-6 h-6" />
-        <span v-if="!isCollapsed">รายการบันทึก</span>
+        <Icon icon="ix:log" class="w-6 h-6" />
+        <span v-if="!isCollapsed">Report Usage</span>
         <div v-if="isLoading && loadingRoute === '/monitor-log'" class="ml-2">
           <svg class="animate-spin w-3 h-3 text-sky-400" fill="none" viewBox="0 0 24 24">
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -470,17 +469,17 @@ function isActiveSystem(system, data) {
 
 function handleMenuClick(system, category, item) {
   const targetRoute = getRoutePath(system, category, item);
-  
+
   // Only show loading if navigating to a different route
   if (route.path !== targetRoute) {
     isLoading.value = true;
     loadingRoute.value = targetRoute;
-    
+
     // Hide loading after a short delay to show the indicator
     setTimeout(() => {
       isLoading.value = false;
       loadingRoute.value = '';
-      
+
       // Close mini menu after loading is complete
       if (activeMiniMenu.value) {
         activeMiniMenu.value = null;
