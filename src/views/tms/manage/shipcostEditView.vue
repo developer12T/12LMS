@@ -9,16 +9,14 @@
                 <div class="mb-2 flex flex-row items-center gap-4">
                     <button
                         class="flex items-center justify-center bg-white border border-[#00569D] text-[#00569D] hover:bg-[#00569D] hover:text-white rounded-full shadow w-8 h-8 transition duration-150 focus:outline-none focus:ring-2 focus:ring-blue-300"
-                        @click="backtomainpage"
-                        title="ย้อนกลับ"
-                    >
+                        @click="backtomainpage" title="ย้อนกลับ">
                         <Icon icon="mdi:arrow-left" class="w-4 h-4" />
                     </button>
                     <h2 class="text-lg font-bold text-gray-800 tracking-tight">
                         การจัดการ Shipment : {{ shipment?.OQCONN }}
                     </h2>
                 </div>
-                
+
                 <div class="flex justify-between gap-1">
                     <!-- Section ข้อมูลสรุป shipment -->
                     <div
@@ -97,7 +95,9 @@
                             <div class="flex flex-col gap-3 flex-1 h-full justify-between">
                                 <div class="flex flex-col h-full">
                                     <label class="block text-sm font-medium mb-1">รายละเอียด :</label>
-                                    <textarea class="w-full border rounded px-2 py-1 flex-1 min-h-[90px] resize-none text-sm" v-model="remark" rows="3"></textarea>
+                                    <textarea
+                                        class="w-full border rounded px-2 py-1 flex-1 min-h-[90px] resize-none text-sm"
+                                        v-model="remark" rows="3"></textarea>
                                 </div>
                                 <div>
                                     <table class="w-full border text-right text-sm bg-white mb-2">
@@ -135,7 +135,7 @@
         </div>
 
         <div class="bg-white shadow-sm border border-gray-200 rounded-lg p-2 mt-2">
-            
+
             <div class="overflow-x-auto" style="height: calc(100vh - 450px);">
                 <table class="min-w-full text-xs text-center border border-gray-200 bg-white">
                     <thead class="sticky top-0">
