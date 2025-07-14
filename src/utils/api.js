@@ -13,7 +13,30 @@ const api = axios.create({
   },
 });
 
-api.interceptors.request.use(config => {
+// Function to get client IP
+const getClientIP = async () => {
+  try {
+    const response = await fetch('https://api.ipify.org?format=json');
+    const data = await response.json();
+    return data.ip;
+  } catch (error) {
+    console.error('Error getting IP:', error);
+    return '';
+  }
+};
+
+// Function to get OS
+const getOS = () => {
+  const userAgent = window.navigator.userAgent;
+  if (userAgent.indexOf('Win') !== -1) return 'Windows';
+  if (userAgent.indexOf('Mac') !== -1) return 'MacOS';
+  if (userAgent.indexOf('Linux') !== -1) return 'Linux';
+  if (userAgent.indexOf('Android') !== -1) return 'Android';
+  if (userAgent.indexOf('like Mac') !== -1) return 'iOS';
+  return 'Unknown';
+};
+
+api.interceptors.request.use(async config => {
   const userStr = localStorage.getItem('user');
   let user = {};
   try {
@@ -26,6 +49,17 @@ api.interceptors.request.use(config => {
   config.headers.fullNameThai = '';
   config.headers.department = user.department || '';
   config.headers.position = user.position || '';
+  
+  // Get client IP address
+  const clientIP = await getClientIP();
+  config.headers.clientIP = clientIP;
+
+  // Device info
+  config.headers.deviceName = window.location.hostname || '';
+  config.headers.operatingSystem = getOS();
+  config.headers.websiteResolution = `${window.innerWidth} x ${window.innerHeight}`;
+  config.headers.displayResolution = `${window.screen.width} x ${window.screen.height}`;
+
   return config;
 }, error => Promise.reject(error));
 
