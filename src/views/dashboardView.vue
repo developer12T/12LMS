@@ -24,7 +24,7 @@
           <div class="bg-gradient-to-r from-blue-600 to-blue-700 p-1 px-2">
             <div class="flex items-center space-x-3">
               <div class="p-2 bg-white bg-opacity-20 rounded-lg">
-                <Icon icon="lets-icons:order-fill" class="w-4 h-4 text-white" />
+                <Icon icon="material-symbols:quick-reorder-rounded" class="w-4 h-4 text-white" />
               </div>
               <div>
                 <h4 class="text-sm font-semibold text-white">OMS Order Management System</h4>

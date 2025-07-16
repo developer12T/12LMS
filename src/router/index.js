@@ -27,6 +27,7 @@ const routes = [
   { path: '/tms/manage/shipcost-setting', name: 'shipcost-setting', component: () => import('../views/tms/manage/shipcostSettingView.vue'), meta: { requiresAuth: true, breadcrumb: 'TMS / จัดการ / กำหนดค่าขนส่ง' } },
   { path: '/tms/manage/shipcost-edit', name: 'shipcost-edit', component: () => import('../views/tms/manage/shipcostEditView.vue'), meta: { requiresAuth: true, breadcrumb: 'TMS / จัดการ / แก้ไขค่าขนส่ง' } },
   { path: '/manage/user', name: 'user-management', component: () => import('../views/manage/userView.vue'), meta: { requiresAuth: true, breadcrumb: 'จัดการสิทธิ์การใช้งาน' } },
+  { path: '/manage/warehouse', name: 'warehouse-management', component: () => import('../views/manage/warehouseView.vue'), meta: { requiresAuth: true, breadcrumb: 'จัดการศูนย์กระจายสินค้า' } },
   { path: '/logout', name: 'Logout', beforeEnter: (to, from, next) => {
     const authStore = useAuthStore();
     authStore.logout();

@@ -55,7 +55,7 @@
                 <span class="font-semibold text-white text-sm">{{ data.label }}</span>
               </div>
               <button @click="activeMiniMenu = null" class="p-1 hover:bg-slate-600 rounded transition-colors"
-                title="ปิดเมนู">
+               >
                 <Icon icon="mdi:close" class="w-4 h-4 text-gray-400 hover:text-white" />
               </button>
             </div>
@@ -146,8 +146,8 @@
         'w-full flex items-center space-x-3 px-2 py-2 hover:bg-sky-600 rounded transition-colors text-sm',
         isCollapsed ? 'justify-center' : ''
       ]">
-        <Icon icon="ix:log" class="w-6 h-6" />
-        <span v-if="!isCollapsed">Report Usage</span>
+        <Icon icon="ic:round-report-problem" class="w-5 h-5" />
+        <span v-if="!isCollapsed">รายงานการใช้งาน</span>
         <div v-if="isLoading && loadingRoute === '/monitor-log'" class="ml-2">
           <svg class="animate-spin w-3 h-3 text-sky-400" fill="none" viewBox="0 0 24 24">
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -163,6 +163,21 @@
         <Icon icon="mdi:account-group" class="w-6 h-6" />
         <span v-if="!isCollapsed">จัดการสิทธิ์การใช้งาน</span>
         <div v-if="isLoading && loadingRoute === '/manage/user'" class="ml-2">
+          <svg class="animate-spin w-3 h-3 text-sky-400" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+          </svg>
+        </div>
+      </router-link>
+
+      <router-link v-if="canSeeUserManage" :to="'/manage/warehouse'"
+        @click="handleMenuClick('', '', 'warehouse-manage')" :class="[
+          'w-full flex items-center space-x-3 px-2 py-2 hover:bg-sky-600 rounded transition-colors text-sm',
+          isCollapsed ? 'justify-center' : ''
+        ]">
+        <Icon icon="mdi:warehouse" class="w-6 h-6" />
+        <span v-if="!isCollapsed">จัดการศูนย์กระจายสินค้า</span>
+        <div v-if="isLoading && loadingRoute === '/manage/warehouse'" class="ml-2">
           <svg class="animate-spin w-3 h-3 text-sky-400" fill="none" viewBox="0 0 24 24">
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
@@ -225,6 +240,7 @@
       </div>
     </div>
   </footer>
+
 </template>
 
 <script setup>
@@ -261,7 +277,7 @@ const loadingRoute = ref('');
 
 const menuData = {
   OMS: {
-    icon: 'lsicon:order-edit-filled',
+    icon: 'material-symbols:quick-reorder-rounded',
     label: 'Order Management',
     items: {
       'รายงาน': {
@@ -302,7 +318,7 @@ const menuData = {
       },
       'Management': {
         icon: 'mdi:cog',
-        children: []
+        children: ['จัดการศูนย์กระจายสินค้า']
       }
     }
   },
@@ -381,6 +397,7 @@ function getRoutePath(system, category, item) {
       'Reports': {
       },
       'Management': {
+        'จัดการศูนย์กระจายสินค้า': '/manage/warehouse'
       }
     },
     'TMS': {
