@@ -174,6 +174,79 @@ export const useReportTmsStore = defineStore('reportTms', () => {
     }
   };
 
+  const planningData = ref([])
+  const loadingPlanning = ref(false)
+  const errorPlanning = ref(null)
+
+  async function fetchPlanningAll() {
+    loadingPlanning.value = true
+    errorPlanning.value = null
+    try {
+      const response = await api.get(`${import.meta.env.VITE_API_BASE_URL || ''}/api/report-tms/planning-all`)
+      console.log(response.data.data.data)
+      if (response.data?.status?.code === 200) {
+        planningData.value = response.data.data.data || []
+      } else {
+        planningData.value = []
+      }
+    } catch (e) {
+      errorPlanning.value = e
+      planningData.value = []
+      console.error('Error fetching planning data:', e)
+    } finally {
+      loadingPlanning.value = false
+    }
+  }
+
+  // State for planning detail data
+  const planningDetailData = ref([])
+  const loadingPlanningDetail = ref(false)
+  const errorPlanningDetail = ref(null)
+
+  async function fetchPlanningDetail(warehouseId) {
+    loadingPlanningDetail.value = true
+    errorPlanningDetail.value = null
+    try {
+      const authStore = useAuthStore();
+      const response = await api.get(`${API_BASE_URL}/api/report-tms/planning-all/show-pna-dc`, {
+        params: { 
+          hcase: 'show_pna_dc', 
+          p1: warehouseId 
+        },
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${authStore.token}`
+        }
+      });
+      
+      if (response.data?.status?.code === 200) {
+        planningDetailData.value = response.data.data || []
+        return { success: true, data: planningDetailData.value };
+      } else {
+        throw new Error(response.data?.status?.message || 'Failed to fetch planning detail data');
+      }
+    } catch (err) {
+      let errorMessage = 'เกิดข้อผิดพลาดในการดึงข้อมูล Planning Detail';
+      if (err.response) {
+        if (err.response.status === 401) {
+          errorMessage = 'Session expired. Please login again.';
+        } else {
+          errorMessage = err.response.data?.message || errorMessage;
+        }
+      } else if (err.request) {
+        errorMessage = 'Network error. Please check your connection.';
+      } else {
+        errorMessage = err.message || errorMessage;
+      }
+      errorPlanningDetail.value = errorMessage;
+      planningDetailData.value = [];
+      console.error('Error fetching planning detail data:', err);
+      return { success: false, message: errorMessage };
+    } finally {
+      loadingPlanningDetail.value = false;
+    }
+  }
+
   return {
     // State
     dailyStockData,
@@ -185,6 +258,12 @@ export const useReportTmsStore = defineStore('reportTms', () => {
     errorNoBillWh,
     roudcosPayOptions,
     codeTruckOptions,
+    planningData,
+    loadingPlanning,
+    errorPlanning,
+    planningDetailData,
+    loadingPlanningDetail,
+    errorPlanningDetail,
     
     // Computed
     getDailyStockData,
@@ -199,5 +278,7 @@ export const useReportTmsStore = defineStore('reportTms', () => {
     fetchTransportCostData,
     clearError,
     reset,
+    fetchPlanningAll,
+    fetchPlanningDetail,
   };
 }); 

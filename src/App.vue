@@ -9,6 +9,7 @@ const route = useRoute();
 
 const sideBarRef = ref();
 const isDailyStockPage = computed(() => route.path === '/tms/report/daily-stock');
+const isUploadExcelPage = computed(() => route.path === '/upload-excel');
 const showOverlay = computed(() =>
   isDailyStockPage.value &&
   sideBarRef.value && sideBarRef.value.isCollapsed === false
@@ -20,7 +21,7 @@ function closeSideBar() {
 
 <template>
     <div :class="authStore.user">
-        <div v-if="route.path !== '/'" class="flex h-screen bg-gray-50">
+        <div v-if="route.path !== '/' && !isUploadExcelPage" class="flex h-screen bg-gray-50">
             <!-- Background drop เฉพาะตอน overlayMode && !isCollapsed (full) -->
             <div v-if="showOverlay" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-40" @click="closeSideBar" />
             <SideBar v-if="route.path !== '/login'" :overlay-mode="isDailyStockPage" ref="sideBarRef" />
@@ -31,6 +32,7 @@ function closeSideBar() {
                 </main>
             </div>
         </div>
+        <router-view v-if="isUploadExcelPage" />
         <router-view v-else />
     </div>
 </template>

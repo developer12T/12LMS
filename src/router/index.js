@@ -59,6 +59,7 @@ const routes = [
     props: route => ({ productCode: route.query.productCode, productName: route.query.productName })
   },
   { path: '/monitor-log', name: 'monitor-log', component: () => import('../views/monitorLog.vue'), meta: { requiresAuth: true, breadcrumb: 'Monitor Log' } },
+  { path: '/upload-excel', name: 'upload-excel', component: () => import('../views/uploadExcelView.vue'), meta: { requiresAuth: false, breadcrumb: 'อัพโหลดไฟล์ Excel' } },
   { path: '/:pathMatch(.*)*', redirect: '/' } 
 ];
 

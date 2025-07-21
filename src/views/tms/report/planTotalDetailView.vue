@@ -44,19 +44,24 @@
                 <th class="px-3 py-2 text-center font-semibold">เดือนปัจจุบัน</th>
                 <th class="px-3 py-2 text-center font-semibold">หน่วยรถ</th>
                 <th class="px-3 py-2 text-center font-semibold">Stock</th>
-                <th class="px-3 py-2 text-center font-semibold bg-red-200">Balance {{ columnLabel }}</th>
+                <th class="px-3 py-2 text-center font-semibold bg-red-200">Balance</th>
               </tr>
             </thead>
             <tbody>
+              <tr v-if="filteredRows.length === 0" class="bg-white">
+                <td colspan="8" class="px-3 py-8 text-center text-gray-500">
+                  ไม่พบข้อมูล
+                </td>
+              </tr>
               <tr v-for="(row, idx) in filteredRows" :key="idx" :class="'transition-colors ' + (idx % 2 === 1 ? 'bg-gray-50' : 'bg-white') + ' hover:bg-blue-50'">
-                <td class="px-3 py-1 text-center">{{ row.productCode }}</td>
-                <td class="px-3 py-1">{{ row.productName }}</td>
-                <td class="px-3 py-1 text-center">{{ row.totalCO }}</td>
-                <td class="px-3 py-1 text-center text-blue-600 underline cursor-pointer" @click.stop="handleColClick('lastMonth', row)">{{ row.lastMonth }}</td>
-                <td class="px-3 py-1 text-center text-blue-600 underline cursor-pointer" @click.stop="handleColClick('thisMonth', row)">{{ row.thisMonth }}</td>
-                <td class="px-3 py-1 text-center text-blue-600 underline cursor-pointer" @click.stop="handleCoListClick(row)">{{ row.unit }}</td>
-                <td class="px-3 py-1 text-center">{{ row.stock }}</td>
-                <td class="px-3 py-1 text-center text-blue-600 cursor-pointer" :class="row.balanceSarakham < 0 ? 'bg-red-100 text-red-600 font-bold' : 'bg-red-50'">{{ row.balanceSarakham }}</td>
+                <td class="px-3 py-1 text-center">{{ row.productCode || '' }}</td>
+                <td class="px-3 py-1">{{ row.productName || '' }}</td>
+                <td class="px-3 py-1 text-center">{{ row.totalCO || 0 }}</td>
+                <td class="px-3 py-1 text-center text-blue-600 underline cursor-pointer" @click.stop="handleColClick('lastMonth', row)">{{ row.lastMonth || 0 }}</td>
+                <td class="px-3 py-1 text-center text-blue-600 underline cursor-pointer" @click.stop="handleColClick('thisMonth', row)">{{ row.thisMonth || 0 }}</td>
+                <td class="px-3 py-1 text-center text-blue-600 underline cursor-pointer" @click.stop="handleCoListClick(row)">{{ row.unit || 0 }}</td>
+                <td class="px-3 py-1 text-center">{{ row.stock || 0 }}</td>
+                <td class="px-3 py-1 text-center text-blue-600 cursor-pointer" :class="(row.balanceSarakham || 0) < 0 ? 'bg-red-100 text-red-600 font-bold' : 'bg-red-50'">{{ row.balanceSarakham || 0 }}</td>
               </tr>
             </tbody>
           </table>
@@ -67,16 +72,19 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { Icon } from '@iconify/vue';
 import PageHeaderSubMenu from '@/components/PageHeaderSubMenu.vue';
+import { useReportTmsStore } from '@/stores/modules/reportTms';
 
 const route = useRoute();
 const router = useRouter();
+const reportTmsStore = useReportTmsStore();
 
 const column = route.query.column || '';
 const searchQuery = ref('');
+const warehouseId = route.query.column ? route.query.column.split('_')[1] : '105'; // Extract warehouse ID from column or default to 105
 
 const columnMap = {
   fplusNakhonPathom: 'F-plus นครปฐม',
@@ -95,28 +103,41 @@ const columnMap = {
 };
 const columnLabel = computed(() => columnMap[column] || column);
 
-const detailRows = [
-  { productCode: '10010201053', productName: 'ผงปรุงรสไก่ ฟ้าไทย 12g x12x20', totalCO: 2, lastMonth: 0, thisMonth: 0, unit: 2, stock: 0, balanceSarakham: -2 },
-  { productCode: '10010201054', productName: 'ผงปรุงรสไก่ ฟ้าไทย 12g x24x10 ชนิดเผ็ด', totalCO: 1, lastMonth: 0, thisMonth: 0, unit: 1, stock: 0, balanceSarakham: -1 },
-  { productCode: '10010601011', productName: 'ผงกะหรี่ญี่ปุ่นข้น ฟ้าไทย 75g x10x8', totalCO: 38, lastMonth: 30, thisMonth: 0, unit: 8, stock: 230, balanceSarakham: 192 },
-  { productCode: '10020501025', productName: 'ผงปรุงรสไก่ เติมทิพ ฟ้าไทย 75g x10x8', totalCO: 5, lastMonth: 0, thisMonth: 0, unit: 5, stock: 3, balanceSarakham: 3 },
-  { productCode: '10020501008', productName: 'ผงปรุงรสไก่ เติมทิพ ฟ้าไทย 75g x10x8', totalCO: 0, lastMonth: 1, thisMonth: 0, unit: 0, stock: 3, balanceSarakham: 2 },
-  { productCode: '10010201018', productName: 'ผงปรุงรสไก่ ฟ้าไทย 75g x10x8 แถมช้อนส้อม', totalCO: 526, lastMonth: 521, thisMonth: 0, unit: 5, stock: 815, balanceSarakham: 289 },
-  { productCode: '10010201019', productName: 'ผงปรุงรสหมู ฟ้าไทย 75g x10x8 แถมช้อนส้อม', totalCO: 12, lastMonth: 12, thisMonth: 0, unit: 0, stock: 116, balanceSarakham: 104 },
-  { productCode: '10010601012', productName: 'ผงกะหรี่ญี่ปุ่นข้น ฟ้าไทย 165g x6x6', totalCO: 116, lastMonth: 0, thisMonth: 0, unit: 0, stock: 465, balanceSarakham: 349 },
-  { productCode: '10010201019', productName: 'ผงปรุงรสไก่ ฟ้าไทย 165g x6x6 แถมช้อนส้อม', totalCO: 0, lastMonth: 0, thisMonth: 0, unit: 0, stock: 0, balanceSarakham: 0 },
-  { productCode: '10010401071', productName: 'ฟ้าไทยผงปรุงหมู 185g MT', totalCO: 0, lastMonth: 0, thisMonth: 0, unit: 0, stock: 0, balanceSarakham: 0 },
-  { productCode: '10010201053', productName: 'ผงปรุงรสเด็ดหอม ฟ้าไทย 165g x6x6 (Export)', totalCO: 0, lastMonth: 0, thisMonth: 0, unit: 0, stock: 0, balanceSarakham: 0 },
-  { productCode: '10010401017', productName: 'ผงกะหรี่ญี่ปุ่นไลท์ ฟ้าไทย 425g x12', totalCO: 0, lastMonth: 0, thisMonth: 0, unit: 0, stock: 87, balanceSarakham: 82 },
-];
+// Transform API data to match our component structure
+const transformApiData = (apiData) => {
+  if (!Array.isArray(apiData)) return [];
+  
+  return apiData
+    .filter(item => item && typeof item === 'object') // Filter out null/undefined items
+    .map(item => ({
+      productCode: item.item_no?.trim() || '',
+      productName: item.item_name || '',
+      totalCO: item.tco || 0,
+      lastMonth: item.oco || 0,
+      thisMonth: item.pco || 0,
+      unit: item.cco !== null && item.cco !== undefined ? item.cco : 0,
+      stock: item.stock || 0,
+      balanceSarakham: item.balance || 0
+    }));
+};
+
+const detailRows = computed(() => {
+  const transformed = transformApiData(reportTmsStore.planningDetailData || []);
+  console.log('Transformed data:', transformed);
+  console.log('Original API data:', reportTmsStore.planningDetailData);
+  console.log('Loading state:', reportTmsStore.loadingPlanningDetail);
+  console.log('Error state:', reportTmsStore.errorPlanningDetail);
+  return transformed;
+});
 
 const filteredRows = computed(() => {
-  if (!searchQuery.value) return detailRows;
-  const term = searchQuery.value.toLowerCase();
-  return detailRows.filter(row =>
-    row.productCode.toString().includes(term) ||
-    row.productName.toLowerCase().includes(term)
+  const result = !searchQuery.value ? detailRows.value : detailRows.value.filter(row =>
+    row && row.productCode && row.productCode.toString().includes(searchQuery.value.toLowerCase()) ||
+    row && row.productName && row.productName.toLowerCase().includes(searchQuery.value.toLowerCase())
   );
+  console.log('Filtered rows:', result);
+  console.log('Search query:', searchQuery.value);
+  return result;
 });
 
 function goBack() {
@@ -135,6 +156,18 @@ function handleCoListClick(row) {
     name: 'plan-total-van',
     query: { productCode: row.productCode, productName: row.productName }
   });
+}
+
+// Fetch data when component mounts
+onMounted(async () => {
+  console.log('Warehouse ID being used:', warehouseId);
+  console.log('Column from route:', route.query.column);
+  await reportTmsStore.fetchPlanningDetail(warehouseId);
+});
+
+// Refresh data function
+async function refreshData() {
+  await reportTmsStore.fetchPlanningDetail(warehouseId);
 }
 </script>
 
