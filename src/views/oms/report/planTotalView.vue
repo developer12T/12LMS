@@ -205,10 +205,11 @@
                 <th class="px-2 py-2 text-[10px] text-center border-r border-gray-200">ลำพูน (103)</th>
                 <th class="px-2 py-2 text-[10px] text-center border-r border-gray-200">สุราษฎร์ (104)</th>
                 <th class="px-2 py-2 text-[10px] text-center border-r border-gray-200">บางนา (105)</th>
+                <th class="px-2 py-2 text-[10px] text-center border-r border-gray-200">บางนา F-plus (105)</th>
                 <th class="px-2 py-2 text-[10px] text-center border-r border-gray-200">นครสวรรค์ (106)</th>
                 <th class="px-2 py-2 text-[10px] text-center border-r border-gray-200">นครราชสีมา (109)</th>
-                <th class="px-2 py-2 text-[10px] text-center border-r border-gray-200">นนทบุรี (110)</th>
                 <th class="px-2 py-2 text-[10px] text-center border-r border-gray-200">นครปฐม2 (111)</th>
+                <th class="px-2 py-2 text-[10px] text-center border-r border-gray-200">นครปฐม2 F-plus (111)</th>
                 <th v-for="dateColumn in dateColumns" :key="dateColumn"
                   class="px-2 py-2 text-[10px] text-center border-r border-gray-200">{{ dateColumn }}</th>
               </tr>
@@ -240,18 +241,21 @@
                 <td :class="!item.wh_105 ? 'text-gray-500 cursor-default' : 'text-blue-600 underline cursor-pointer'"
                   class="px-2 py-1 text-end border-r border-gray-200"
                   @click.stop="item.wh_105 && handleCellClick(item, 'wh_105')">{{ item.wh_105 || '-' }}</td>
+                  <td :class="!item.wh_105F ? 'text-gray-500 cursor-default' : 'text-blue-600 underline cursor-pointer'"
+                  class="px-2 py-1 text-end border-r border-gray-200"
+                  @click.stop="item.wh_105F && handleCellClick(item, 'wh_105F')">{{ item.wh_105F || '-' }}</td>
                 <td :class="!item.wh_106 ? 'text-gray-500 cursor-default' : 'text-blue-600 underline cursor-pointer'"
                   class="px-2 py-1 text-end border-r border-gray-200"
                   @click.stop="item.wh_106 && handleCellClick(item, 'wh_106')">{{ item.wh_106 || '-' }}</td>
                 <td :class="!item.wh_109 ? 'text-gray-500 cursor-default' : 'text-blue-600 underline cursor-pointer'"
                   class="px-2 py-1 text-end border-r border-gray-200"
                   @click.stop="item.wh_109 && handleCellClick(item, 'wh_109')">{{ item.wh_109 || '-' }}</td>
-                <td :class="!item.wh_110 ? 'text-gray-500 cursor-default' : 'text-blue-600 underline cursor-pointer'"
-                  class="px-2 py-1 text-end border-r border-gray-200"
-                  @click.stop="item.wh_110 && handleCellClick(item, 'wh_110')">{{ item.wh_110 || '-' }}</td>
                 <td :class="!item.wh_111 ? 'text-gray-500 cursor-default' : 'text-blue-600 underline cursor-pointer'"
                   class="px-2 py-1 text-end border-r border-gray-200"
                   @click.stop="item.wh_111 && handleCellClick(item, 'wh_111')">{{ item.wh_111 || '-' }}</td>
+                <td :class="!item.wh_111F ? 'text-gray-500 cursor-default' : 'text-blue-600 underline cursor-pointer'"
+                  class="px-2 py-1 text-end border-r border-gray-200"
+                  @click.stop="item.wh_111F && handleCellClick(item, 'wh_111F')">{{ item.wh_111F || '-' }}</td>
                 <td v-for="dateColumn in dateColumns" :key="dateColumn"
                   class="px-2 py-1 text-end border-r border-gray-200" :class="getDateCellClass(item[dateColumn])">{{
                     item[dateColumn] || '-' }}</td>
