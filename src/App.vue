@@ -8,8 +8,8 @@ import { ref, computed } from 'vue';
 const route = useRoute();
 
 const sideBarRef = ref();
-const isDailyStockPage = computed(() => route.path === '/tms/report/daily-stock');
-const isUploadExcelPage = computed(() => route.path === '/upload-excel');
+const isDailyStockPage = computed(() => route.path === '/oms/report/daily-stock');
+// const isUploadExcelPage = computed(() => route.path === '/upload-excel');
 const showOverlay = computed(() =>
   isDailyStockPage.value &&
   sideBarRef.value && sideBarRef.value.isCollapsed === false
@@ -27,7 +27,7 @@ function closeSideBar() {
             <SideBar v-if="route.path !== '/login'" :overlay-mode="isDailyStockPage" ref="sideBarRef" />
             <div class="flex-1 flex flex-col">
                 <main :class="route.path !== '/login' ? 'flex-1 p-6' : ''">
-                    <PageHeader v-if="route.path !== '/login' && route.meta.breadcrumb && route.path !== '/tms/manage/backlog' && route.path !== '/tms/report/shipment-cost'" />
+                    <PageHeader v-if="route.path !== '/login' && route.meta.breadcrumb && route.path !== '/oms/manage/backlog' && route.path !== '/oms/report/shipment-cost'" />
                     <router-view />
                 </main>
             </div>

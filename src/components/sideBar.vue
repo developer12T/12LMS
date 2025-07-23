@@ -30,7 +30,7 @@
     <!-- Navigation - Scrollable -->
     <nav :class="[isCollapsed ? 'overflow-visible' : 'overflow-y-auto overflow-x-hidden', 'flex-1']">
       <div v-for="(data, system) in menuData" :key="system" class="relative" v-show="isMenuVisible(system, data)">
-        <button @click="isCollapsed ? toggleMiniMenu(system) : toggleMenu(system)" v-if="system === 'OMS'"
+        <button @click="isCollapsed ? toggleMiniMenu(system) : toggleMenu(system)" v-if="system === 'OMS' || system === 'PDM'"
           :title="isCollapsed ? 'คลิกเพื่อขยายเมนู' : ''" :class="[
             'w-full flex items-center px-4 py-3 text-left hover:bg-sky-600 transition-colors relative text-sm',
             isCollapsed ? 'justify-center' : 'justify-between',
@@ -54,8 +54,7 @@
                 <Icon :icon="data.icon" class="w-5 h-5 text-sky-500" />
                 <span class="font-semibold text-white text-sm">{{ data.label }}</span>
               </div>
-              <button @click="activeMiniMenu = null" class="p-1 hover:bg-slate-600 rounded transition-colors"
-               >
+              <button @click="activeMiniMenu = null" class="p-1 hover:bg-slate-600 rounded transition-colors">
                 <Icon icon="mdi:close" class="w-4 h-4 text-gray-400 hover:text-white" />
               </button>
             </div>
@@ -281,9 +280,9 @@ const menuData = {
     label: 'Order Management',
     items: {
       'รายงาน': {
-        icon: 'mdi:file-document',
+        icon: 'mdi:trending-up',
         children: [
-          '%เติมสินค้าเข้า DC',
+          // '%เติมสินค้าเข้า DC',
           // 'Stock On Hand',
           // 'Daily Stock',
           'รายการที่ไม่ได้วางบิล',
@@ -299,10 +298,10 @@ const menuData = {
       'จัดการ': {
         icon: 'mdi:cog',
         children: [
-          'ออเดอร์ค้างส่ง',
+          // 'ออเดอร์ค้างส่ง',
           // 'ออเดอร์ค้างส่ง(หน่วยรถ)',
-          'กำหนดปริมาตรและน้ำหนักรถบรรทุก',
-          'จัดการค่าขนส่ง',
+          // 'กำหนดปริมาตรและน้ำหนักรถบรรทุก',
+          // 'จัดการค่าขนส่ง',
           // 'กำหนดค่าขนส่ง'
         ]
       }
@@ -346,7 +345,25 @@ const menuData = {
       },
       'Management': {
         icon: 'mdi:package-variant',
+        children: [
+
+        ]
+      }
+    }
+  },
+  PDM: {
+    icon: 'mdi:package-variant',
+    label: 'Product Department Management',
+    items: {
+      'Reports': {
+        icon: 'mdi:trending-up',
         children: []
+      },
+      'Management': {
+        icon: 'mdi:cog',
+        children: [
+           'อัพโหลดไฟล์วางแผน'
+        ]
       }
     }
   }
@@ -372,25 +389,25 @@ function getRoutePath(system, category, item) {
   const routeMap = {
     'OMS': {
       'รายงาน': {
-        '%เติมสินค้าเข้า DC': '/tms/report/percent-fill-to-dc',
-        'Stock On Hand': '/tms/report/stock-on-hand',
-        'Daily Stock': '/tms/report/daily-stock',
-        'รายการที่ไม่ได้วางบิล': '/tms/report/not-bill',
-        'สินค้าที่ยังไม่ได้เปิด Invoice': '/tms/report/not-open-invoice',
-        'ออเดอร์ค้างส่ง(หน่วยรถ)': '/tms/report/backlog-unit',
-        'วางแผน': '/tms/report/plan',
-        'วางแผนรวม': '/tms/report/plan-total',
-        'อายุสินค้าคงเหลือ': '/tms/report/stock-age',
-        'ค่าขนส่ง(shipment)': '/tms/report/shipment-cost',
-        'ค่าขนส่ง(รถร่วม)': '/tms/report/shared-vehicle-cost',
-        '% ontime': '/tms/report/ontime-percent'
+        '%เติมสินค้าเข้า DC': '/oms/report/percent-fill-to-dc',
+        'Stock On Hand': '/oms/report/stock-on-hand',
+        'Daily Stock': '/oms/report/daily-stock',
+        'รายการที่ไม่ได้วางบิล': '/oms/report/not-bill',
+        'สินค้าที่ยังไม่ได้เปิด Invoice': '/oms/report/not-open-invoice',
+        'ออเดอร์ค้างส่ง(หน่วยรถ)': '/oms/report/backlog-unit',
+        'วางแผน': '/oms/report/plan',
+        'วางแผนรวม': '/oms/report/plan-total',
+        'อายุสินค้าคงเหลือ': '/oms/report/stock-age',
+        'ค่าขนส่ง(shipment)': '/oms/report/shipment-cost',
+        'ค่าขนส่ง(รถร่วม)': '/oms/report/shared-vehicle-cost',
+        '% ontime': '/oms/report/ontime-percent'
       },
       'จัดการ': {
-        'ออเดอร์ค้างส่ง': '/tms/manage/backlog',
-        'ออเดอร์ค้างส่ง(หน่วยรถ)': '/tms/manage/backlog-unit',
-        'กำหนดปริมาตรและน้ำหนักรถบรรทุก': '/tms/manage/weight-volume',
-        'จัดการค่าขนส่ง': '/tms/manage/shipcost-management',
-        'กำหนดค่าขนส่ง': '/tms/manage/shipcost-setting'
+        'ออเดอร์ค้างส่ง': '/oms/manage/backlog',
+        'ออเดอร์ค้างส่ง(หน่วยรถ)': '/oms/manage/backlog-unit',
+        'กำหนดปริมาตรและน้ำหนักรถบรรทุก': '/oms/manage/weight-volume',
+        'จัดการค่าขนส่ง': '/oms/manage/shipcost-management',
+        'กำหนดค่าขนส่ง': '/oms/manage/shipcost-setting'
       }
     },
     'WMS': {
@@ -410,6 +427,13 @@ function getRoutePath(system, category, item) {
       'Reports': {
       },
       'Management': {
+      }
+    },
+    'PDM': {
+      'Reports': {
+      },
+      'Management': {
+        'อัพโหลดไฟล์วางแผน': '/upload-excel'
       }
     }
   };

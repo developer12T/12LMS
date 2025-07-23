@@ -1,15 +1,15 @@
 <template>
-    <div class="min-h-screen bg-gray-50 py-8">
+    <div class="min-h-screen bg-gray-50 py-1">
         <div class=" mx-auto px-4 flex justify-between gap-4">
             <!-- Upload Form -->
-            <div class="w-1/4 h-full bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+            <div class="w-1/4 h-full bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-2">
                 <div class="flex flex-col justify-between h-full">
-                    <div class="mb-4">
+                    <div class="mb-2">
                         <h3 class="text-lg font-semibold text-gray-900 mb-2">อัพโหลดไฟล์ Excel</h3>
-                        <p class="text-sm text-gray-600 mb-4">สำหรับบันทึกข้อมูลวางแผนรวม</p>
+                        <p class="text-sm text-gray-600 mb-2">สำหรับบันทึกข้อมูลวางแผนรวม</p>
 
                         <!-- ข้อมูลตัวอย่าง -->
-                        <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
+                        <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-2">
                             <h4 class="text-sm font-medium text-blue-900 mb-2">รูปแบบข้อมูลที่รองรับ:</h4>
                             <ul class="text-xs text-blue-800 space-y-1">
                                 <li>• คอลัมน์ที่ 1: รหัสสินค้า</li>
@@ -19,7 +19,7 @@
                         </div>
                     </div>
                 </div>
-                <form @submit.prevent="handleSave" class="space-y-6">
+                <form @submit.prevent="handleSave" class="space-y-2">
                     <!-- Employee ID Input -->
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">

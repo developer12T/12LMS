@@ -351,7 +351,7 @@ const loadTransportData = async () => {
     isLoadingTransport.value = true;
     transportError.value = null;
     try {
-        const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/report-tms/nobill-wh`);
+        const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/report/oms/nobill/option-wh`);
         // สมมติ response.data เป็น array ของ DC
         transportOptions.value = response.data || [];
     } catch (err) {

@@ -9,114 +9,265 @@
       </div>
     </div>
 
+    <!-- Tab Navigation -->
     <div class="bg-white rounded-lg shadow-sm border border-gray-200 mt-4 p-4">
-      <div class="flex flex-col sm:flex-row justify-between items-center mb-4 gap-2">
-        <!-- จำนวนทั้งหมด ฝั่งซ้าย -->
-        <div class="text-xs text-gray-600 w-full sm:w-auto mb-2 sm:mb-0">
-          จำนวนทั้งหมด: <span class="font-semibold">{{ filteredUsers.length }}</span> คน
-        </div>
-        
-        <!-- Filter แผนก ขวา (medium) -->
-        <div class="flex flex-col sm:flex-row justify-end items-center gap-2 w-full sm:w-auto">
-          <button @click="downloadUsersExcel" class="flex items-center gap-1 bg-green-600 hover:bg-green-700 text-white text-xs font-medium rounded px-4 py-1.5 transition-colors shadow min-w-[80px] justify-center">
-            <Icon icon="file-icons:microsoft-excel" width="16" height="16" class="mr-1.5" />
-            Export Excel
+      <div class="border-b border-gray-200 mb-4">
+        <nav class="flex space-x-8">
+          <button
+            @click="activeTab = 'employee'"
+            :class="[
+              'py-2 px-1 border-b-2 font-medium text-sm transition-colors',
+              activeTab === 'employee'
+                ? 'border-sky-500 text-sky-600'
+                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+            ]"
+          >
+            <Icon icon="mdi:account-group" class="w-4 h-4 inline mr-2" />
+            ข้อมูลพนักงาน
           </button>
-          <div class="flex items-center gap-2 w-full sm:w-auto">
-            <label class="text-xs font-medium text-gray-700 whitespace-nowrap">แผนก : </label>
-            <select v-model="selectedDepartment"
-              class="bg-gray-50 border border-gray-300 text-gray-700 text-sm rounded-lg focus:ring-sky-500 focus:border-sky-500 block w-full sm:w-44 py-1.5 px-3">
-              <option value="">ทุกแผนก</option>
-              <option v-for="dept in departmentOptions" :key="dept" :value="dept">{{ dept }}</option>
-            </select>
+          <button
+            @click="activeTab = 'access'"
+            :class="[
+              'py-2 px-1 border-b-2 font-medium text-sm transition-colors',
+              activeTab === 'access'
+                ? 'border-sky-500 text-sky-600'
+                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+            ]"
+          >
+            <Icon icon="mdi:shield-account" class="w-4 h-4 inline mr-2" />
+            จัดการการเข้าใช้งาน
+          </button>
+        </nav>
+      </div>
+
+      <!-- Tab Content -->
+      <div v-if="activeTab === 'employee'">
+        <!-- Employee Data Tab Content -->
+        <div class="flex flex-col sm:flex-row justify-between items-center mb-4 gap-2">
+          <!-- จำนวนทั้งหมด ฝั่งซ้าย -->
+          <div class="text-xs text-gray-600 w-full sm:w-auto mb-2 sm:mb-0">
+            จำนวนทั้งหมด: <span class="font-semibold">{{ filteredUsers.length }}</span> คน
           </div>
-          <!-- ช่องค้นหา ขวา (medium) -->
-          <div class="relative w-full sm:w-60">
-            <Icon icon="mdi:magnify" class="w-4 h-4 absolute left-3 top-2.5 text-gray-400" />
-            <input v-model="search" type="text" placeholder="ค้นหา..." class="w-full pl-10 pr-3 py-1.5 text-sm bg-gray-50 border border-gray-300 rounded-lg text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-500" />
+          
+          <!-- Filter แผนก ขวา (medium) -->
+          <div class="flex flex-col sm:flex-row justify-end items-center gap-2 w-full sm:w-auto">
+            <button @click="downloadUsersExcel" class="flex items-center gap-1 bg-green-600 hover:bg-green-700 text-white text-xs font-medium rounded px-4 py-1.5 transition-colors shadow min-w-[80px] justify-center">
+              <Icon icon="file-icons:microsoft-excel" width="16" height="16" class="mr-1.5" />
+              Export Excel
+            </button>
+            <div class="flex items-center gap-2 w-full sm:w-auto">
+              <label class="text-xs font-medium text-gray-700 whitespace-nowrap">แผนก : </label>
+              <select v-model="selectedDepartment"
+                class="bg-gray-50 border border-gray-300 text-gray-700 text-sm rounded-lg focus:ring-sky-500 focus:border-sky-500 block w-full sm:w-44 py-1.5 px-3">
+                <option value="">ทุกแผนก</option>
+                <option v-for="dept in departmentOptions" :key="dept" :value="dept">{{ dept }}</option>
+              </select>
+            </div>
+            <!-- ช่องค้นหา ขวา (medium) -->
+            <div class="relative w-full sm:w-60">
+              <Icon icon="mdi:magnify" class="w-4 h-4 absolute left-3 top-2.5 text-gray-400" />
+              <input v-model="search" type="text" placeholder="ค้นหา..." class="w-full pl-10 pr-3 py-1.5 text-sm bg-gray-50 border border-gray-300 rounded-lg text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-500" />
+            </div>
+            <!-- ปุ่ม Export Excel -->
+          
           </div>
-          <!-- ปุ่ม Export Excel -->
-        
+        </div>
+        <!-- Action bar -->
+        <div v-if="selectedEmployeeIDs.length" class="flex items-center gap-2 mb-2">
+          <span class="text-xs">เลือก {{ selectedEmployeeIDs.length }} คน</span>
+          <select v-model="bulkRole" class="border border-gray-300 rounded px-2 py-1 text-xs">
+            <option value="">เลือกสิทธิ์ใหม่</option>
+            <option v-for="opt in roleOptions" :key="opt.value" :value="opt.value">{{ opt.label }}</option>
+          </select>
+          <button @click="saveBulkRole" :disabled="!bulkRole || bulkLoading" class="px-2 py-1 rounded bg-sky-700 text-white text-xs">
+            <Icon v-if="bulkLoading" icon="mdi:loading" class="animate-spin w-4 h-4 inline mr-1" />
+            บันทึกสิทธิ์ที่เลือก
+          </button>
+        </div>
+        <div class="overflow-x-auto rounded-lg overflow-y-auto custom-scrollbar" style="height: calc(100vh - 280px);">
+          <div class="virtual-table-container rounded-lg overflow-auto" style="height: calc(100vh - 280px);" @scroll="handleScroll">
+            <table class="min-w-full text-xs text-left text-gray-700 border border-gray-200 bg-white">
+              <thead class="bg-gray-100 sticky top-0">
+                <tr>
+                  <th class="p-3">
+                    <input type="checkbox" :checked="isAllSelected" @change="toggleSelectAll" />
+                  </th>
+                  <th class="p-3">รูป</th>
+                  <th class="p-3">รหัสพนักงาน</th>
+                  <th class="p-3">ชื่อผู้ใช้</th>
+                  <th class="p-3">ชื่อ-สกุล (ไทย)</th>
+                  <th class="p-3">อีเมล</th>
+                  <th class="p-3">แผนก</th>
+                  <th class="p-3">ตำแหน่ง</th>
+                  <th class="p-3">สิทธิ์</th>
+                  <th class="p-3 text-center">สถานะ</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Top padding for virtual scrolling -->
+                <tr v-if="topPadding > 0">
+                  <td :colspan="10" :style="{ height: topPadding + 'px', padding: 0 }"></td>
+                </tr>
+
+                <tr v-if="virtualScrollData.length === 0">
+                  <td colspan="10" class="text-center text-gray-400 py-6">ไม่พบข้อมูลผู้ใช้งาน</td>
+                </tr>
+                <tr v-else v-for="(user, idx) in virtualScrollData" :key="user.employeeID" class="hover:bg-sky-50 transition cursor-pointer" @click="openUserDetail(user)">
+                  <td class="p-3">
+                    <input
+                      type="checkbox"
+                      :checked="selectedEmployeeIDs.includes(user.employeeID)"
+                      @change.stop="toggleSelectOne(user.employeeID)"
+                      @click.stop
+                    />
+                  </td>
+                  <td class="p-3" @click="openUserDetail(user)" style="cursor:pointer">
+                    <img
+                      :src="user.imgUrl || defaultAvatar(user)"
+                      :alt="user.fullNameThai"
+                      class="w-8 h-8 rounded-full object-cover border border-gray-300"
+                      @error="onImgError($event, user)"
+                    />
+                  </td>
+                  <td class="p-3">{{ user.employeeID }}</td>
+                  <td class="p-3">{{ user.userName }}</td>
+                  <td class="p-3">{{ user.fullNameThai }}</td>
+                  <td class="p-3">{{ user.mail || '-' }}</td>
+                  <td class="p-3">{{ user.department || '-' }}</td>
+                  <td class="p-3">{{ user.positon || '-' }}</td>
+                  <td class="p-3">{{ user.role }}</td>
+                  <td class="p-3 text-center">
+                    <span :class="user.status === 1 ? 'text-green-600' : 'text-red-500'">
+                      <Icon :icon="user.status === 1 ? 'mdi:check-circle' : 'mdi:close-circle'" class="w-4 h-4 inline" />
+                      {{ user.status === 1 ? 'เปิดใช้งาน' : 'ปิด' }}
+                    </span>
+                  </td>
+                </tr>
+
+                <!-- Bottom padding for virtual scrolling -->
+                <tr v-if="bottomPadding > 0">
+                  <td :colspan="10" :style="{ height: bottomPadding + 'px', padding: 0 }"></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
-      <!-- Action bar -->
-      <div v-if="selectedEmployeeIDs.length" class="flex items-center gap-2 mb-2">
-        <span class="text-xs">เลือก {{ selectedEmployeeIDs.length }} คน</span>
-        <select v-model="bulkRole" class="border border-gray-300 rounded px-2 py-1 text-xs">
-          <option value="">เลือกสิทธิ์ใหม่</option>
-          <option v-for="opt in roleOptions" :key="opt.value" :value="opt.value">{{ opt.label }}</option>
-        </select>
-        <button @click="saveBulkRole" :disabled="!bulkRole || bulkLoading" class="px-2 py-1 rounded bg-sky-700 text-white text-xs">
-          <Icon v-if="bulkLoading" icon="mdi:loading" class="animate-spin w-4 h-4 inline mr-1" />
-          บันทึกสิทธิ์ที่เลือก
-        </button>
-      </div>
-      <div class="overflow-x-auto rounded-lg overflow-y-auto custom-scrollbar" style="height: calc(100vh - 200px);">
-        <div class="virtual-table-container rounded-lg overflow-auto" style="height: calc(100vh - 200px);" @scroll="handleScroll">
-          <table class="min-w-full text-xs text-left text-gray-700 border border-gray-200 bg-white">
-            <thead class="bg-gray-100 sticky top-0">
-              <tr>
-                <th class="p-3">
-                  <input type="checkbox" :checked="isAllSelected" @change="toggleSelectAll" />
-                </th>
-                <th class="p-3">รูป</th>
-                <th class="p-3">รหัสพนักงาน</th>
-                <th class="p-3">ชื่อผู้ใช้</th>
-                <th class="p-3">ชื่อ-สกุล (ไทย)</th>
-                <th class="p-3">อีเมล</th>
-                <th class="p-3">แผนก</th>
-                <th class="p-3">ตำแหน่ง</th>
-                <th class="p-3">สิทธิ์</th>
-                <th class="p-3 text-center">สถานะ</th>
-              </tr>
-            </thead>
-            <tbody>
-              <!-- Top padding for virtual scrolling -->
-              <tr v-if="topPadding > 0">
-                <td :colspan="10" :style="{ height: topPadding + 'px', padding: 0 }"></td>
-              </tr>
 
-              <tr v-if="virtualScrollData.length === 0">
-                <td colspan="10" class="text-center text-gray-400 py-6">ไม่พบข้อมูลผู้ใช้งาน</td>
-              </tr>
-              <tr v-else v-for="(user, idx) in virtualScrollData" :key="user.employeeID" class="hover:bg-sky-50 transition cursor-pointer" @click="openUserDetail(user)">
-                <td class="p-3">
-                  <input
-                    type="checkbox"
-                    :checked="selectedEmployeeIDs.includes(user.employeeID)"
-                    @change.stop="toggleSelectOne(user.employeeID)"
-                    @click.stop
-                  />
-                </td>
-                <td class="p-3" @click="openUserDetail(user)" style="cursor:pointer">
-                  <img
-                    :src="user.imgUrl || defaultAvatar(user)"
-                    :alt="user.fullNameThai"
-                    class="w-8 h-8 rounded-full object-cover border border-gray-300"
-                    @error="onImgError($event, user)"
-                  />
-                </td>
-                <td class="p-3">{{ user.employeeID }}</td>
-                <td class="p-3">{{ user.userName }}</td>
-                <td class="p-3">{{ user.fullNameThai }}</td>
-                <td class="p-3">{{ user.mail || '-' }}</td>
-                <td class="p-3">{{ user.department || '-' }}</td>
-                <td class="p-3">{{ user.positon || '-' }}</td>
-                <td class="p-3">{{ user.role }}</td>
-                <td class="p-3 text-center">
-                  <span :class="user.status === 1 ? 'text-green-600' : 'text-red-500'">
-                    <Icon :icon="user.status === 1 ? 'mdi:check-circle' : 'mdi:close-circle'" class="w-4 h-4 inline" />
-                    {{ user.status === 1 ? 'เปิดใช้งาน' : 'ปิด' }}
-                  </span>
-                </td>
-              </tr>
+      <!-- Access Management Tab Content -->
+      <div v-else-if="activeTab === 'access'">
+        <div class="space-y-6">
+          <!-- Access Control Overview -->
+          <div class="bg-gray-50 rounded-lg p-4">
+            <h3 class="text-lg font-semibold text-gray-800 mb-3">ภาพรวมการเข้าใช้งาน</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div class="bg-white rounded-lg p-4 shadow-sm">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <p class="text-sm text-gray-600">ผู้ใช้งานทั้งหมด</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ userStore.users.length }}</p>
+                  </div>
+                  <Icon icon="mdi:account-group" class="w-8 h-8 text-sky-600" />
+                </div>
+              </div>
+              <div class="bg-white rounded-lg p-4 shadow-sm">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <p class="text-sm text-gray-600">ผู้ใช้งานที่เปิดใช้งาน</p>
+                    <p class="text-2xl font-bold text-green-600">{{ userStore.users.filter(u => u.status === 1).length }}</p>
+                  </div>
+                  <Icon icon="mdi:check-circle" class="w-8 h-8 text-green-600" />
+                </div>
+              </div>
+              <div class="bg-white rounded-lg p-4 shadow-sm">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <p class="text-sm text-gray-600">ผู้ใช้งานที่ปิดใช้งาน</p>
+                    <p class="text-2xl font-bold text-red-600">{{ userStore.users.filter(u => u.status === 0).length }}</p>
+                  </div>
+                  <Icon icon="mdi:close-circle" class="w-8 h-8 text-red-600" />
+                </div>
+              </div>
+            </div>
+          </div>
 
-              <!-- Bottom padding for virtual scrolling -->
-              <tr v-if="bottomPadding > 0">
-                <td :colspan="10" :style="{ height: bottomPadding + 'px', padding: 0 }"></td>
-              </tr>
-            </tbody>
-          </table>
+          <!-- Role Management -->
+          <div class="bg-white rounded-lg border border-gray-200">
+            <div class="p-4 border-b border-gray-200">
+              <h3 class="text-lg font-semibold text-gray-800">จัดการสิทธิ์การเข้าใช้งาน</h3>
+              <p class="text-sm text-gray-600 mt-1">กำหนดสิทธิ์การเข้าถึงระบบสำหรับผู้ใช้งานแต่ละคน</p>
+            </div>
+            <div class="p-4">
+              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div v-for="role in roleOptions" :key="role.value" class="bg-gray-50 rounded-lg p-4">
+                  <div class="flex items-center justify-between mb-2">
+                    <h4 class="font-medium text-gray-800">{{ role.label }}</h4>
+                    <span class="text-xs bg-sky-100 text-sky-800 px-2 py-1 rounded-full">
+                      {{ userStore.users.filter(u => u.role === role.value).length }} คน
+                    </span>
+                  </div>
+                  <p class="text-xs text-gray-600">
+                    {{ getRoleDescription(role.value) }}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Access Log -->
+          <div class="bg-white rounded-lg border border-gray-200">
+            <div class="p-4 border-b border-gray-200">
+              <h3 class="text-lg font-semibold text-gray-800">ประวัติการเข้าใช้งาน</h3>
+              <p class="text-sm text-gray-600 mt-1">ดูประวัติการเข้าใช้งานระบบล่าสุด</p>
+            </div>
+            <div class="p-4">
+              <div class="bg-gray-50 rounded-lg p-4 text-center">
+                <Icon icon="mdi:clock-outline" class="w-12 h-12 text-gray-400 mx-auto mb-2" />
+                <p class="text-gray-600">ยังไม่มีข้อมูลประวัติการเข้าใช้งาน</p>
+                <p class="text-sm text-gray-500">ข้อมูลจะแสดงที่นี่เมื่อมีการเข้าใช้งานระบบ</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Security Settings -->
+          <div class="bg-white rounded-lg border border-gray-200">
+            <div class="p-4 border-b border-gray-200">
+              <h3 class="text-lg font-semibold text-gray-800">การตั้งค่าความปลอดภัย</h3>
+              <p class="text-sm text-gray-600 mt-1">กำหนดนโยบายความปลอดภัยสำหรับการเข้าใช้งานระบบ</p>
+            </div>
+            <div class="p-4 space-y-4">
+              <div class="flex items-center justify-between">
+                <div>
+                  <h4 class="font-medium text-gray-800">การยืนยันตัวตนแบบ 2 ขั้นตอน</h4>
+                  <p class="text-sm text-gray-600">เปิดใช้งานการยืนยันตัวตนด้วย SMS หรือ Email</p>
+                </div>
+                <label class="relative inline-flex items-center cursor-pointer">
+                  <input type="checkbox" v-model="securitySettings.twoFactor" class="sr-only peer">
+                  <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-sky-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-sky-600"></div>
+                </label>
+              </div>
+              <div class="flex items-center justify-between">
+                <div>
+                  <h4 class="font-medium text-gray-800">จำกัดการเข้าใช้งานตาม IP</h4>
+                  <p class="text-sm text-gray-600">อนุญาตให้เข้าใช้งานเฉพาะจาก IP ที่กำหนด</p>
+                </div>
+                <label class="relative inline-flex items-center cursor-pointer">
+                  <input type="checkbox" v-model="securitySettings.ipRestriction" class="sr-only peer">
+                  <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-sky-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-sky-600"></div>
+                </label>
+              </div>
+              <div class="flex items-center justify-between">
+                <div>
+                  <h4 class="font-medium text-gray-800">บันทึกประวัติการเข้าใช้งาน</h4>
+                  <p class="text-sm text-gray-600">บันทึกข้อมูลการเข้าใช้งานของผู้ใช้ทุกคน</p>
+                </div>
+                <label class="relative inline-flex items-center cursor-pointer">
+                  <input type="checkbox" v-model="securitySettings.accessLog" class="sr-only peer">
+                  <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-sky-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-sky-600"></div>
+                </label>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -229,6 +380,15 @@ const selectedUserDetail = ref(null);
 const showUserDetailModal = ref(false);
 const editedRole = ref('');
 const selectedEmployeeIDs = ref([]);
+const activeTab = ref('employee');
+
+// Security settings for access management tab
+const securitySettings = ref({
+  twoFactor: false,
+  ipRestriction: false,
+  accessLog: true
+});
+
 const isAllSelected = computed(() =>
   filteredUsers.value.length > 0 &&
   filteredUsers.value.every(u => selectedEmployeeIDs.value.includes(u.employeeID))
@@ -277,6 +437,18 @@ const roleOptions = [
   { value: 'Supervisor', label: 'Supervisor' },
   { value: 'NoUse', label: 'NoUse' },
 ];
+
+// Function to get role description
+function getRoleDescription(role) {
+  const descriptions = {
+    'User': 'ผู้ใช้งานทั่วไป สามารถดูข้อมูลและรายงานได้',
+    'Admin': 'ผู้ดูแลระบบ มีสิทธิ์เต็มในการจัดการระบบ',
+    'Manager': 'ผู้จัดการ สามารถจัดการข้อมูลและดูรายงานได้',
+    'Supervisor': 'หัวหน้างาน สามารถดูและจัดการข้อมูลในส่วนที่รับผิดชอบ',
+    'NoUse': 'ไม่มีการใช้งานในระบบ'
+  };
+  return descriptions[role] || 'ไม่ระบุ';
+}
 
 const filteredUsers = computed(() => {
   let arr = userStore.users;

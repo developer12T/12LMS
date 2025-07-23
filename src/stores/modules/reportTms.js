@@ -84,7 +84,7 @@ export const useReportTmsStore = defineStore('reportTms', () => {
       const authStore = useAuthStore();
       // console.log(API_BASE_URL);
       
-      const response = await api.get(`${API_BASE_URL}/api/report-tms/nobill`, {
+      const response = await api.get(`${API_BASE_URL}/api/report/oms/nobill`, {
         params: { warehouse, dateStart, dateEnd },
         headers: {
           'Content-Type': 'application/json',
@@ -134,7 +134,7 @@ export const useReportTmsStore = defineStore('reportTms', () => {
     loadingNoBillWh.value = true;
     errorNoBillWh.value = null;
     try {
-      const response = await api.get(`${API_BASE_URL}/api/report-tms/nobill-wh`);
+      const response = await api.get(`${API_BASE_URL}/api/report/oms/nobill/option-wh`);
       nobillWhList.value = response.data || [];
       console.log(nobillWhList.value);
     } catch (err) {
@@ -147,7 +147,7 @@ export const useReportTmsStore = defineStore('reportTms', () => {
 
   const fetchTransportCostOptions = async () => {
     try {
-      const res = await api.get(`${API_BASE_URL}/api/report-tms/transport-cost`);
+      const res = await api.get(`${API_BASE_URL}/api/report/oms/shipment-cost/option`);
       const data = res.data;
       if (data.status && data.status.code === 200) {
         roudcosPayOptions.value = data.data.roudcos_pay || [];
@@ -162,7 +162,7 @@ export const useReportTmsStore = defineStore('reportTms', () => {
 
   const fetchTransportCostData = async ({ shipmentId, channelId, truckId }) => {
     try {
-      const res = await api.get(`${API_BASE_URL}/api/report-tms/transport-cost/show-data?shipmentId=${shipmentId}&channelId=${channelId}&truckId=${truckId}`);
+      const res = await api.get(`${API_BASE_URL}/api/report/oms/shipment-cost?shipmentId=${shipmentId}&channelId=${channelId}&truckId=${truckId}`);
       const data = res.data;
       if (data.status && data.status.code === 200) {
         return data;
@@ -182,7 +182,7 @@ export const useReportTmsStore = defineStore('reportTms', () => {
     loadingPlanning.value = true
     errorPlanning.value = null
     try {
-      const response = await api.get(`${import.meta.env.VITE_API_BASE_URL || ''}/api/report-tms/planning-all`)
+      const response = await api.get(`${import.meta.env.VITE_API_BASE_URL || ''}/api/report/oms/planning-all`)
       console.log(response.data.data.data)
       if (response.data?.status?.code === 200) {
         planningData.value = response.data.data.data || []
@@ -208,7 +208,7 @@ export const useReportTmsStore = defineStore('reportTms', () => {
     errorPlanningDetail.value = null
     try {
       const authStore = useAuthStore();
-      const response = await api.get(`${API_BASE_URL}/api/report-tms/planning-all/show-pna-dc`, {
+      const response = await api.get(`${API_BASE_URL}/api/report/oms/planning-all/show-pna-dc`, {
         params: { 
           hcase: 'show_pna_dc', 
           p1: warehouseId 

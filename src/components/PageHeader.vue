@@ -32,7 +32,7 @@
     </nav>
     <!-- User Info + Actions Slot -->
     <div class="flex items-center space-x-2">
-      <template v-if="authStore.currentUser && route.path !== '/tms/manage/backlog' && route.path !== '/tms/report/shipment-cost'">
+      <template v-if="authStore.currentUser && route.path !== '/oms/manage/backlog' && route.path !== '/oms/report/shipment-cost'">
         <img :src="authStore.userImgUrl || 'logo12.png'" :alt="authStore.userFullName"
           class="w-8 h-8 rounded-full object-cover border-2 border-gray-200"
           @error="$event.target.src = 'logo12.png'" />

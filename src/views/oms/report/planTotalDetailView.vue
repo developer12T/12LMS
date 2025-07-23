@@ -33,18 +33,18 @@
     </div>
     <div class="flex flex-col md:flex-row gap-4">
       <section class="flex-1 p-2">
-        <div class="rounded-lg shadow border border-gray-200 overflow-x-auto overflow-y-auto" style="max-height: calc(100vh - 140px);">
-          <table class="min-w-full text-sm p-2" style="max-height: calc(100vh - 140px);">
+        <div class="rounded-lg shadow border border-gray-200 overflow-x-auto overflow-y-auto" style="max-height: calc(100vh - 150px);">
+          <table class="min-w-full text-sm p-2" style="max-height: calc(100vh - 160px);">
             <thead class="bg-gray-100 sticky top-0">
               <tr>
                 <th class="px-3 py-2 text-center font-semibold">รหัสสินค้า</th>
                 <th class="px-3 py-2 text-center font-semibold">รายการสินค้า</th>
-                <th class="px-3 py-2 text-center font-semibold">Total CO</th>
+                <th class="px-3 py-2 text-center font-semibold">ยอดสั่งซื้อ</th>
                 <th class="px-3 py-2 text-center font-semibold">เดือนก่อน</th>
-                <th class="px-3 py-2 text-center font-semibold">เดือนปัจจุบัน</th>
+                <th class="px-3 py-2 text-center font-semibold">เครดิต</th>
                 <th class="px-3 py-2 text-center font-semibold">หน่วยรถ</th>
                 <th class="px-3 py-2 text-center font-semibold">Stock</th>
-                <th class="px-3 py-2 text-center font-semibold bg-red-200">Balance</th>
+                <th class="px-3 py-2 text-center font-semibold bg-red-200">ยอดส่วนต่าง</th>
               </tr>
             </thead>
             <tbody>
