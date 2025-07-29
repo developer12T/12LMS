@@ -38,7 +38,7 @@ const routes = [
   {
     path: '/order-detail/:productCode',
     name: 'OrderDetail',
-    component: () => import('@/views/tms/report/OrderDetailView.vue'),
+    component: () => import('@/views/oms/report/OrderDetailView.vue'),
     props: route => ({ productCode: route.params.productCode, productName: route.query.productName })
   },
   {
@@ -50,13 +50,13 @@ const routes = [
   {
     path: '/oms/report/plan-total-co-list',
     name: 'plan-total-co-list',
-    component: () => import('@/views/tms/report/PlanTotalCoList.vue'),
+    component: () => import('@/views/oms/report/PlanTotalCoList.vue'),
     props: route => ({ productCode: route.query.productCode, productName: route.query.productName })
   },
   {
     path: '/oms/report/plan-total-van',
     name: 'plan-total-van',
-    component: () => import('@/views/tms/report/PlanTotalVan.vue'),
+    component: () => import('@/views/oms/report/PlanTotalVan.vue'),
     props: route => ({ productCode: route.query.productCode, productName: route.query.productName })
   },
   { path: '/monitor-log', name: 'monitor-log', component: () => import('../views/monitorLog.vue'), meta: { requiresAuth: true, breadcrumb: 'Monitor Log' } },
