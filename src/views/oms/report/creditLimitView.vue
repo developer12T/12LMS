@@ -8,9 +8,89 @@
                     <div class="flex flex-wrap items-end gap-x-4 gap-y-2 justify-between">
                         <!-- ปุ่ม Export Excel ด้านซ้าย -->
                         <div class="flex flex-col justify-start">
+                            <!-- Summary Section -->
+                            <div v-if="creditLimitData.length > 0" class="rounded-xl">
+                                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2">
+
+                                    <!-- ✅ Total Stores -->
+                                    <div
+                                        class="bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-all p-1.5 flex flex-col items-center">
+                                        <div
+                                            class="bg-blue-100 flex flex-row items-center gap-1 p-1.5 rounded-full mb-2">
+                                            <Icon icon="mdi:store" class="w-4 h-4 text-blue-600" />
+                                        </div>
+                                        <div
+                                            class="text-sm font-bold text-gray-800 flex flex-row items-center gap-1 justify-center">
+                                            {{ creditLimitData.length }} <div class=" text-gray-500">ร้านค้า</div>
+                                        </div>
+
+                                    </div>
+
+                                    <!-- ✅ Total Unpaid Bills -->
+                                    <div
+                                        class="bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-all p-1.5 flex flex-col items-center">
+                                        <div
+                                            class="bg-orange-100 flex flex-row items-center gap-1 p-1.5 rounded-full mb-2">
+                                            <Icon icon="mdi:file-document-outline" class="w-4 h-4 text-orange-600" />
+                                        </div>
+                                        <div
+                                            class="text-sm font-bold text-gray-800 flex flex-row items-center gap-1 justify-center">
+                                            {{ totalUnpaidBills }} <div class=" text-gray-500">บิลค้างชำระ</div>
+                                        </div>
+
+                                    </div>
+
+                                    <!-- ✅ Total CO Bills -->
+                                    <div
+                                        class="bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-all p-1.5 flex flex-col items-center">
+                                        <div
+                                            class="bg-teal-100 flex flex-row items-center gap-1 p-1.5 rounded-full mb-2">
+                                            <Icon icon="mdi:truck-delivery-outline" class="w-4 h-4 text-teal-600" />
+                                        </div>
+                                        <div
+                                            class="text-sm font-bold text-gray-800 flex flex-row items-center gap-1 justify-center">
+                                            {{ totalCOBills }} <div class=" text-gray-500">CO ค้างส่ง</div>
+                                        </div>
+
+                                    </div>
+
+                                    <!-- ✅ Total Unpaid Amount -->
+                                    <div
+                                        class="bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-all p-1.5 flex flex-col items-center">
+                                        <div
+                                            class="bg-red-100 flex flex-row items-center gap-1 p-1.5 rounded-full mb-2">
+                                            <Icon icon="mdi:currency-thb" class="w-4 h-4 text-red-600" />
+                                        </div>
+                                        <div
+                                            class="text-sm font-bold text-gray-800 flex flex-row items-center gap-1 justify-center">
+                                            {{
+                                                formatCurrency(totalUnpaidAmount) }} <div class=" text-gray-500">
+                                                เงินค้างชำระ</div>
+                                        </div>
+
+                                    </div>
+
+                                    <!-- ✅ Total CO Amount -->
+                                    <div
+                                        class="bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-all p-1.5 flex flex-col items-center">
+                                        <div
+                                            class="bg-purple-100 flex flex-row items-center gap-1 p-1.5 rounded-full mb-2">
+                                            <Icon icon="mdi:currency-thb" class="w-4 h-4 text-purple-600" />
+                                        </div>
+                                        <div
+                                            class="text-sm font-bold text-gray-800 flex flex-row items-center gap-1 justify-center">
+                                            {{ formatCurrency(totalCOAmount) }} <div class=" text-gray-500">เงิน CO
+                                                ค้างส่ง</div>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+                            </div>
                         </div>
+
                         <!-- Filter Form -->
-                        <div class="flex flex-wrap items-end gap-x-4 gap-y-2 justify-center">    
+                        <div class="flex flex-wrap items-end gap-x-4 gap-y-2 justify-center">
                             <div class="flex flex-col">
                                 <label
                                     class="mb-1 text-xs font-medium text-gray-900 dark:text-white flex items-center gap-1">
@@ -25,6 +105,7 @@
                                         :value="dc.who_no">
                                         {{ dc.who_name }} : {{ dc.who_no }}
                                     </option>
+                                    <option value="all">ทั้งหมด : ทุก dc</option>
                                 </select>
                                 <p v-if="transportError" class="mt-1 text-xs text-red-600 dark:text-red-400">
                                     {{ transportError }}
@@ -45,169 +126,328 @@
                 </div>
             </div>
 
+
+
             <!-- Table Section -->
-            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mt-4 overflow-x-auto">
-                <table class="min-w-full text-xs text-gray-700 border-collapse border border-gray-300">
-                    <thead>
-                        <tr class="bg-gray-100">
-                            <th class="px-3 py-2 border border-gray-300 font-semibold text-center" rowspan="2">เขต</th>
-                            <th class="px-3 py-2 border border-gray-300 font-semibold text-center" rowspan="2">คลัง</th>
-                            <th class="px-3 py-2 border border-gray-300 font-semibold text-center" rowspan="2">รหัส</th>
-                            <th class="px-3 py-2 border border-gray-300 font-semibold text-center" rowspan="2">ชื่อร้าน
-                            </th>
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+                <!-- Loading State -->
+                <div v-if="isLoading" class="flex items-center justify-center p-8">
+                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+                </div>
 
-                            <th class="px-3 py-2 border border-gray-300 font-semibold text-center" rowspan="1"
-                                colspan="2">รายการค้างชำระ</th>
-                            <th class="px-3 py-2 border border-gray-300 font-semibold text-center" rowspan="1"
-                                colspan="2">co ค้างส่ง</th>
-                            <!-- <th class="px-3 py-2 border border-gray-300 font-semibold text-center">รายละเอียด</th> -->
-                        </tr>
-                        <tr class="bg-gray-100">
+                <!-- Error State -->
+                <div v-else-if="error" class="p-8 text-center text-red-500">
+                    {{ error }}
+                </div>
 
-                            <th class="px-3 py-2 border border-gray-300 font-semibold text-center">จำนวนบิล</th>
-                            <th class="px-3 py-2 border border-gray-300 font-semibold text-center">จำนวนเงิน</th>
+                <!-- No Data State -->
+                <div v-else-if="!creditLimitData.length && hasLoadedData" class="p-8 text-center">
+                    <div class="text-gray-500">
+                        <Icon icon="mdi:database-off" class="w-12 h-12 mx-auto mb-4" />
+                        <p class="text-lg font-medium mb-2">ไม่มีข้อมูล</p>
+                        <p class="text-sm">ไม่พบข้อมูลที่ตรงกับเงื่อนไขที่เลือก</p>
+                        <div class="mt-4 text-xs text-gray-400">
+                            <p>DC: {{ getSelectedDCName() }}</p>
+                        </div>
+                    </div>
+                </div>
 
-                            <th class="px-3 py-2 border border-gray-300 font-semibold text-center">จำนวนบิล</th>
-                            <th class="px-3 py-2 border border-gray-300 font-semibold text-center">จำนวนเงิน</th>
-                            <!-- <th class="px-3 py-2 border border-gray-300 font-semibold text-center">รายละเอียด</th> -->
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="row in tableData" :key="row.cuscode"
-                            class="hover:bg-gray-50 transition-colors cursor-pointer" @click="openBillDetail(row)">
-                            <td class="px-3 py-2 border border-gray-300 text-center">{{ row.area }}</td>
-                            <td class="px-3 py-2 border border-gray-300 text-center">{{ row.area }}</td>
-                            <td class="px-3 py-2 border border-gray-300 text-center">{{ row.cuscode }}</td>
-                            <td class="px-3 py-2 border border-gray-300">{{ row.cusname }}</td>
+                <!-- Not Selected State -->
+                <div v-else-if="!selectedDC" class="p-8 text-center">
+                    <div class="text-gray-500">
+                        <Icon icon="mdi:clipboard-text-outline" class="w-12 h-12 mx-auto mb-4" />
+                        <p class="text-lg font-medium mb-2">กรุณาเลือกเงื่อนไข</p>
+                        <p class="text-sm">เลือก DC แล้วกดปุ่ม "ดึงข้อมูล"</p>
+                        <div class="mt-4 flex flex-col items-center space-y-2 text-xs">
+                            <div class="flex items-center space-x-2">
+                                <Icon :icon="selectedDC ? 'mdi:check-circle' : 'mdi:circle-outline'"
+                                    :class="selectedDC ? 'text-green-500' : 'text-gray-400'" class="w-4 h-4" />
+                                <span :class="selectedDC ? 'text-gray-700' : 'text-gray-400'">
+                                    DC: {{ selectedDC ? getSelectedDCName() : 'ยังไม่เลือก' }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-                            <td class="px-3 py-2 border border-gray-300 text-right">{{ row.amount }}</td>
-                            <td class="px-3 py-2 border border-gray-300 text-center">{{ row.amount }}</td>
+                <!-- Never Loaded State -->
+                <div v-else-if="!hasLoadedData && selectedDC" class="p-8 text-center">
+                    <div class="text-gray-500">
+                        <Icon icon="mdi:database-search" class="w-12 h-12 mx-auto mb-4" />
+                        <p class="text-lg font-medium mb-2">พร้อมดึงข้อมูล</p>
+                        <p class="text-sm">กดปุ่ม "ดึงข้อมูล" เพื่อดูรายการ Credit Limit</p>
+                        <div class="mt-4 text-xs text-gray-400 flex flex-col items-center space-y-1">
+                            <div>
+                                <span class="font-medium text-gray-600">DC:</span>
+                                <span>{{ getSelectedDCName() }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-                            <td class="px-3 py-2 border border-gray-300 text-right">{{ row.amount }}</td>
-                            <td class="px-3 py-2 border border-gray-300 text-center">{{ row.amount }}</td>
+                <!-- Data Table with Custom Scrollbar -->
+                <div v-else-if="creditLimitData.length > 0"
+                    class="relative shadow-md sm:rounded-lg custom-scrollbar p-2 overflow-x-auto overflow-y-hidden"
+                    style="max-height: calc(100vh - 220px);">
 
-                        </tr>
-                    </tbody>
-                </table>
-                <!-- Modal -->
-                <div v-if="showModal"
-                    class="fixed inset-0 flex items-center justify-center bg-black/50 z-50 p-4 backdrop-blur-sm"
-                    @click.self="showModal = false">
-                    <div
-                        class="bg-white rounded-xl shadow-2xl max-w-6xl w-full h-[90vh] overflow-hidden transform transition-all duration-300 scale-100">
-                        <!-- Header -->
-                        <div class="bg-gradient-to-r from-blue-600 to-blue-700 text-white py-2 px-6">
-                            <div class="flex justify-between items-center">
-                                <div class="flex items-center space-x-3">
+                    <div class="flex flex-col md:flex-row md:items-center md:justify-between px-2 pt-2">
+                        <div class="flex items-center justify-center flex-row">
+                            <!-- Record Count -->
+                            <ResultCount :label="'ผลลัพธ์:'"
+                                :current="searchQuery ? filteredCreditLimitData.length : null"
+                                :total="creditLimitData.length" icon="mdi:clipboard-list-outline" iconColor="#00569D"
+                                class="" />
+                        </div>
+                        <div class="flex items-center space-x-4">
 
-                                    <div>
-                                        <span class="text-md font-bold">รายละเอียด {{ selectedRow.cusname }}</span>
-                                    </div>
-                                </div>
-                                <button @click="showModal = false"
-                                    class="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-colors duration-200">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M6 18L18 6M6 6l12 12" />
-                                    </svg>
+                            <div class=" flex flex-row gap-1 items-center">
+                                <button type="button" @click="exportToExcel"
+                                    :disabled="!(filteredCreditLimitData?.length)"
+                                    class="h-7 px-5 text-white bg-green-600 hover:bg-green-700 font-medium rounded-lg text-xs flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed">
+                                    <Icon icon="file-icons:microsoft-excel" width="12" height="12" class="mr-2" />
+                                    Export Excel
                                 </button>
+                            </div>
+                            <!-- Search Input -->
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                    <Icon icon="mdi:magnify" class="w-4 h-4 text-gray-400" />
+                                </div>
+                                <input type="text" v-model="searchQuery" placeholder="ค้นหา..."
+                                    class="w-64 pl-10 pr-3 py-1.5 text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400">
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="custom-scrollbar rounded-t-lg overflow-auto mt-2" style="height: calc(100vh - 280px);">
+                        <table
+                            class="w-full text-xs text-left text-gray-500 dark:text-gray-400 border-collapse border border-gray-300 dark:border-gray-600">
+                            <thead
+                                class="text-xs text-gray-700 uppercase bg-gray-100 dark:bg-gray-700 dark:text-gray-400 sticky top-0 z-10">
+                                <tr>
+                                    <th scope="col" colspan="1" rowspan="2"
+                                        class="px-1 py-1 text-center w-6 border border-gray-300 dark:border-gray-600">No
+                                    </th>
+                                    <th scope="col" colspan="1" rowspan="2"
+                                        class="px-1 py-1 text-center w-8 border border-gray-300 dark:border-gray-600">
+                                        เขต
+                                    </th>
+                                    <th scope="col" colspan="1" rowspan="2"
+                                        class="px-1 py-1 text-center w-8 border border-gray-300 dark:border-gray-600">
+                                        คลัง</th>
+                                    <th scope="col" colspan="1" rowspan="2"
+                                        class="px-1 py-1 text-center w-16 border border-gray-300 dark:border-gray-600">
+                                        รหัสลูกค้า</th>
+                                    <th scope="col" colspan="1" rowspan="2"
+                                        class="px-1 py-1 w-2 border border-gray-300 dark:border-gray-600">
+                                        ชื่อร้าน</th>
+                                    <th scope="col" colspan="3" rowspan="1"
+                                        class="px-1 py-1 text-center w-20 border border-gray-300 dark:border-gray-600">
+                                        รายการค้างชำระ (จำนวนบิล)</th>
+                                    <th scope="col" colspan="3" rowspan="1"
+                                        class="px-1 py-1 text-center w-20 border border-gray-300 dark:border-gray-600">
+                                        co ค้างส่ง</th>
+                                </tr>
+                                <tr>
+                                    <th scope="col"
+                                        class="px-1 py-1 text-center w-20 border border-gray-300 dark:border-gray-600">
+                                        จำนวนบิล</th>
+                                    <th scope="col"
+                                        class="px-1 py-1 text-center w-20 border border-gray-300 dark:border-gray-600">
+                                        จำนวนเงิน</th>
+                                    <th scope="col"
+                                        class="px-1 py-1 text-center w-20 border border-gray-300 dark:border-gray-600">
+                                        เกินกำหนด</th>
+                                    <th scope="col"
+                                        class="px-1 py-1 text-center w-20 border border-gray-300 dark:border-gray-600">
+                                        จำนวนบิล</th>
+                                    <th scope="col"
+                                        class="px-1 py-1 text-center w-20 border border-gray-300 dark:border-gray-600">
+                                        จำนวนเงิน</th>
+
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="(row, index) in filteredCreditLimitData" :key="row.dap_customer"
+                                    class="hover:bg-gray-50 transition-colors cursor-pointer"
+                                    @click="openBillDetail(row)">
+                                    <td class="px-1 py-1 border border-gray-300 text-center">{{ index + 1 }}</td>
+                                    <td class="px-1 py-1 border border-gray-300 text-center">{{ row.dap_area }}</td>
+                                    <td class="px-1 py-1 border border-gray-300 text-center">{{ row.warehouse }}</td>
+                                    <td class="px-1 py-1 border border-gray-300 text-center">{{ row.dap_customer }}</td>
+                                    <td class="px-1 py-1 border border-gray-300">{{ row.dap_name }}</td>
+                                    <td class="px-1 py-1 border border-gray-300 text-center">{{ row.count_inv }}</td>
+                                    <td class="px-1 py-1 border border-gray-300 text-right">{{
+                                        formatCurrency(row.sum_inv) }}
+                                    </td>
+                                    <td class="px-1 py-1 border border-gray-300 text-center"
+                                        :class="row.inv_days_from_today < 0 || row.inv_days_from_today > 0 ? 'text-red-500 bg-red-100' : ''">{{
+                                            row.inv_days_from_today < 0 ? splitNumber(row.inv_days_from_today) + ' วัน' :
+                                            (row.inv_days_from_today  ||  '-' ) }}</td>
+                                    <td class="px-1 py-1 border border-gray-300 text-center">{{ row.count_co }}</td>
+                                    <td class="px-1 py-1 border border-gray-300 text-right">{{
+                                        formatCurrency(row.sum_co) }}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal -->
+            <div v-if="showModal"
+                class="fixed inset-0 flex items-center justify-center bg-black/50 z-50 p-4 top-0  backdrop-blur-sm"
+                @click.self="showModal = false">
+                <div
+                    class="bg-white rounded-xl shadow-2xl max-w-6xl w-full h-[90vh] overflow-hidden transform transition-all  duration-300 scale-100">
+                    <!-- Header -->
+                    <div class="bg-gradient-to-r from-[#00569D] to-[#004080] text-white py-2 px-6">
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center space-x-3">
+
+                                <div>
+                                    <span class="text-md font-medium">รายละเอียด {{ selectedRow.dap_customer }} : {{
+                                        selectedRow.dap_name || selectedRow.dap_customer || 'ไม่ระบุ' }}</span>
+                                </div>
+                            </div>
+                            <button @click="showModal = false"
+                                class="w-6 h-6 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-colors duration-200">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Content -->
+                    <div class="p-6 overflow-y-hidden space-y-6">
+                        <!-- ตารางรายการค้างชำระ -->
+                        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 overflow-y-hidden">
+                            <div
+                                class="bg-gradient-to-r from-[#6495ed] to-[#6495ed] text-white text-sm py-2 px-4 font-normal rounded-t-lg -mt-4 -mx-4 mb-4">
+                                <div class="flex items-center gap-2">
+                                    <Icon icon="mdi:file-document-outline" class="w-4 h-4" />
+                                    รายการค้างชำระ ({{ selectedRow.list_inv?.length || 0 }} รายการ)
+                                </div>
+                            </div>
+                            <div class="overflow-x-auto overflow-y-auto" style="max-height: calc(100vh - 500px);">
+                                <table class="min-w-full text-xs text-gray-700 border-collapse border border-gray-300"
+                                    style="max-height: calc(100vh - 500px);">
+                                    <thead>
+                                        <tr class="bg-gray-100 sticky top-0">
+                                            <th class="px-3 py-2 border border-gray-300 font-semibold text-center">
+                                                เลขที่ inv.</th>
+                                            <th class="px-3 py-2 border border-gray-300 font-semibold text-center">
+                                                วันที่ Invoice</th>
+                                            <th class="px-3 py-2 border border-gray-300 font-semibold text-center">
+                                                ครบกำหนด</th>
+                                            <th class="px-3 py-2 border border-gray-300 font-semibold text-center">
+                                                จำนวนเงิน</th>
+                                            <th class="px-3 py-2 border border-gray-300 font-semibold text-center">
+                                                เกินกำหนด</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-if="!selectedRow.list_inv" class="text-center py-12">
+                                            <td colspan="4" class="text-center py-12">
+                                                <p class="text-gray-500 text-sm">ไม่มีข้อมูลรายการค้างชำระ</p>
+                                            </td>
+                                        </tr>
+                                        <tr v-else v-for="(bill, index) in selectedRow.list_inv"
+                                            :key="bill.dio_inv_order"
+                                            class="hover:bg-gray-50 transition-colors cursor-pointer">
+                                            <td class="px-3 py-2 border border-gray-300 text-center">
+                                                <div class="font-medium text-gray-900">{{ bill.dio_inv_order?.trim()
+                                                }}</div>
+                                            </td>
+                                            <td class="px-3 py-2 border border-gray-300 text-center">
+                                                <div class="text-gray-700">{{
+                                                    formatDateFromYYYYMMDD(bill.dio_inv_date) }}</div>
+                                            </td>
+                                            <td class="px-3 py-2 border border-gray-300 text-center">
+                                                <div class="text-gray-700">{{
+                                                    formatDateFromYYYYMMDD(bill.dio_due_date) }}</div>
+                                            </td>
+                                            <td class="px-3 py-2 border border-gray-300 text-right">
+                                                <div class="text-gray-700 font-medium">{{ bill.dio_amount }}</div>
+                                            </td>
+                                            <td class="px-3 py-2 border border-gray-300 text-center"
+                                                :class="bill.days_from_today < 0 ? 'text-red-500 bg-red-100' : ''">
+                                                <div >{{
+                                                    bill.days_from_today < 0 ? splitNumber(bill.days_from_today) + ' วัน'
+                                                        : '-' }}</div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
 
-                        <!-- Content -->
-                        <div class="p-6 max-h-[90vh] overflow-auto space-y-6">
-                            <!-- ตารางรายการค้างชำระ -->
-                            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-                                <div class="bg-gradient-to-r from-[#00569D] to-[#004080] text-white py-2 px-4 font-semibold rounded-t-lg -mt-4 -mx-4 mb-4">
-                                    <div class="flex items-center gap-2">
-                                        <Icon icon="mdi:file-document-outline" class="w-4 h-4" />
-                                        รายการค้างชำระ
-                                    </div>
-                                </div>
-                                <div class="overflow-x-auto">
-                                    <table class="min-w-full text-xs text-gray-700 border-collapse border border-gray-300">
-                                        <thead>
-                                            <tr class="bg-gray-100">
-                                                <th class="px-3 py-2 border border-gray-300 font-semibold text-center">เลขที่ inv.</th>
-                                                <th class="px-3 py-2 border border-gray-300 font-semibold text-center">จำนวน</th>
-                                                <th class="px-3 py-2 border border-gray-300 font-semibold text-center">ครบกำหนด</th>
-                                                <th class="px-3 py-2 border border-gray-300 font-semibold text-center">เกินกำหนด</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr v-for="(bill, index) in selectedRow.outstandingPayments" 
-                                                :key="bill.invoiceNo"
-                                                class="hover:bg-gray-50 transition-colors cursor-pointer">
-                                                <td class="px-3 py-2 border border-gray-300 text-center">
-                                                    <div class="font-medium text-gray-900">{{ bill.invoiceNo }}</div>
-                                                </td>
-                                                <td class="px-3 py-2 border border-gray-300 text-center">
-                                                    <div class="text-gray-700 font-medium">{{ bill.amount }}</div>
-                                                </td>
-                                                <td class="px-3 py-2 border border-gray-300 text-center">
-                                                    <div class="text-gray-700">{{ bill.dueDate }}</div>
-                                                </td>
-                                                <td class="px-3 py-2 border border-gray-300 text-center">
-                                                    <span class="inline-block px-2 py-1 rounded text-xs font-medium"
-                                                          :class="bill.overdue.includes('-') ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'">
-                                                        {{ bill.overdue }}
-                                                    </span>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
+                        <!-- ตารางรายการค้างส่ง -->
+                        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 ">
+                            <div
+                                class="bg-gradient-to-r from-[#138496] to-[#138496] text-white py-2 px-4 text-sm font-normal rounded-t-lg -mt-4 -mx-4 mb-4">
+                                <div class="flex items-center gap-2">
+                                    <Icon icon="mdi:truck-delivery-outline" class="w-4 h-4" />
+                                    รายการค้างส่ง ({{ selectedRow.list_co?.length || 0 }} รายการ)
                                 </div>
                             </div>
+                            <div class="overflow-x-auto overflow-y-auto" style="max-height: calc(100vh - 500px);">
+                                <table class="min-w-full text-xs text-gray-700 border-collapse border border-gray-300">
+                                    <thead>
+                                        <tr class="bg-gray-100 sticky top-0">
+                                            <th class="px-3 py-2 border border-gray-300 font-semibold text-center">
+                                                เลขที่ CO</th>
+                                            <th class="px-3 py-2 border border-gray-300 font-semibold text-center">
+                                                วันที่ CO</th>
+                                            <th class="px-3 py-2 border border-gray-300 font-semibold text-center">
+                                                ครบกำหนด</th>
+                                            <th class="px-3 py-2 border border-gray-300 font-semibold text-center">
+                                                จำนวนเงิน</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-if="!selectedRow.list_co" class="text-center py-12">
+                                            <td colspan="4" class="text-center py-12">
+                                                <p class="text-gray-500 text-sm">ไม่มีข้อมูลรายการค้างส่ง</p>
+                                            </td>
+                                        </tr>
+                                        <tr v-else v-for="(co, index) in selectedRow.list_co" :key="co.dco_co_order"
+                                            class="hover:bg-gray-50 transition-colors cursor-pointer">
+                                            <td class="px-3 py-2 border border-gray-300 text-center">
+                                                {{ co.dco_co_order?.trim() }}
+                                            </td>
+                                            <td class="px-3 py-2 border border-gray-300 text-center">
+                                                <div class="text-gray-700">{{ formatDateFromYYYYMMDD(co.dco_co_date)
+                                                }}</div>
+                                            </td>
+                                            <td class="px-3 py-2 border border-gray-300 text-center">
+                                                <div class="text-gray-700">{{
+                                                    formatDateFromYYYYMMDD(co.dco_send_date) }}</div>
+                                            </td>
+                                            <td class="px-3 py-2 border border-gray-300 text-right">
+                                                <div class="text-gray-700 font-medium">{{ co.dco_amount }}</div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
 
-                            <!-- ตารางรายการค้างส่ง -->
-                            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-                                <div class="bg-gradient-to-r from-[#00569D] to-[#004080] text-white py-2 px-4 font-semibold rounded-t-lg -mt-4 -mx-4 mb-4">
-                                    <div class="flex items-center gap-2">
-                                        <Icon icon="mdi:truck-delivery-outline" class="w-4 h-4" />
-                                        รายการค้างส่ง
-                                    </div>
-                                </div>
-                                <div class="overflow-x-auto">
-                                    <table class="min-w-full text-xs text-gray-700 border-collapse border border-gray-300">
-                                        <thead>
-                                            <tr class="bg-gray-100">
-                                                <th class="px-3 py-2 border border-gray-300 font-semibold text-center">เลขที่ CO</th>
-                                                <th class="px-3 py-2 border border-gray-300 font-semibold text-center">จำนวน</th>
-                                                <th class="px-3 py-2 border border-gray-300 font-semibold text-center">ครบกำหนด</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr v-for="(co, index) in selectedRow.outstandingItems" 
-                                                :key="co.coNo"
-                                                class="hover:bg-gray-50 transition-colors cursor-pointer">
-                                                <td class="px-3 py-2 border border-gray-300 text-center">
-                                                    <span class="inline-block px-2 py-1 rounded text-xs font-medium bg-teal-100 text-teal-800">
-                                                        {{ co.coNo }}
-                                                    </span>
-                                                </td>
-                                                <td class="px-3 py-2 border border-gray-300 text-center">
-                                                    <div class="text-gray-700 font-medium">{{ co.amount }}</div>
-                                                </td>
-                                                <td class="px-3 py-2 border border-gray-300 text-center">
-                                                    <div class="text-gray-700">{{ co.dueDate }}</div>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
+                        <!-- Empty State -->
+                        <div v-if="(!selectedRow.list_inv || selectedRow.list_inv.length === 0) &&
+                            (!selectedRow.list_co || selectedRow.list_co.length === 0)" class="text-center py-12">
+                            <div
+                                class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
                             </div>
-
-                            <!-- Empty State -->
-                            <div v-if="(!selectedRow.outstandingPayments || selectedRow.outstandingPayments.length === 0) && 
-                                       (!selectedRow.outstandingItems || selectedRow.outstandingItems.length === 0)" 
-                                 class="text-center py-12">
-                                <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                                    </svg>
-                                </div>
-                                <p class="text-gray-500 text-sm">ไม่มีข้อมูล</p>
-                            </div>
+                            <p class="text-gray-500 text-sm">ไม่มีข้อมูลรายการค้างชำระและค้างส่ง</p>
                         </div>
                     </div>
                 </div>
@@ -219,70 +459,75 @@
 <script setup>
 import { ref, onMounted, computed, watch } from 'vue';
 import { Icon } from '@iconify/vue';
-import { useAuthStore } from '@/stores';
 import { useReportTmsStore } from '@/stores/modules/reportTms';
 import { showError, showWarning, showSuccess } from '@/utils/toast';
 import * as XLSX from 'xlsx';
-import axios from 'axios';
 import ResultCount from '@/components/ResultCount.vue';
 
 
 // Stores
-const authStore = useAuthStore();
 const reportTmsStore = useReportTmsStore();
 
 // Reactive data
 const selectedDC = ref('');
-const startDate = ref('');
-const endDate = ref('');
 const hasLoadedData = ref(false);
 const searchQuery = ref('');
 
-// State สำหรับ DC (transportOptions)
-const transportOptions = computed(() => reportTmsStore.nobillWhList.data || []);
-const isLoadingTransport = ref(false);
-const transportError = ref(null);
+// State สำหรับ DC loading
+const isLoadingTransport = computed(() => reportTmsStore.loadingNoBillWhList);
+const transportError = computed(() => reportTmsStore.errorNoBillWhList);
 
 // Computed properties from stores
 const isLoading = computed(() => reportTmsStore.loadingCreditLimit);
 const error = computed(() => reportTmsStore.errorCreditLimit);
 const creditLimitData = computed(() => reportTmsStore.creditLimitData);
 
-const hasCreditLimitData = computed(() => creditLimitData.value.length > 0);
+// Summary computed properties
+const totalUnpaidBills = computed(() => {
+    return creditLimitData.value.reduce((total, item) => total + (item.count_inv || 0), 0);
+});
 
-// Load transport data on component mount
+const totalUnpaidAmount = computed(() => {
+    return creditLimitData.value.reduce((total, item) => total + (item.sum_inv || 0), 0);
+});
+
+const totalCOBills = computed(() => {
+    return creditLimitData.value.reduce((total, item) => total + (item.count_co || 0), 0);
+});
+
+const totalCOAmount = computed(() => {
+    return creditLimitData.value.reduce((total, item) => total + (item.sum_co || 0), 0);
+});
+
+// Load data on component mount
 onMounted(() => {
-    loadTransportData();
-    if (window?.Datepicker) {
-        document.querySelectorAll('[datepicker]').forEach(el => {
-            if (!el._flowbiteDatepicker) {
-                new window.Datepicker(el);
-            }
-        });
-    }
     selectedDC.value = localStorage.getItem('creditlimit_selectedDC') || '';
     reportTmsStore.fetchNoBillWhList();
 });
 
-// Function to load transport data
-const loadTransportData = async () => {
-    isLoadingTransport.value = true;
-    transportError.value = null;
-    try {
-        const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/report/oms/nobill/option-wh`);
-        // สมมติ response.data เป็น array ของ DC
-        transportOptions.value = response.data || [];
-    } catch (err) {
-        transportError.value = 'ไม่สามารถโหลดข้อมูล DC ได้';
-    } finally {
-        isLoadingTransport.value = false;
-    }
-};
 
-// Function to format date to YYYYMMDD
-function formatDateYYYYMMDD(dateStr) {
+
+
+
+// Function to format currency
+function formatCurrency(amount) {
+    if (!amount) return '0.00';
+    return Number(amount).toLocaleString('en-US', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    });
+}
+
+// Function to format date from YYYYMMDD to DD/MM/YYYY
+function formatDateFromYYYYMMDD(dateStr) {
     if (!dateStr || dateStr.length !== 8) return dateStr;
     return `${dateStr.slice(6, 8)}/${dateStr.slice(4, 6)}/${dateStr.slice(0, 4)}`;
+}
+
+// Function to split number and remove minus sign
+function splitNumber(num) {
+    if (!num) return '0';
+    return Math.abs(num).toString();
 }
 
 // Function to load credit limit data
@@ -292,7 +537,7 @@ const loadData = async () => {
         return;
     }
     hasLoadedData.value = true;
-    
+
     const result = await reportTmsStore.fetchCreditLimitData(selectedDC.value);
     if (result.success) {
         console.log('Credit limit data loaded:', result.data);
@@ -304,48 +549,13 @@ const loadData = async () => {
 
 const onDCChange = () => {
     console.log(`Selected DC: ${selectedDC.value}`);
-    const selectedTransport = (transportOptions.value.data || []).find(t => t.who_no === selectedDC.value);
+    const selectedTransport = (reportTmsStore.nobillWhList.data || []).find(t => t.who_no === selectedDC.value);
     if (selectedTransport) {
         console.log('Selected transport:', selectedTransport);
     }
 };
 
-// Function to format date for Excel
-const formatExcelDate = (str) => {
-    if (!str) return '';
-    // กรณี YYYYMMDD
-    if (/^\\d{8}$/.test(str)) {
-        return `${str.slice(6, 8)}/${str.slice(4, 6)}/${str.slice(0, 4)}`;
-    }
-    // กรณี YYYY-MM-DD
-    if (/^\\d{4}-\\d{2}-\\d{2}$/.test(str)) {
-        const [y, m, d] = str.split('-');
-        return `${d}/${m}/${y}`;
-    }
-    // กรณี Date object
-    if (str instanceof Date && !isNaN(str)) {
-        return `${str.getDate().toString().padStart(2, '0')}/${(str.getMonth() + 1).toString().padStart(2, '0')}/${str.getFullYear()}`;
-    }
-    return str;
-};
 
-// Function to format date as DD-MM-YYYY for Excel (for po_detail)
-const formatExcelDateDMY = (dateStr) => {
-    if (!dateStr) return '';
-    let dateObj = dateStr;
-    if (typeof dateStr === 'string' && dateStr.includes('T')) {
-        dateObj = new Date(dateStr);
-    } else if (dateStr instanceof Date) {
-        dateObj = dateStr;
-    } else {
-        return '';
-    }
-    const day = String(dateObj.getDate()).padStart(2, '0');
-    const month = String(dateObj.getMonth() + 1).padStart(2, '0');
-    const year = dateObj.getFullYear();
-    if (day === '01' && month === '01' && year === 1900) return '';
-    return `${day}-${month}-${year}`;
-};
 
 // Export to Excel function
 const exportToExcel = () => {
@@ -362,21 +572,21 @@ const exportToExcel = () => {
 
     // Prepare header row
     const headerRow = [
-        'ลำดับ', 'เขต', 'คลัง', 'รหัส', 'ชื่อร้าน', 'รายการค้างชำระ (จำนวนบิล)', 'รายการค้างชำระ (จำนวนเงิน)', 
+        'ลำดับ', 'เขต', 'คลัง', 'รหัส', 'ชื่อร้าน', 'รายการค้างชำระ (จำนวนบิล)', 'รายการค้างชำระ (จำนวนเงิน)',
         'co ค้างส่ง (จำนวนบิล)', 'co ค้างส่ง (จำนวนเงิน)'
     ];
 
     // Prepare data rows
     const dataRows = filteredCreditLimitData.value.map((item, index) => [
         index + 1,
-        item.area || '',
+        item.dap_area || '',
         item.warehouse || '',
-        item.cuscode || '',
-        item.cusname || '',
-        item.outstanding_payments_bills || '',
-        item.outstanding_payments_amount || '',
-        item.outstanding_items_bills || '',
-        item.outstanding_items_amount || ''
+        item.dap_customer || '',
+        item.dap_name || '',
+        item.count_inv || '',
+        formatCurrency(item.sum_inv) || '',
+        item.count_co || '',
+        formatCurrency(item.sum_co) || ''
     ]);
 
     // Combine all rows
@@ -415,7 +625,7 @@ const exportToExcel = () => {
 
 // Helper function to get selected DC name
 const getSelectedDCName = () => {
-    const selectedTransport = (transportOptions.value.data || []).find(t => t.who_no === selectedDC.value);
+    const selectedTransport = (reportTmsStore.nobillWhList.data || []).find(t => t.who_no === selectedDC.value);
     return selectedTransport ? selectedTransport.who_name : 'เลือก DC';
 };
 
@@ -427,101 +637,25 @@ const filteredCreditLimitData = computed(() => {
     const searchTerm = searchQuery.value.toLowerCase();
     return creditLimitData.value.filter(item => {
         return (
-            (item.area && item.area.toLowerCase().includes(searchTerm)) ||
-            (item.warehouse && item.warehouse.toLowerCase().includes(searchTerm)) ||
-            (item.cuscode && item.cuscode.toLowerCase().includes(searchTerm)) ||
-            (item.cusname && item.cusname.toLowerCase().includes(searchTerm)) ||
-            (item.outstanding_payments && item.outstanding_payments.toString().toLowerCase().includes(searchTerm)) ||
-            (item.outstanding_items && item.outstanding_items.toString().toLowerCase().includes(searchTerm))
+            (item.dap_area && item.dap_area.toLowerCase().includes(searchTerm)) ||
+            (item.warehouse && item.warehouse.toString().toLowerCase().includes(searchTerm)) ||
+            (item.dap_customer && item.dap_customer.toLowerCase().includes(searchTerm)) ||
+            (item.dap_name && item.dap_name.toLowerCase().includes(searchTerm)) ||
+            (item.sum_inv && item.sum_inv.toString().toLowerCase().includes(searchTerm)) ||
+            (item.sum_co && item.sum_co.toString().toLowerCase().includes(searchTerm))
         );
     });
 });
 
-// Virtual scrolling properties
-const rowHeight = 40; // ความสูงแต่ละแถว (px)
-const visibleRows = 20; // จำนวนแถวที่แสดงพร้อมกัน
-const scrollTop = ref(0);
-const containerHeight = ref(0);
 
-// คำนวณแถวที่ควรแสดงจาก scroll position
-const virtualScrollData = computed(() => {
-    if (!filteredCreditLimitData.value) return [];
-
-    const startIndex = Math.floor(scrollTop.value / rowHeight);
-    const endIndex = Math.min(startIndex + visibleRows, filteredCreditLimitData.value.length);
-
-    return filteredCreditLimitData.value.slice(startIndex, endIndex).map((item, index) => ({
-        ...item,
-        virtualIndex: startIndex + index,
-        originalIndex: startIndex + index
-    }));
-});
-
-// คำนวณ padding-top เพื่อให้ scroll bar ถูกต้อง
-const topPadding = computed(() => {
-    return Math.floor(scrollTop.value / rowHeight) * rowHeight;
-});
-
-// คำนวณ padding-bottom เพื่อให้ความสูงรวมเท่าเดิม
-const bottomPadding = computed(() => {
-    if (!filteredCreditLimitData.value) return 0;
-    const totalHeight = filteredCreditLimitData.value.length * rowHeight;
-    const visibleHeight = visibleRows * rowHeight;
-    const remainingHeight = totalHeight - visibleHeight - topPadding.value;
-    return Math.max(0, remainingHeight);
-});
-
-// จัดการ scroll event
-const handleScroll = (event) => {
-    scrollTop.value = event.target.scrollTop;
-};
-
-// ตั้งค่าความสูง container
-const setContainerHeight = () => {
-    const container = document.querySelector('.virtual-table-container');
-    if (container) {
-        containerHeight.value = container.clientHeight;
-    }
-};
 
 watch([selectedDC], ([dc]) => {
     localStorage.setItem('creditlimit_selectedDC', dc || '');
 });
 
-const tableData = [
-    {
-        area: 'BE101',
-        cuscode: '6501141',
-        cusname: 'ร้านประไพร',
-        invoice: '40',
-        amount: '50',
-        bill: 'BILL001',
-        outstandingPayments: [
-            { invoiceNo: '2568121014025', amount: '37,350.00 บาท', dueDate: '18 กรกฎาคม 2568', overdue: '-11 วัน' },
-            { invoiceNo: '2568121014953', amount: '11,952.00 บาท', dueDate: '31 กรกฎาคม 2568', overdue: '2 วัน' },
-            { invoiceNo: '0250002575', amount: '73,740.00 บาท', dueDate: '30 กรกฎาคม 2568', overdue: '1 วัน' }
-        ],
-        outstandingItems: [
-            { coNo: '680718034', amount: '24,900.00 บาท', dueDate: '5 สิงหาคม 2568' }
-        ]
-    },
-    {
-        area: 'BE102',
-        cuscode: '6501142',
-        cusname: 'ร้านสมใจ',
-        invoice: '20',
-        amount: '30',
-        bill: 'BILL002',
-        outstandingPayments: [
-            { invoiceNo: '2568121014025', amount: '37,350.00 บาท', dueDate: '18 กรกฎาคม 2568', overdue: '-11 วัน' },
-            { invoiceNo: '2568121014953', amount: '11,952.00 บาท', dueDate: '31 กรกฎาคม 2568', overdue: '2 วัน' }
-        ],
-        outstandingItems: [
-            { coNo: '680718034', amount: '24,900.00 บาท', dueDate: '5 สิงหาคม 2568' },
-            { coNo: '680718035', amount: '15,600.00 บาท', dueDate: '10 สิงหาคม 2568' }
-        ]
-    }
-];
+
+
+
 
 const showModal = ref(false);
 const selectedRow = ref({});
@@ -575,85 +709,5 @@ function openBillDetail(row) {
     .custom-scrollbar::-webkit-scrollbar-thumb:hover {
         background: #64748b;
     }
-}
-
-.edit-row td {
-    border-bottom: 2px solid #fbbf24;
-    /* amber-400 */
-}
-
-.edit-row:hover {
-    background-color: transparent !important;
-}
-
-.edit-row-content {
-    border-bottom: 2px solid #fbbf24;
-    /* amber-400 */
-}
-
-/* Slide and Fade Transition */
-.slide-fade-enter-active {
-    transition: all 0.8s ease-in-out;
-}
-
-.slide-fade-leave-active {
-    transition: all 0.8s ease-in-out;
-}
-
-.slide-fade-enter-from,
-.slide-fade-leave-to {
-    transform: translateY(-20px);
-    opacity: 0;
-}
-
-.animate-fade-in {
-    animation: fadeIn 0.3s ease-in-out;
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: scale(0.95);
-    }
-
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
-}
-
-/* Virtual scrolling styles */
-.virtual-table-container {
-    scrollbar-width: thin;
-    scrollbar-color: #cbd5e0 #f7fafc;
-}
-
-.virtual-table-container::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-}
-
-.virtual-table-container::-webkit-scrollbar-track {
-    background: #f7fafc;
-    border-radius: 4px;
-}
-
-.virtual-table-container::-webkit-scrollbar-thumb {
-    background: #cbd5e0;
-    border-radius: 4px;
-}
-
-.virtual-table-container::-webkit-scrollbar-thumb:hover {
-    background: #a0aec0;
-}
-
-/* Ensure table rows have consistent height */
-.virtual-table-container tbody tr {
-    height: 40px;
-}
-
-/* Smooth scrolling */
-.virtual-table-container {
-    scroll-behavior: smooth;
 }
 </style>
