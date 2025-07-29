@@ -20,6 +20,8 @@
     "exceljs": "^4.4.0",
     "file-saver": "^2.0.5",
     "flowbite": "^1.7.0",
+    "jspdf": "^3.0.1",
+    "jspdf-autotable": "^5.0.2",
     "moment": "^2.29.4",
     "pdfmake": "^0.2.10",
     "pinia": "^2.1.4",

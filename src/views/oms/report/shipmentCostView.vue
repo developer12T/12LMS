@@ -158,6 +158,16 @@
               Export Excel
             </button>
 
+                        <button type="button" @click="exportToPdf" :disabled="!filteredTransportCostData.length || isPrinting"
+              class="text-white bg-red-600 hover:bg-red-700 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-xs px-3 py-1.5 text-center inline-flex items-center justify-center dark:focus:ring-red-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+              <Icon v-if="!isPrinting" icon="mdi:printer" width="16" height="16" class="mr-1.5" />
+              <svg v-else class="animate-spin mr-1.5" width="16" height="16" viewBox="0 0 24 24" fill="none">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"/>
+              </svg>
+              {{ isPrinting ? 'กำลังสร้างหน้าพิมพ์...' : 'พิมพ์รายงาน' }}
+            </button>
+
             <div class="relative">
               <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                 <Icon icon="mdi:magnify" class="w-4 h-4 text-gray-400" />
@@ -220,6 +230,44 @@
         </div>
       </div>
     </div>
+
+    <!-- PDF Modal -->
+    <div v-if="showPdfModal" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+      <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+        <!-- Background overlay -->
+        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" @click="closePdfModal"></div>
+
+        <!-- Modal panel -->
+        <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-6xl sm:w-full">
+          <!-- Modal header -->
+          <div class="bg-gray-50 px-4 py-3 sm:px-6 flex justify-between items-center">
+            <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">
+              รายงานค่าขนส่ง - {{ pdfFileName }}
+            </h3>
+            <div class="flex items-center gap-2">
+              <button @click="downloadPdf" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                <Icon icon="mdi:download" class="w-4 h-4 mr-1" />
+                ดาวน์โหลด
+              </button>
+              <button @click="closePdfModal" class="inline-flex items-center px-3 py-2 border border-gray-300 text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                <Icon icon="mdi:close" class="w-4 h-4 mr-1" />
+                ปิด
+              </button>
+            </div>
+          </div>
+
+          <!-- Modal body -->
+          <div class="bg-white px-4 py-5 sm:p-6">
+            <div class="w-full h-96 border border-gray-300 rounded-lg overflow-hidden">
+              <iframe v-if="pdfUrl" :src="pdfUrl" class="w-full h-full" frameborder="0"></iframe>
+              <div v-else class="flex items-center justify-center h-full">
+                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -233,6 +281,9 @@ import { showError } from '@/utils/toast';
 import PageHeader from '@/components/PageHeader.vue';
 import ExcelJS from 'exceljs';
 import { saveAs } from 'file-saver';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
+import theme from 'tailwindcss/defaultTheme';
 
 const reportTmsStore = useReportTmsStore();
 const { roudcosPayOptions, codeTruckOptions } = storeToRefs(reportTmsStore);
@@ -245,6 +296,7 @@ const searchQuery = ref('');
 const hasSearched = ref(false);
 const transportCostData = ref([]);
 const isLoading = ref(false);
+const isPrinting = ref(false);
 
 // Summary data
 const summaryData = ref({
@@ -373,25 +425,38 @@ const exportToExcel = async () => {
 
   // Header section
   sheet.addRow(['', '', '', 'รายงานค่าขนส่ง', '', '', '', '', '']); // r0
-  sheet.addRow([summary.truckInfo.DAFWNO || '', '', summary.truckInfo.IDSUNM || '', '', summary.truckInfo.DAE0B4 || '', '', '', '', '']); // r1
-  sheet.addRow([summary.calpallet.CONN || '', '', dateStr, '', '', '', '', '', '']); // r2
+  sheet.addRow(['รหัส : '+summary.truckInfo.DAFWNO || '', '', 'ชื่อ : '+summary.truckInfo.IDSUNM || '', '', 'เส้นทาง : '+summary.truckInfo.DAE0B4 || '', '', '', '', '']); // r1
+  sheet.addRow(['เลขที่ : '+summary.calpallet.CONN || '', '', 'วันที่ : '+dateStr, '', '', '', '', '', '']); // r2
   sheet.addRow([]); // r3 (empty)
 
   // Table header
   sheet.addRow(['อำเภอ', 'ประเภท', 'เลขที่เอกสาร', 'จำนวน', 'ราคา/หีบ', 'ค่าขนส่ง', 'ราคาพิเศษ', 'รวมค่าขนส่ง']); // r4
+  // Center align the table header row
+  sheet.getRow(5).eachCell(cell => {
+    cell.alignment = { vertical: 'middle', horizontal: 'center' };
+    cell.font = { bold: true };
+  });
 
   // Table data
-  filteredTransportCostData.value.forEach(item => {
-    sheet.addRow([
+  filteredTransportCostData.value.forEach((item, idx) => {
+    const row = sheet.addRow([
       item.ROUDES || '',
       item.ORTP || '',
       item.ORNO || '',
-      Number(item.FG_AMOUNT) || '',
-      Number(item.FORCOST) || '',
-      Number(item.Cost_transport) || '',
-      Number(item.SP_Cost) || '',
-      Number(item.Total_cost) || ''
+      item.FG_AMOUNT && Number(item.FG_AMOUNT) !== 0 ? Number(item.FG_AMOUNT).toFixed(2) : '-',
+      item.FORCOST && Number(item.FORCOST) !== 0 ? Number(item.FORCOST).toFixed(2) : '-',
+      item.Cost_transport && Number(item.Cost_transport) !== 0 ? Number(item.Cost_transport).toFixed(2) : '-',
+      item.SP_Cost && Number(item.SP_Cost) !== 0 ? Number(item.SP_Cost).toFixed(2) : '-',
+      item.Total_cost && Number(item.Total_cost) !== 0 ? Number(item.Total_cost).toFixed(2) : '-',
     ]);
+    // Center align columns 1-3, right align columns 4-8
+    row.eachCell((cell, colNumber) => {
+      if (colNumber >= 4 && colNumber <= 8) {
+        cell.alignment = { vertical: 'middle', horizontal: 'right' };
+      } else {
+        cell.alignment = { vertical: 'middle', horizontal: 'center' };
+      }
+    });
   });
 
   // Sum row
@@ -403,19 +468,30 @@ const exportToExcel = async () => {
   sheet.addRow([]);
 
   // สรุปค่าต่างๆ
-  sheet.addRow(['', '', '', '', '', '', 'ปรับราคาน้ำมัน', (summary.calpallet.OILRETENTION || 0) + '%']);
-  sheet.addRow(['', '', '', '', '', '', 'ค่าเที่ยว', summary.calpallet.helper_cost?.toLocaleString() || '0.00']);
-  sheet.addRow(['', '', '', '', '', '', 'ค่าพาเลท', summary.calpallet.palletcost?.toLocaleString() || '0.00']);
-  sheet.addRow(['', '', '', '', '', '', 'เงินพิเศษ', summary.calpallet.EXTRA?.toLocaleString() || '0.00']);
-  sheet.addRow(['', '', '', '', '', '', 'รวมทั้งสิ้น', summary.calpallet.COST?.toLocaleString() || '0.00']);
+  [
+    ['ปรับราคาน้ำมัน', (summary.calpallet.OILRETENTION || 0) + '%'],
+    ['ค่าเที่ยว', summary.calpallet.helper_cost?.toLocaleString() || '0.00'],
+    ['ค่าพาเลท', summary.calpallet.palletcost?.toLocaleString() || '0.00'],
+    ['เงินพิเศษ', summary.calpallet.EXTRA?.toLocaleString() || '0.00'],
+    ['รวมทั้งสิ้น', summary.calpallet.COST?.toLocaleString() || '0.00']
+  ].forEach(arr => {
+    const row = sheet.addRow(['', '', '', '', '', '', arr[0], arr[1]]);
+    row.getCell(8).alignment = { vertical: 'middle', horizontal: 'right' };
+  });
 
   // ช่องว่าง
   sheet.addRow([]);
+  sheet.addRow([]);
 
   // ช่องเซ็นชื่อ
-  sheet.addRow(['ผู้จัดทำรายงาน……………………………………', '', '', '', '', '', '', '', 'ผู้รับรองรายงาน……………………………………']);
+  const signRow = sheet.addRow(['ผู้จัดทำรายงาน……………………………………', '', '', '', '', 'ผู้รับรองรายงาน……………………………………', '', '', '']);
+  // Merge columns 1-2 for ผู้จัดทำรายงาน and 6-7 for ผู้รับรองรายงาน
+  const signRowIdx2 = signRow.number;
+  sheet.mergeCells(`A${signRowIdx2}:C${signRowIdx2}`);
+  sheet.mergeCells(`F${signRowIdx2}:H${signRowIdx2}`);
 
   // ช่องว่าง
+  sheet.addRow([]);
   sheet.addRow([]);
 
   // หมายเหตุรวมจำนวน/ค่าขนส่งแยกตามประเภท
@@ -442,8 +518,8 @@ const exportToExcel = async () => {
   sheet.mergeCells(`A${sumRowIdx + 1}:C${sumRowIdx + 1}`);
   // ช่องเซ็นชื่อ
   const signRowIdx = sumRowIdx + 8;
-  sheet.mergeCells(`A${signRowIdx + 1}:D${signRowIdx + 1}`);
-  sheet.mergeCells(`E${signRowIdx + 1}:I${signRowIdx + 1}`);
+  sheet.mergeCells(`A${signRowIdx + 1}:E${signRowIdx + 1}`);
+  sheet.mergeCells(`F${signRowIdx + 1}:H${signRowIdx + 1}`);
   // หมายเหตุ
   const note1RowIdx = signRowIdx + 3;
   const note2RowIdx = note1RowIdx + 1;
@@ -454,6 +530,26 @@ const exportToExcel = async () => {
   sheet.columns = [
     { width: 16 }, { width: 10 }, { width: 16 }, { width: 10 }, { width: 10 }, { width: 14 }, { width: 14 }, { width: 16 }, { width: 16 }
   ];
+
+  // Set page setup for A4
+  sheet.pageSetup.paperSize = 9; // A4
+  sheet.pageSetup.fitToPage = true;
+  sheet.pageSetup.fitToWidth = 1;
+  sheet.pageSetup.fitToHeight = 1;
+  sheet.pageSetup.orientation = 'portrait';
+  sheet.pageSetup.centerHorizontally = true;
+sheet.pageSetup.centerVertically = true;
+
+  // Apply font Angsana New size 16 to all cells
+  for (let row = 1; row <= sheet.rowCount; row++) {
+    const rowObj = sheet.getRow(row);
+    rowObj.eachCell((cell) => {
+      cell.font = {
+        name: 'Angsana New',
+        size: 16
+      };
+    });
+  }
 
   // Border เฉพาะหัวตาราง+ข้อมูล+sum
   for (let r = tableStart; r <= sumRowIdx; ++r) {
@@ -483,6 +579,378 @@ const exportToExcel = async () => {
   const buffer = await workbook.xlsx.writeBuffer();
   saveAs(new Blob([buffer]), filename);
 };
+
+const showPdfModal = ref(false);
+const pdfUrl = ref(null);
+const pdfFileName = ref('');
+
+const exportToPdf = async () => {
+  if (!filteredTransportCostData.value.length || isPrinting.value) return;
+  
+  isPrinting.value = true;
+  const summary = summaryData.value;
+  const now = new Date();
+  const dateStr = now.getFullYear().toString() + (now.getMonth() + 1).toString().padStart(2, '0') + now.getDate().toString().padStart(2, '0');
+  const filename = `shipment_cost_report_${summary.calpallet.CONN || dateStr}.pdf`;
+  pdfFileName.value = filename;
+
+  // สร้าง PDF document
+  const doc = new jsPDF('p', 'mm', 'a4');
+  
+  // เพิ่ม font Sarabun สำหรับภาษาไทย
+  doc.addFont('/src/assets/my-fonts/THSarabun.ttf', 'Sarabun', 'normal');
+  doc.addFont('/src/assets/my-fonts/THSarabun-Bold.ttf', 'Sarabun', 'bold');
+  
+  // ตั้งค่า font สำหรับภาษาไทย
+  doc.setFont('Sarabun');
+  doc.setFontSize(14);
+
+  // ตั้งค่า margins
+  const margin = 20;
+  const pageWidth = doc.internal.pageSize.width;
+  const pageHeight = doc.internal.pageSize.height;
+  const contentWidth = pageWidth - (margin * 2);
+
+  let yPosition = margin;
+
+  // Header - รายงานค่าขนส่ง (ตาม layout ภาพ)
+  doc.setFontSize(16);
+  doc.setFont('Sarabun', 'bold');
+
+const title = 'รายงานค่าขนส่ง';
+const textWidth = doc.getTextWidth(title);
+const xCenter = (pageWidth - textWidth) / 2;
+
+doc.text(title, xCenter, yPosition); // yPosition คือตำแหน่งแนวตั้งเริ่มต้น
+yPosition += 5; // เพิ่มระยะห่างก่อนเริ่มตาราง
+
+  // สร้างตาราง header แบบไม่มีเส้น
+  const headerData = [
+    [String('รหัส : '+summary.truckInfo.DAFWNO || ''),String('ชื่อ : '+summary.truckInfo.IDSUNM || ''), String('เส้นทาง : '+summary.truckInfo.DAE0B4 || '')],
+    [String('เลขที่ : '+summary.calpallet.CONN || ''), String('วันที่ : '+dateStr) , '']
+  ];
+
+  autoTable(doc, {
+    startY: yPosition,
+    body: headerData,
+    theme: 'plain',
+    styles: {
+      fontSize: 14,
+      font: 'Sarabun',
+      textColor: 0,
+      cellPadding:0.5
+    },
+    bodyStyles: {
+      fillColor: [255, 255, 255],
+      textColor: 0,
+      fontStyle: 'normal',
+      font: 'Sarabun',
+      lineWidth: 0,
+      lineColor: [255, 255, 255],
+    },
+    headStyles: {
+      fillColor: [255, 255, 255],
+      textColor: 0,
+      fontStyle: 'normal',
+      font: 'Sarabun',
+      lineWidth: 0,
+      lineColor: [255, 255, 255]
+    },
+    footStyles: {
+      fillColor: [255, 255, 255],
+      textColor: 0,
+      fontStyle: 'normal',
+      font: 'Sarabun',
+      lineWidth: 0,
+      lineColor: [255, 255, 255]
+    },
+    margin: { top: 10, right: margin, bottom: 10, left: margin },
+    didParseCell: function(data) {
+      const { cell } = data;
+
+    // แถวที่ 2
+    if ( data.row.index === 0) {
+      if (data.column.index === 0) data.cell.styles.halign = 'left';
+      if (data.column.index === 1) data.cell.styles.halign = 'left';
+      if (data.column.index === 2) data.cell.styles.halign = 'left';
+    }
+    // แถวที่ 3 - เปลี่ยนการจัดตำแหน่ง
+    else if (data.row.index === 1) {
+      if (data.column.index === 0) data.cell.styles.halign = 'left';  // ชิดขวา
+      if (data.column.index === 1) data.cell.styles.halign = 'left'; // กึ่งกลาง
+      if (data.column.index === 2) data.cell.styles.halign = 'left';   // ชิดซ้าย
+    }
+
+    const boldLabels = ['รหัส :', 'ชื่อ :', 'เส้นทาง :', 'เลขที่ :', 'วันที่ :'];
+  boldLabels.forEach(label => {
+    if (cell.raw?.startsWith(label)) {
+      // ใช้เทคนิคแบบง่าย ทำให้ทั้ง cell เป็น bold (ถ้าคำขึ้นต้นตรงกับ label)
+      cell.styles.fontStyle = 'bold';
+    }
+  });
+
+  // ปรับตำแหน่งตามเดิม
+  if (data.row.index === 0 || data.row.index === 1) {
+    data.cell.styles.halign = 'left';
+  }
+  }
+    
+  });
+
+  yPosition = doc.lastAutoTable.finalY + 5;
+
+  // สร้างตารางข้อมูล
+  const tableData = [
+    ['อำเภอ', 'ประเภท', 'เลขที่เอกสาร', 'จำนวน', 'ราคา/หีบ', 'ค่าขนส่ง', 'ราคาพิเศษ', 'รวมค่าขนส่ง']
+  ];
+
+  // เพิ่มข้อมูลในตาราง
+  filteredTransportCostData.value.forEach(item => {
+    tableData.push([
+      String(item.ROUDES || ''),
+      String(item.ORTP || ''),
+      String(item.ORNO || ''),
+      (Number(item.FG_AMOUNT || 0) === 0 ? '-' : Number(item.FG_AMOUNT || 0).toLocaleString()),
+      (Number(item.FORCOST || 0) === 0 ? '-' : Number(item.FORCOST || 0).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')),
+      (Number(item.Cost_transport || 0) === 0 ? '-' : Number(item.Cost_transport || 0).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')),
+      (Number(item.SP_Cost || 0) === 0 ? '-' : Number(item.SP_Cost || 0).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')),
+      (Number(item.Total_cost || 0) === 0 ? '-' : Number(item.Total_cost || 0).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ','))
+    ]);
+  });
+
+  // คำนวณผลรวม
+  const sumQty = filteredTransportCostData.value.reduce((sum, r) => sum + (Number(r.FG_AMOUNT) || 0), 0);
+  const sumTotal = filteredTransportCostData.value.reduce((sum, r) => sum + (Number(r.Total_cost) || 0), 0);
+  // tableData.push(['', '', '', String(sumQty), '', '', '', String(sumTotal)]);
+  tableData.push(['', '', '', String(Number(sumQty || 0).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')), '', '', '', String(Number(sumTotal || 0).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ','))]);
+
+  // สร้างตาราง
+  autoTable(doc, {
+    startY: yPosition,
+    head: [tableData[0]],
+    body: tableData.slice(1, -1), // ไม่รวม header และ sum row
+    foot: [tableData[tableData.length - 1]], // sum row
+    theme: 'grid',
+    styles: {
+      fontSize: 14,
+      font: 'Sarabun',
+      cellPadding: 0.5
+    },
+    bodyStyles: {
+      fillColor: [255, 255, 255],
+      textColor: 0,
+      fontStyle: 'normal',
+      font: 'Sarabun',
+      lineWidth: 0.1, // ไม่มีเส้นขอบ
+      lineColor: 0
+    },
+    headStyles: {
+      fillColor: [255, 255, 255],
+      textColor: 0,
+      fontStyle: 'bold',
+      font: 'Sarabun',
+      lineWidth: 0.1, // ไม่มีเส้นขอบ
+      lineColor: 0,
+      halign: 'center'
+    },
+    footStyles: {
+      fillColor: [255, 255, 255],
+      textColor: 0,
+      fontStyle: 'normal',
+      font: 'Sarabun',
+      lineWidth: 0.1, // ไม่มีเส้นขอบ
+      lineColor: 0
+    },
+    columnStyles: {
+    0: { halign: 'left' }, // คอลัมน์แรก
+    1: { halign: 'center' }, // คอลัมน์ที่ 2
+    2: { halign: 'center' }, // คอลัมน์ที่ 3
+    3: { halign: 'right' }, // คอลัมน์ที่ 3
+    4: { halign: 'right' }, // คอลัมน์ที่ 3
+    5: { halign: 'right' }, // คอลัมน์ที่ 3
+    6: { halign: 'right' }, // คอลัมน์ที่ 3
+    7: { halign: 'right' }, // คอลัมน์ที่ 3
+  },
+    margin: { top: 10, right: margin, bottom: 10, left: margin },
+    didParseCell: function(data) {
+    // ถ้าเป็นแถวสุดท้าย (sum row)
+    if (data.row.section === 'foot' || data.row.index === data.table.body.length - 1) {
+      if (data.column.index === 3) { // คอลัมน์ sumQty
+        data.cell.styles.halign = 'right'; // จัดซ้าย
+        data.cell.styles.fontStyle = 'normal';
+      }
+      if (data.column.index === 7) { // คอลัมน์ sumTotal
+        data.cell.styles.halign = 'right'; // จัดขวา
+        data.cell.styles.fontStyle = 'normal';
+      }
+    }
+  }
+  });
+
+  // รับตำแหน่ง Y หลังจากตาราง
+  yPosition = doc.lastAutoTable.finalY + 5;
+
+  // สรุปค่าต่างๆ
+  const summaryTableData = [
+    ['ปรับราคาน้ำมัน', `${summary.calpallet.OILRETENTION || 0}%`],
+    ['ค่าเที่ยว', (Number(summary.calpallet.helper_cost || 0) === 0 ? '0.00' : Number(summary.calpallet.helper_cost || 0).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ','))],
+    ['ค่าพาเลท', (Number(summary.calpallet.palletcost || 0) === 0 ? '0.00' : Number(summary.calpallet.palletcost || 0).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ','))],
+    ['เงินพิเศษ', (Number(summary.calpallet.EXTRA || 0) === 0 ? '0.00' : Number(summary.calpallet.EXTRA || 0).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ','))],
+    ['รวมทั้งสิ้น', (Number(summary.calpallet.COST || 0) === 0 ? '0.00' : Number(summary.calpallet.COST || 0).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ','))]
+  ];
+
+  // สร้างตารางสรุป
+  autoTable(doc, {
+    startY: yPosition,
+    body: summaryTableData,
+    theme: 'plain',
+    styles: {
+      fontSize: 14,
+      cellPadding: 0.5 ,
+      font: 'Sarabun'
+    },
+    columnStyles: {
+    0: { halign: 'left' },
+    1: { halign: 'right' }
+  },
+    margin: {  
+      left: pageWidth - 120,
+      right: margin 
+    },
+    didParseCell(data){
+      if (data.column.index === 1 && data.row.index === 4) { // คอลัมน์ sumTotal
+      data.cell.styles.fontStyle = 'bold';
+      }
+    },
+    didDrawCell(data) {
+    if (data.column.index === 1 && data.row.index === 4) {
+      const doc = data.doc;
+      const x = data.cell.x;
+      const y = data.cell.y;
+      const w = data.cell.width;
+      const h = data.cell.height;
+
+      // 🔹 เส้นบน
+      doc.setLineWidth(0.1);
+      doc.setDrawColor(0);
+      doc.line(x, y, x + w, y);
+
+      // 🔹 เส้นล่างแรก
+      doc.line(x, y + h, x + w, y + h);
+
+      // 🔹 เส้นล่างสอง (ต่ำลงอีกนิด)
+      doc.line(x, y + h + 1.5, x + w, y + h + 1.5);
+    }
+  }
+  });
+
+  yPosition = doc.lastAutoTable.finalY + 20;
+
+  // ช่องเซ็นชื่อ
+  doc.setFontSize(14);
+  doc.setFont('Sarabun', 'normal');
+  doc.text('ผู้จัดทำรายงาน……………………………………', margin, yPosition);
+  
+  // ช่องเซ็นชื่อชิดขอบขวา
+  const certifierText = 'ผู้รับรองรายงาน………………………………………………';
+  const certifierTextWidth = doc.getTextWidth(certifierText);
+  doc.text(certifierText, pageWidth - margin - certifierTextWidth, yPosition);
+  yPosition += 10;
+
+  // หมายเหตุ
+  const typeMap = {};
+  filteredTransportCostData.value.forEach(item => {
+    if (!typeMap[item.ORTP]) typeMap[item.ORTP] = { qty: 0, total: 0 };
+    typeMap[item.ORTP].qty += Number(item.FG_AMOUNT) || 0;
+    typeMap[item.ORTP].total += Number(item.Total_cost) || 0;
+  });
+
+  // สร้างตารางหมายเหตุ
+  const noteTableData = [
+    [`รวมจำนวนแยกตามประเภท: A11(011)=0, 021=0, 921=0, 041=${typeMap['041']?.qty || 0}, 941=0, T05=${typeMap['T05']?.qty || 0}`],
+    [`รวมค่าขนส่งแยกตามประเภท: A11(011)=0.00, 021=0.00, 921=0.00, 041=${(Number(typeMap['041']?.total || 0) === 0 ? '-' : Number(typeMap['041']?.total || 0).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ','))}, 941=0.00, T05=${(Number(typeMap['T05']?.total || 0) === 0 ? '-' : Number(typeMap['T05']?.total || 0).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ','))}`]
+  ];
+
+  autoTable(doc, {
+    startY: yPosition,
+    body: noteTableData,
+    theme: 'plain',
+    styles: {
+      fontSize: 14,
+      font: 'Sarabun',
+      textColor: 0,
+      cellPadding: 0.5 
+    },
+    bodyStyles: {
+      fillColor: [255, 255, 255],
+      textColor: 0,
+      fontStyle: 'normal',
+      font: 'Sarabun',
+      fontSize: 12,
+      // lineWidth: 0.5,
+      // lineColor: [128, 128, 128]
+    },
+    headStyles: {
+      fillColor: [255, 255, 255],
+      textColor: 0,
+      fontStyle: 'normal',
+      font: 'Sarabun',
+      lineWidth: 0.5,
+      lineColor: [128, 128, 128]
+    },
+    footStyles: {
+      fillColor: [255, 255, 255],
+      textColor: 0,
+      fontStyle: 'normal',
+      font: 'Sarabun',
+      // lineWidth: 0.5,
+      // lineColor: [128, 128, 128]
+    },
+    margin: { top: 10, right: margin, bottom: 10, left: margin },
+    columnStyles: {
+      0: { cellWidth: pageWidth - (margin * 2) }
+    }
+  });
+
+  // สร้าง PDF และเปิดหน้าพิมพ์ในหน้าเดิม
+  const pdfBlob = doc.output('blob');
+  const pdfUrl = URL.createObjectURL(pdfBlob);
+  
+  // สร้าง iframe ซ่อนไว้ในหน้าเดิม
+  const iframe = document.createElement('iframe');
+  iframe.style.display = 'none';
+  iframe.src = pdfUrl;
+  document.body.appendChild(iframe);
+  
+  // รอให้ PDF โหลดเสร็จแล้วเปิดหน้าพิมพ์ในหน้าเดิม
+  iframe.onload = () => {
+    setTimeout(() => {
+      try {
+        iframe.contentWindow.print();
+      } catch (error) {
+        console.log('Print dialog opened');
+      }
+      // Reset printing state after a delay
+      setTimeout(() => {
+        isPrinting.value = false;
+      }, 2000);
+    }, 1000);
+  };
+};
+
+const closePdfModal = () => {
+  showPdfModal.value = false;
+  pdfUrl.value = null;
+  pdfFileName.value = '';
+};
+
+const downloadPdf = () => {
+  if (pdfUrl.value) {
+    saveAs(pdfUrl.value, pdfFileName.value);
+    closePdfModal();
+  }
+};
+
 </script>
 
 <style scoped>

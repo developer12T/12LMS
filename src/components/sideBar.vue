@@ -293,6 +293,7 @@ const menuData = {
           // 'อายุสินค้าคงเหลือ',
           'ค่าขนส่ง(shipment)',
           // '% ontime'
+          'Credit Limit'
         ]
       },
       'จัดการ': {
@@ -400,7 +401,8 @@ function getRoutePath(system, category, item) {
         'อายุสินค้าคงเหลือ': '/oms/report/stock-age',
         'ค่าขนส่ง(shipment)': '/oms/report/shipment-cost',
         'ค่าขนส่ง(รถร่วม)': '/oms/report/shared-vehicle-cost',
-        '% ontime': '/oms/report/ontime-percent'
+        '% ontime': '/oms/report/ontime-percent',
+        'Credit Limit': '/oms/report/credit-limit'
       },
       'จัดการ': {
         'ออเดอร์ค้างส่ง': '/oms/manage/backlog',

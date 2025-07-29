@@ -19,6 +19,7 @@ const routes = [
   { path: '/oms/report/shipment-cost', name: 'shipment-cost', component: () => import('../views/oms/report/shipmentCostView.vue'), meta: { requiresAuth: true, breadcrumb: 'OMS / รายงาน / ค่าขนส่ง(shipment)' } },
   { path: '/oms/report/shared-vehicle-cost', name: 'shared-vehicle-cost', component: () => import('../views/oms/report/sharedVehicleCostView.vue'), meta: { requiresAuth: true, breadcrumb: 'OMS / รายงาน / ค่าขนส่ง(รถร่วม)' } },
   { path: '/oms/report/ontime-percent', name: 'ontime-percent', component: () => import('../views/oms/report/ontimePercentView.vue'), meta: { requiresAuth: true, breadcrumb: 'OMS / รายงาน / % ontime' } },
+  { path: '/oms/report/credit-limit', name: 'credit-limit', component: () => import('../views/oms/report/creditLimitView.vue'), meta: { requiresAuth: true, breadcrumb: 'OMS / รายงาน / Credit Limit' } },
   { path: '/oms/manage', redirect: '/oms/manage/backlog', meta: { requiresAuth: true } },
   { path: '/oms/manage/backlog', name: 'backlog', component: () => import('../views/oms/manage/backlogView.vue'), meta: { requiresAuth: true, breadcrumb: 'OMS / จัดการ / ออเดอร์ค้างส่ง' } },
   { path: '/oms/manage/backlog-unit', name: 'backlog-unit', component: () => import('../views/oms/manage/backlogUnitView.vue'), meta: { requiresAuth: true, breadcrumb: 'OMS / จัดการ / ออเดอร์ค้างส่ง(หน่วยรถ)' } },

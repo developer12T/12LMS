@@ -203,6 +203,11 @@ export const useReportTmsStore = defineStore('reportTms', () => {
   const loadingPlanningDetail = ref(false)
   const errorPlanningDetail = ref(null)
 
+  // State for credit limit data
+  const creditLimitData = ref([])
+  const loadingCreditLimit = ref(false)
+  const errorCreditLimit = ref(null)
+
   async function fetchPlanningDetail(warehouseId) {
     loadingPlanningDetail.value = true
     errorPlanningDetail.value = null
@@ -247,6 +252,49 @@ export const useReportTmsStore = defineStore('reportTms', () => {
     }
   }
 
+  // Credit Limit API
+  const fetchCreditLimitData = async (warehouse = 'all') => {
+    loadingCreditLimit.value = true;
+    errorCreditLimit.value = null;
+    try {
+      const authStore = useAuthStore();
+      const response = await api.get(`${API_BASE_URL}/api/report/oms/credit-limit`, {
+        params: { warehouse },
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${authStore.token}`
+        }
+      });
+      
+      const data = response.data;
+      if (data.status && data.status.code === 200) {
+        creditLimitData.value = data.data || [];
+        return { success: true, data: creditLimitData.value };
+      } else {
+        throw new Error(data.status?.message || 'Failed to fetch credit limit data');
+      }
+    } catch (err) {
+      let errorMessage = 'เกิดข้อผิดพลาดในการดึงข้อมูล Credit Limit';
+      if (err.response) {
+        if (err.response.status === 401) {
+          errorMessage = 'Session expired. Please login again.';
+        } else {
+          errorMessage = err.response.data?.message || errorMessage;
+        }
+      } else if (err.request) {
+        errorMessage = 'Network error. Please check your connection.';
+      } else {
+        errorMessage = err.message || errorMessage;
+      }
+      errorCreditLimit.value = errorMessage;
+      creditLimitData.value = [];
+      console.error('Error fetching credit limit data:', err);
+      return { success: false, message: errorMessage };
+    } finally {
+      loadingCreditLimit.value = false;
+    }
+  };
+
   return {
     // State
     dailyStockData,
@@ -264,6 +312,9 @@ export const useReportTmsStore = defineStore('reportTms', () => {
     planningDetailData,
     loadingPlanningDetail,
     errorPlanningDetail,
+    creditLimitData,
+    loadingCreditLimit,
+    errorCreditLimit,
     
     // Computed
     getDailyStockData,
@@ -280,5 +331,6 @@ export const useReportTmsStore = defineStore('reportTms', () => {
     reset,
     fetchPlanningAll,
     fetchPlanningDetail,
+    fetchCreditLimitData,
   };
 }); 
