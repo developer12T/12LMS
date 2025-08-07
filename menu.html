@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Knowledge Hub - รวบรวมเว็บความรู้</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            margin: 20px 0;
+            padding: 30px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .header h1 {
+            color: white;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.1rem;
+        }
+        
+        .category-section {
+            margin-bottom: 40px;
+        }
+        
+        .category-title {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .link-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .link-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+            color: inherit;
+            text-decoration: none;
+        }
+        
+        .link-card .icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            margin-bottom: 15px;
+        }
+        
+        .link-card h5 {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+        }
+        
+        .link-card p {
+            color: #666;
+            margin-bottom: 0;
+            font-size: 0.9rem;
+        }
+        
+        .search-box {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .search-input {
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            border-radius: 10px;
+            padding: 12px 20px;
+            width: 100%;
+            font-size: 1rem;
+        }
+        
+        .search-input:focus {
+            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3);
+            outline: none;
+        }
+        
+        /* สีสำหรับไอคอนแต่ละหมวดหมู่ */
+        .dev-tools { background: linear-gradient(45deg, #ff6b6b, #ee5a52); }
+        .learning { background: linear-gradient(45deg, #4ecdc4, #44a08d); }
+        .design { background: linear-gradient(45deg, #45b7d1, #96c93d); }
+        .productivity { background: linear-gradient(45deg, #f093fb, #f5576c); }
+        .reference { background: linear-gradient(45deg, #ffecd2, #fcb69f); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1><i class="fas fa-brain"></i> Knowledge Hub</h1>
+            <p>รวบรวมเว็บไซต์ความรู้และเครื่องมือที่มีประโยชน์</p>
+        </div>
+        
+        <!-- Search Box -->
+        <div class="search-box">
+            <input type="text" class="search-input" id="searchInput" placeholder="🔍 ค้นหาเว็บไซต์...">
+        </div>
+        
+        <!-- Development Tools -->
+        <div class="category-section">
+            <h3 class="category-title">
+                <i class="fas fa-code"></i> เครื่องมือการพัฒนา
+            </h3>
+            <div class="row">
+                <div class="col-md-6 col-lg-4">
+                    <a href="https://jsoneditoronline.org/#left=local.fuhimu" target="_blank" class="link-card" data-search="github git code repository">
+                        <div class="icon dev-tools">
+                            <i class="fa-solid fa-file-code"></i>
+                        </div>
+                        <h5>jsoneditoronline</h5>
+                        <p>สร้าง json strunc</p>
+                    </a>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <a href="https://jsonformatter.curiousconcept.com/#" target="_blank" class="link-card" data-search="github git code repository">
+                        <div class="icon dev-tools">
+                            <i class="fa-solid fa-file-code"></i>
+                        </div>
+                        <h5>jsonformatter</h5>
+                        <p>จัดระเบียบ json strunc</p>
+                    </a>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <a href="https://da94.hostneverdie.com:4228/CMD_FILE_MANAGER/domains/init%2Dhpph.shop/public%5Fhtml/menu.html?action=edit" target="_blank" class="link-card" data-search="stackoverflow programming help">
+                        <div class="icon dev-tools">
+                            <i class="fab fa-stack-overflow"></i>
+                        </div>
+                        <h5>Hostneverdie</h5>
+                        <p>จัดการ server</p>
+                    </a>
+                </div>
+                <!-- <div class="col-md-6 col-lg-4">
+                    <a href="https://codepen.io" target="_blank" class="link-card" data-search="codepen html css javascript">
+                        <div class="icon dev-tools">
+                            <i class="fab fa-codepen"></i>
+                        </div>
+                        <h5>CodePen</h5>
+                        <p>เครื่องมือสำหรับทดลองโค้ด HTML, CSS, JS</p>
+                    </a>
+                </div> -->
+            </div>
+        </div>
+        
+        <!-- Learning Resources -->
+        <div class="category-section">
+            <h3 class="category-title">
+                <i class="fas fa-graduation-cap"></i> แหล่งเรียนรู้
+            </h3>
+            <!-- <div class="row">
+                <div class="col-md-6 col-lg-4">
+                    <a href="https://www.w3schools.com" target="_blank" class="link-card" data-search="w3schools tutorial html css javascript">
+                        <div class="icon learning">
+                            <i class="fas fa-book"></i>
+                        </div>
+                        <h5>W3Schools</h5>
+                        <p>บทเรียนเว็บไซต์และภาษาโปรแกรมมิ่ง</p>
+                    </a>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <a href="https://developer.mozilla.org" target="_blank" class="link-card" data-search="mdn mozilla documentation">
+                        <div class="icon learning">
+                            <i class="fab fa-firefox"></i>
+                        </div>
+                        <h5>MDN Web Docs</h5>
+                        <p>เอกสารอ้างอิงเว็บไซต์จาก Mozilla</p>
+                    </a>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <a href="https://www.freecodecamp.org" target="_blank" class="link-card" data-search="freecodecamp learn programming">
+                        <div class="icon learning">
+                            <i class="fab fa-free-code-camp"></i>
+                        </div>
+                        <h5>freeCodeCamp</h5>
+                        <p>เรียนเขียนโปรแกรมฟรีแบบ Interactive</p>
+                    </a>
+                </div>
+            </div> -->
+        </div>
+        
+        <!-- Design Tools -->
+        <div class="category-section">
+            <h3 class="category-title">
+                <i class="fas fa-palette"></i> เครื่องมือดีไซน์
+            </h3>
+            <div class="row">
+                <div class="col-md-6 col-lg-4">
+                    <a href="https://icon-sets.iconify.design/" target="_blank" class="link-card" data-search="figma design ui ux">
+                        <div class="icon design">
+                            <i class="fas fa-icons"></i>
+                        </div>
+                        <h5>iconify</h5>
+                        <p>iconify</p>
+                    </a>
+                </div>
+                <!-- <div class="col-md-6 col-lg-4">
+                    <a href="https://coolors.co" target="_blank" class="link-card" data-search="coolors color palette generator">
+                        <div class="icon design">
+                            <i class="fas fa-fill-drip"></i>
+                        </div>
+                        <h5>Coolors</h5>
+                        <p>เครื่องมือสร้างชุดสีและ Color Palette</p>
+                    </a>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <a href="https://fonts.google.com" target="_blank" class="link-card" data-search="google fonts typography">
+                        <div class="icon design">
+                            <i class="fas fa-font"></i>
+                        </div>
+                        <h5>Google Fonts</h5>
+                        <p>แหล่งรวมฟอนต์ฟรีจาก Google</p>
+                    </a>
+                </div> -->
+            </div>
+        </div>
+        
+        <!-- Productivity Tools -->
+        <div class="category-section">
+            <h3 class="category-title">
+                <i class="fas fa-tools"></i> เครื่องมือเพิ่มประสิทธิภาพ
+            </h3>
+            <div class="row">
+                <div class="col-md-6 col-lg-4">
+                    <a href="https://charcount.thaiware.com/" target="_blank" class="link-card" data-search="trello project management">
+                        <div class="icon productivity">
+                            <i class="fas fa-keyboard"></i>
+                        </div>
+                        <h5>นับตัวอักษร</h5>
+                        <p>นับตัวอักษร</p>
+                    </a>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <a href="https://calculator.teenee.com/percentage.html" target="_blank" class="link-card" data-search="notion notes productivity">
+                        <div class="icon productivity">
+                            <i class="fas fa-sticky-note"></i>
+                        </div>
+                        <h5>Percentage Calculator</h5>
+                        <p>คำนวณเปอร์เซ็นต์</p>
+                    </a>
+                </div>
+                <!-- <div class="col-md-6 col-lg-4">
+                    <a href="https://www.canva.com" target="_blank" class="link-card" data-search="canva graphic design template">
+                        <div class="icon productivity">
+                            <i class="fas fa-magic"></i>
+                        </div>
+                        <h5>Canva</h5>
+                        <p>เครื่องมือสร้างกราฟิกและโพสต์</p>
+                    </a>
+                </div> -->
+            </div>
+        </div>
+        
+        <!-- Reference -->
+        <div class="category-section">
+            <h3 class="category-title">
+                <i class="fas fa-book-open"></i> อ้างอิงและเอกสาร
+            </h3>
+            <!-- <div class="row">
+                <div class="col-md-6 col-lg-4">
+                    <a href="https://getbootstrap.com/docs/" target="_blank" class="link-card" data-search="bootstrap documentation css framework">
+                        <div class="icon reference">
+                            <i class="fab fa-bootstrap"></i>
+                        </div>
+                        <h5>Bootstrap Docs</h5>
+                        <p>เอกสารอ้างอิง Bootstrap Framework</p>
+                    </a>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <a href="https://vuejs.org/guide/" target="_blank" class="link-card" data-search="vuejs documentation javascript framework">
+                        <div class="icon reference">
+                            <i class="fab fa-vuejs"></i>
+                        </div>
+                        <h5>Vue.js Guide</h5>
+                        <p>คู่มือการใช้งาน Vue.js 3</p>
+                    </a>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <a href="https://docs.flutter.dev/" target="_blank" class="link-card" data-search="flutter documentation mobile development">
+                        <div class="icon reference">
+                            <i class="fas fa-mobile-alt"></i>
+                        </div>
+                        <h5>Flutter Docs</h5>
+                        <p>เอกสารการพัฒนาแอปมือถือด้วย Flutter</p>
+                    </a>
+                </div>
+            </div> -->
+        </div>
+
+    </div>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Search functionality
+        document.getElementById('searchInput').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const linkCards = document.querySelectorAll('.link-card');
+            
+            linkCards.forEach(card => {
+                const searchData = card.getAttribute('data-search') || '';
+                const title = card.querySelector('h5')?.textContent || '';
+                const description = card.querySelector('p')?.textContent || '';
+                
+                const searchableText = (searchData + ' ' + title + ' ' + description).toLowerCase();
+                
+                if (searchableText.includes(searchTerm)) {
+                    card.style.display = 'block';
+                    card.parentElement.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+            
+            // Hide empty categories
+            document.querySelectorAll('.category-section').forEach(section => {
+                const visibleCards = section.querySelectorAll('.link-card[style*="display: block"], .link-card:not([style*="display: none"])');
+                if (visibleCards.length === 0) {
+                    section.style.display = 'none';
+                } else {
+                    section.style.display = 'block';
+                }
+            });
+        });
+        
+        // Add smooth scrolling to anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+        
+        // Add animation when cards come into view
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+        
+        // Initially hide cards for animation
+        document.querySelectorAll('.link-card').forEach(card => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(card);
+        });
+        
+        // Show cards immediately if no animation support
+        setTimeout(() => {
+            document.querySelectorAll('.link-card').forEach(card => {
+                if (card.style.opacity === '0') {
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }
+            });
+        }, 100);
+    </script>
+</body>
+</html>

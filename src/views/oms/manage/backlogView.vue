@@ -4,26 +4,33 @@
             <template #actions>
                 <div class="flex flex-col sm:flex-row gap-3 pl-5 items-end bg-white shadow-md rounded-lg p-2">
                     <div class=" flex flex-row gap-1 items-center">
-                        <button type="button" @click="exportToExcel" :disabled="!filteredBacklogData.length"
-                        class="text-white bg-green-600 hover:bg-green-700 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-xs px-3 py-1.5 text-center inline-flex items-center justify-center dark:focus:ring-green-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-                        <Icon icon="file-icons:microsoft-excel" width="16" height="16" class="mr-1.5" />
-                        Export Excel
-                    </button>
-                    <button type="button" @click="showConfirmReload = true" :disabled="isLoadingTransport || isReloading"
-                        class="text-white bg-red-600 hover:bg-red-700 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-xs px-3 py-1.5 text-center inline-flex items-center justify-center dark:focus:ring-red-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-                        <Icon v-if="isReloading" icon="mdi:loading" class="animate-spin w-4 h-4 mr-1.5" />
-                        <Icon v-else icon="mdi:database-sync" width="16" height="16" class="mr-1.5" />
-                        {{ isReloading ? 'กำลังประมวลผล...' : 'ดึงข้อมูลใหม่' }}
-                    </button>
+
+                        <button type="button" @click="showConfirmReload = true"
+                            :disabled="isLoadingTransport || isReloading"
+                            class="text-white bg-red-600 hover:bg-red-700 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-xs px-3 py-1.5 text-center inline-flex items-center justify-center dark:focus:ring-red-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                            <Icon v-if="isReloading" icon="mdi:loading" class="animate-spin w-4 h-4 mr-1.5" />
+                            <Icon v-else icon="mdi:database-sync" width="16" height="16" class="mr-1.5" />
+                            {{ isReloading ? 'กำลังประมวลผล...' : 'ดึงข้อมูลใหม่' }}
+                        </button>
+                        <button type="button" @click="showConfirmReload = true"
+                            :disabled="isLoadingTransport || isReloading"
+                            class="text-white bg-green-600 hover:bg-green-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-xs px-3 py-1.5 text-center inline-flex items-center justify-center dark:focus:ring-blue-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                            <Icon v-if="isReloading" icon="mdi:loading" class="animate-spin w-4 h-4 mr-1.5" />
+                            <Icon v-else icon="mdi:database-sync" width="16" height="16" class="mr-1.5" />
+                            {{ isReloading ? 'กำลังดึงข้อมูล...' : 'export excel' }}
+                        </button>
+
                     </div>
                     <div class="flex-1 flex flex-row gap-1 min-w-0 items-center">
-                        <label for="mh-select" class="block mb-1 text-sm whitespace-nowrap font-sm text-gray-900 dark:text-white">
-                            เลือก DC : 
+                        <label for="mh-select"
+                            class="block mb-1 text-sm whitespace-nowrap font-sm text-gray-900 dark:text-white">
+                            เลือก DC :
                         </label>
                         <select id="mh-select" v-model="selectedDC" @change="onDCChange" :disabled="isLoadingTransport"
                             class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-1.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
                             <option value="" disabled>{{ isLoadingTransport ? 'กำลังโหลด...' : 'เลือก DC' }}</option>
-                            <option v-for="transport in transportOptions" :key="transport.value" :value="transport.value">
+                            <option v-for="transport in transportOptions" :key="transport.value"
+                                :value="transport.value">
                                 {{ transport.label }} : {{ transport.value }}
                             </option>
                         </select>
@@ -31,21 +38,8 @@
                             {{ transportError }}
                         </p>
                     </div>
-                    <div class="flex-1 flex flex-row gap-1 min-w-0 items-center">
-                        <label for="status-select" class="block mb-1 text-sm whitespace-nowrap font-sm text-gray-900 dark:text-white">
-                            สถานะ :
-                        </label>
-                        <select id="status-select" v-model="selectedStatus" @change="onStatusChange"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-1.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-colors">
-                            <option value="">เลือก สถานะ</option>
-                            <option value="1">เกินกำหนดส่ง</option>
-                            <option value="2">ครบกำหนดส่ง</option>
-                            <option value="3">ยังไม่ถึงกำหนดส่ง</option>
-                            <option value="ALL">ทุกสถานะ</option>
-                        </select>
-                    </div>
-                    <div class="flex-shrink-0 sm:self-end">
-                        <button type="button" @click="loadData" :disabled="isLoadingBacklog || !selectedDC || !selectedStatus"
+                    <div class="flex-shrink-0 sm:self-end flex flex-row gap-1">
+                        <button type="button" @click="loadData" :disabled="isLoadingBacklog || !selectedDC"
                             class="w-full sm:w-auto text-white bg-[#00569D] hover:bg-[#004080] focus:ring-4 focus:ring-[#00569D]/30 font-medium rounded-lg text-xs px-4 py-1.5 dark:bg-[#00569D] dark:hover:bg-[#004080] focus:outline-none dark:focus:ring-[#00569D]/30 transition-colors inline-flex items-center justify-center min-w-[100px] disabled:opacity-50 disabled:cursor-not-allowed">
                             <Icon v-if="isLoadingBacklog" icon="mdi:loading" class="animate-spin w-4 h-4 mr-1.5" />
                             <Icon v-else icon="mdi:magnify" width="14" height="14" class="mr-1.5" />
@@ -55,143 +49,120 @@
                 </div>
             </template>
         </PageHeader>
-        <div class="overflow-x-auto bg-white rounded-lg shadow mb-2 p-2">
-            <table class="min-w-max text-xs text-center border border-gray-200 bg-white">
-                <thead>
-                    <tr class="hover:bg-blue-50 transition">
-                        <th class="px-3 py-2 border border-gray-200 text-left font-medium bg-gray-50">จำนวนวันที่เกิน</th>
-                        <td v-for="(d, colIdx) in backlogSummaryPivot.days" :key="'d'+d"
-                            class="px-3 py-2 border border-gray-200"
-                            :class="{ 'bg-blue-50': hoverCol === colIdx }"
-                            @mouseover="hoverCol = colIdx"
-                            @mouseleave="hoverCol = null"
-                        >{{ d }}</td>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr class="hover:bg-blue-50 transition">
-                        <th class="px-3 py-2 border border-gray-200 text-left font-medium bg-gray-50">จำนวนบิล</th>
-                        <td v-for="(n, colIdx) in backlogSummaryPivot.billCounts" :key="'b'+n"
-                            class="px-3 py-2 border border-gray-200"
-                            :class="{ 'bg-blue-50': hoverCol === colIdx }"
-                            @mouseover="hoverCol = colIdx"
-                            @mouseleave="hoverCol = null"
-                        >{{ n }}</td>
-                    </tr>
-                    <tr class="hover:bg-blue-50 transition">
-                        <th class="px-3 py-2 border border-gray-200 text-left font-medium bg-gray-50">ยอดรวมค้างส่ง FG</th>
-                        <td v-for="(n, colIdx) in backlogSummaryPivot.fgTotals" :key="'fg'+n"
-                            class="px-3 py-2 border border-gray-200"
-                            :class="{ 'bg-blue-50': hoverCol === colIdx }"
-                            @mouseover="hoverCol = colIdx"
-                            @mouseleave="hoverCol = null"
-                        >{{ n }}</td>
-                    </tr>
-                    <tr class="hover:bg-blue-50 transition">
-                        <th class="px-3 py-2 border border-gray-200 text-left font-medium bg-gray-50">ยอดรวมค้างส่ง PM</th>
-                        <td v-for="(n, colIdx) in backlogSummaryPivot.pmTotals" :key="'pm'+n"
-                            class="px-3 py-2 border border-gray-200"
-                            :class="{ 'bg-blue-50': hoverCol === colIdx }"
-                            @mouseover="hoverCol = colIdx"
-                            @mouseleave="hoverCol = null"
-                        >{{ n }}</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+
         <!-- Table Section -->
         <div class="bg-white rounded-lg shadow-sm border border-gray-200">
             <!-- Loading State -->
-            <div v-if="isLoadingBacklog" class="flex items-center justify-center p-8">
+            <div v-if="omsBacklogStore.isLoadingData" class="flex items-center justify-center p-8">
                 <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
             </div>
 
             <!-- Error State -->
-            <div v-else-if="backlogError" class="p-8 text-center text-red-500">
-                {{ backlogError }}
-            </div>
-
-            <!-- No Data State -->
-            <div v-else-if="!backlogStore.hasData && hasLoadedData" class="p-8 text-center">
-                <div class="text-gray-500">
-                    <Icon icon="mdi:database-off" class="w-12 h-12 mx-auto mb-4" />
-                    <p class="text-lg font-medium mb-2">ไม่มีข้อมูล</p>
-                    <p class="text-sm">ไม่พบข้อมูลที่ตรงกับเงื่อนไขที่เลือก</p>
-                    <div class="mt-4 text-xs text-gray-400">
-                        <p>DC: {{ getSelectedDCName() }} | สถานะ: {{ getStatusText(selectedStatus) }}</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Not Selected State -->
-            <div v-else-if="!selectedDC || !selectedStatus" class="p-8 text-center">
-                <div class="text-gray-500">
-                    <Icon icon="mdi:clipboard-text-outline" class="w-12 h-12 mx-auto mb-4" />
-                    <p class="text-lg font-medium mb-2">กรุณาเลือกเงื่อนไข</p>
-                    <p class="text-sm">เลือก DC และสถานะ แล้วกดปุ่ม "ดึงข้อมูล"</p>
-                    <div class="mt-4 flex flex-col items-center space-y-2 text-xs">
-                        <div class="flex items-center space-x-2">
-                            <Icon :icon="selectedDC ? 'mdi:check-circle' : 'mdi:circle-outline'"
-                                :class="selectedDC ? 'text-green-500' : 'text-gray-400'" class="w-4 h-4" />
-                            <span :class="selectedDC ? 'text-gray-700' : 'text-gray-400'">
-                                DC: {{ selectedDC ? getSelectedDCName() : 'ยังไม่เลือก' }}
-                            </span>
-                        </div>
-                        <div class="flex items-center space-x-2">
-                            <Icon :icon="selectedStatus ? 'mdi:check-circle' : 'mdi:circle-outline'"
-                                :class="selectedStatus ? 'text-green-500' : 'text-gray-400'" class="w-4 h-4" />
-                            <span :class="selectedStatus ? 'text-gray-700' : 'text-gray-400'">
-                                สถานะ: {{ selectedStatus ? getStatusText(selectedStatus) : 'ยังไม่เลือก' }}
-                            </span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Never Loaded State -->
-            <div v-else-if="!hasLoadedData && selectedDC && selectedStatus" class="p-8 text-center">
-                <div class="text-gray-500">
-                    <Icon icon="mdi:database-search" class="w-12 h-12 mx-auto mb-4" />
-                    <p class="text-lg font-medium mb-2">พร้อมดึงข้อมูล</p>
-                    <p class="text-sm">กดปุ่ม "ดึงข้อมูล" เพื่อดูรายการออร์เดอร์ค้างส่ง</p>
-                    <div class="mt-4 text-xs text-gray-400">
-                        <p>DC: {{ getSelectedDCName() }} | สถานะ: {{ getStatusText(selectedStatus) }}</p>
-                    </div>
-                </div>
+            <div v-else-if="omsBacklogStore.apiError" class="p-8 text-center text-red-500">
+                {{ omsBacklogStore.apiError }}
             </div>
 
             <!-- Data Table with Custom Scrollbar -->
-            <div v-else-if="backlogStore.hasData" class="relative shadow-md sm:rounded-lg custom-scrollbar p-2 overflow-x-auto overflow-y-hidden" style="max-height: calc(100vh - 270px);">
-                <div class="virtual-table-container rounded-t-lg  overflow-auto" 
-                     style="height: calc(100vh - 270px);" 
-                     @scroll="handleScroll">
+            <div class="relative shadow-md sm:rounded-lg custom-scrollbar p-2 overflow-x-auto overflow-y-hidden"
+                style="max-height: calc(100vh - 120px);">
+                <!-- Summary Info -->
+                <div class="mb-2 p-2 bg-blue-50 text-xs">
+                    <div class="grid grid-cols-3 gap-4">
+                        <div class="text-center">
+                            <p class="font-semibold text-blue-800">จังหวัด</p>
+                            <p class="text-lg font-bold text-blue-600">{{ omsBacklogStore.filteredPlanningData.length }}
+                            </p>
+                        </div>
+                        <div class="text-center">
+                            <p class="font-semibold text-green-800">จำนวนร้านค้า</p>
+                            <p class="text-lg font-bold text-green-600">{{ getTotalCustomers() }}</p>
+                        </div>
+                        <div class="text-center">
+                            <p class="font-semibold text-purple-800">จำนวน PO</p>
+                            <p class="text-lg font-bold text-purple-600">{{ getTotalPOs() }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="virtual-table-container rounded-t-lg overflow-auto" style="height: calc(100vh - 180px);">
                     <table
-                        class="w-full text-xs text-left text-gray-500  dark:text-gray-400 border-collapse border border-gray-300 dark:border-gray-600">
+                        class="w-full text-xs text-left text-gray-500 dark:text-gray-400 border-collapse border border-gray-300 dark:border-gray-600 mb-8">
                         <thead
                             class="text-xs text-gray-700 uppercase bg-gray-100 dark:bg-gray-700 dark:text-gray-400 sticky top-0 z-10">
                             <tr>
-                                <th colspan="16" class="px-4 py-3 border-b border-gray-200 dark:border-gray-600">
+                                <th :colspan="omsBacklogStore.processedData.dateRange ? omsBacklogStore.processedData.dateRange.allDates.length + 2 : 4"
+                                    class="px-4 py-3 border-b border-gray-200 dark:border-gray-600">
                                     <div class="flex items-center justify-between">
-                                      
-                                         <!-- Record Count -->
-                                         <ResultCount
-                                            :label="'ผลลัพธ์:'"
-                                            :current="searchQuery ? filteredBacklogData.length : null"
-                                            :total="backlogData.length"
-                                            icon="mdi:clipboard-text-outline"
-                                            iconColor="#00569D"
-                                         />
+
+                                        <!-- Record Count -->
+                                        <ResultCount :label="'ผลลัพธ์:'"
+                                            :current="omsBacklogStore.filteredPlanningData.length"
+                                            :total="omsBacklogStore.filteredPlanningData.length"
+                                            icon="mdi:clipboard-text-outline" iconColor="#00569D" />
                                         <div class="flex items-center space-x-4">
-                                            <!-- Multi-Save Controls -->
-                                            <div v-if="editingRowIndexes.size > 1" class="flex items-center space-x-2 animate-fade-in">
-                                                <button @click="saveAllChanges" class="text-white bg-green-600 hover:bg-green-700 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-xs px-3 py-1.5 text-center inline-flex items-center">
-                                                    <Icon icon="mdi:content-save-all-outline" class="w-4 h-4 mr-1.5"/>
-                                                    บันทึกทั้งหมด ({{ editingRowIndexes.size }})
+                                            
+                                            <!-- Province Filter -->
+                                            <div class="relative" ref="provinceDropdownRef">
+                                                <button @click="toggleProvinceDropdown"
+                                                    :disabled="availableProvinces.length === 0"
+                                                    class="text-white bg-[#F47A30] text-xs hover:bg-[#F47A30]/80 disabled:bg-gray-400 focus:ring-4 focus:outline-none focus:ring-[#F47A30]/30 font-medium rounded-lg px-3 py-1.5 text-center inline-flex items-center transition-colors shadow-sm"
+                                                    type="button">
+                                                    <Icon icon="mdi:map-marker" class="w-4 h-4 mr-2" />
+                                                    จังหวัด {{ selectedProvinces.length > 0 ?
+                                                    `(${selectedProvinces.length})` :
+                                                    '' }}{{ availableProvinces.length ===
+                                                        0 ? ' (ไม่มีข้อมูล)' : '' }}
+                                                    <svg class="w-2 h-2 ml-2 transition-transform"
+                                                        :class="{ 'rotate-180': showProvinceDropdown }"
+                                                        aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                                                        fill="none" viewBox="0 0 10 6">
+                                                        <path stroke="currentColor" stroke-linecap="round"
+                                                            stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4" />
+                                                    </svg>
                                                 </button>
-                                                <button @click="cancelAllEditing" class="text-white bg-gray-500 hover:bg-gray-600 focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-xs px-3 py-1.5 text-center inline-flex items-center">
-                                                    <Icon icon="mdi:cancel" class="w-4 h-4 mr-1.5"/>
-                                                    ยกเลิกทั้งหมด
-                                                </button>
+
+                                                <!-- Province Dropdown menu -->
+                                                <div v-show="showProvinceDropdown" @click.stop
+                                                    class="absolute right-0 mt-2 w-80 md:w-96 lg:w-[500px] bg-white divide-y divide-gray-100 rounded-lg shadow-lg border border-gray-200 dark:bg-gray-800 dark:divide-gray-600 dark:border-gray-700 z-50">
+                                                    <div class="p-3">
+                                                        <h3
+                                                            class="text-sm font-semibold text-gray-900 dark:text-white mb-3">
+                                                            เลือกจังหวัด</h3>
+                                                        <div v-if="availableProvinces.length === 0"
+                                                            class="text-sm text-gray-500 text-center py-4">
+                                                            กรุณากดปุ่ม "ดึงข้อมูล" ก่อนเพื่อโหลดข้อมูลจังหวัด
+                                                        </div>
+                                                        <div v-else
+                                                            class="grid grid-cols-3 md:grid-cols-3 lg:grid-cols-3 gap-2 text-sm text-gray-700 dark:text-gray-200">
+                                                            <div v-for="province in availableProvinces" :key="province"
+                                                                class="flex items-center p-2 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                                                                @click.stop>
+                                                                <input :id="`province-${province}`" type="checkbox"
+                                                                    v-model="selectedProvinces" :value="province"
+                                                                    class="w-4 h-4 text-[#00569D] bg-gray-100 border-gray-300 rounded focus:ring-[#00569D] dark:focus:ring-[#00569D] dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                                                <label :for="`province-${province}`"
+                                                                    class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300 flex items-center truncate">
+                                                                    {{ province }}
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="p-3 bg-gray-50 dark:bg-gray-700 rounded-b-lg">
+                                                        <div v-if="selectedProvinces.length === 0"
+                                                            class="text-xs text-gray-500 mb-2 text-center">
+                                                            เลือกจังหวัดอย่างน้อย 1 รายการ
+                                                        </div>
+                                                        <div class="flex flex-row gap-2">
+                                                            <button @click="applyProvinceFilter"
+                                                            class="w-full bg-[#00569D] hover:bg-[#004080] disabled:bg-gray-400 text-white text-sm font-medium py-2 px-3 rounded-md transition-colors">
+                                                            ค้นหา
+                                                        </button>
+
+                                                       
+                                                        </div>
+                                                        
+                                                    </div>
+                                                </div>
                                             </div>
                                             <!-- Search Input -->
                                             <div class="relative">
@@ -199,188 +170,97 @@
                                                     class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                                                     <Icon icon="mdi:magnify" class="w-4 h-4 text-gray-400" />
                                                 </div>
-                                                <input type="text" v-model="searchQuery" placeholder="ค้นหา..."
+                                                <input type="text" v-model="omsBacklogStore.searchQuery"
+                                                    placeholder="ค้นหา..."
                                                     class="w-64 pl-10 pr-3 py-1.5 text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400">
                                             </div>
+
                                         </div>
                                     </div>
                                 </th>
                             </tr>
                             <tr>
                                 <th scope="col"
-                                    class="px-1 py-1 text-center w-6 border border-gray-300 dark:border-gray-600">No
+                                    class="px-2 py-2 text-left w-48 border border-gray-300 dark:border-gray-600 bg-gray-50">
+                                    จังหวัด
+                                </th>
+                                <!-- Date Columns -->
+                                <th v-for="date in omsBacklogStore.processedData.dateRange?.allDates" :key="date"
+                                    scope="col"
+                                    class="px-2 py-2 text-center w-16 border border-gray-300 dark:border-gray-600 bg-gray-50">
+                                    {{ omsBacklogStore.formatDate(date) }}
                                 </th>
                                 <th scope="col"
-                                    class="px-1 py-1 text-center w-8 border border-gray-300 dark:border-gray-600">คลัง
-                                </th>
-                                <th scope="col"
-                                    class="px-1 py-1 text-center w-20 border border-gray-300 dark:border-gray-600">
-                                    วันที่เปิด SR</th>
-                                <th scope="col"
-                                    class="px-1 py-1 text-center w-20 border border-gray-300 dark:border-gray-600">
-                                    กำหนดส่ง</th>
-                                <th scope="col"
-                                    class="px-1 py-1 text-center w-20 border border-gray-300 dark:border-gray-600">
-                                    เลขที่ใบสั่งซื้อ</th>
-                                <th scope="col"
-                                    class="px-1 py-1 text-center w-16 border border-gray-300 dark:border-gray-600">
-                                    รหัสลูกค้า</th>
-                                <th scope="col" class="px-1 py-1 w-2 border border-gray-300 dark:border-gray-600">
-                                    ชื่อลูกค้า</th>
-                                <th scope="col" class="px-1 py-1 w-40 border border-gray-300 dark:border-gray-600">
-                                    สถานที่จัดส่ง</th>
-                                <th scope="col" class="px-1 py-1 w-28 border border-gray-300 dark:border-gray-600">
-                                    จังหวัด</th>
-                                <th scope="col"
-                                    class="px-1 py-1 text-center w-12 border border-gray-300 dark:border-gray-600">เกิน
-                                </th>
-                                <th scope="col"
-                                    class="px-1 py-1 text-center w-12 border border-gray-300 dark:border-gray-600">ค้าง
-                                    FG</th>
-                                <th scope="col"
-                                    class="px-1 py-1 text-center w-12 border border-gray-300 dark:border-gray-600">ค้าง
-                                    PM</th>
-                                <th scope="col" class="px-1 py-1 w-24 border border-gray-300 dark:border-gray-600">
-                                    สาเหตุ</th>
-                                <th scope="col" class="px-1 py-1 w-20 border border-gray-300 dark:border-gray-600">อื่นๆ
-                                    (ระบุ)</th>
-                                <th scope="col"
-                                    class="px-1 py-1 text-center w-16 border border-gray-300 dark:border-gray-600">
-                                    เลื่อนส่ง</th>
-                                <th scope="col"
-                                    class="px-1 py-1 text-center w-16 border border-gray-300 dark:border-gray-600">แก้ไข
+                                    class="px-2 py-2 text-center w-20 border border-gray-300 dark:border-gray-600 bg-gray-200">
+                                    Total
                                 </th>
                             </tr>
                         </thead>
                         <tbody>
-                            <!-- Top padding for virtual scrolling -->
-                            <tr v-if="topPadding > 0">
-                                <td :colspan="16" :style="{ height: topPadding + 'px', padding: 0 }"></td>
-                            </tr>
-                            
-                            <tr v-if="virtualScrollData.length === 0" class="bg-white dark:bg-gray-800">
-                                <td colspan="16" class="px-4 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
+                            <tr v-if="!omsBacklogStore.filteredPlanningData || omsBacklogStore.filteredPlanningData.length === 0"
+                                class="bg-white dark:bg-gray-800">
+                                <td :colspan="omsBacklogStore.processedData.dateRange ? omsBacklogStore.processedData.dateRange.allDates.length + 2 : 4"
+                                    class="px-4 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
                                     ไม่พบข้อมูลค้นหา
                                 </td>
                             </tr>
-                            <tr v-else v-for="(item, index) in virtualScrollData" :key="item.po_no" class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                                <td class="px-1 py-0.5 font-medium text-gray-900 dark:text-white text-center text-xs border border-gray-300 dark:border-gray-600">
-                                    {{ item.originalIndex + 1 }}
-                                </td>
-                                <td class="px-1 py-0.5 text-center text-xs whitespace-nowrap border border-gray-300 dark:border-gray-600">
-                                    {{ item.wh_no }}
-                                </td>
-                                <td class="px-1 py-0.5 text-center text-xs whitespace-nowrap border border-gray-300 dark:border-gray-600">
-                                    {{ formatThaiDate(item.date_create) }}
-                                </td>
-                                <td class="px-1 py-0.5 text-center text-xs whitespace-nowrap border border-gray-300 dark:border-gray-600">
-                                    {{ formatThaiDate(item.date_send) }}
-                                </td>
-                                <td class="px-1 py-0.5 text-center text-xs whitespace-nowrap border border-gray-300 dark:border-gray-600">
-                                    <a href="#" @click.prevent="openPoDetail(item)"
-                                        class="font-medium text-blue-600 dark:text-blue-500 hover:underline">
-                                        {{ item.po_no }}
-                                    </a>
-                                </td>
-                                <td class="px-1 py-0.5 text-center text-xs whitespace-nowrap border border-gray-300 dark:border-gray-600">
-                                    {{ item.cus_code }}
-                                </td>
-                                <td class="px-1 py-0.5 text-xs whitespace-nowrap max-w-28 truncate border border-gray-300 dark:border-gray-600"
-                                    :title="item.cus_name">
-                                    {{ item.cus_name }}
-                                </td>
-                                <td class="px-1 py-0.5 text-xs w-40 border border-gray-300 dark:border-gray-600">
-                                    <div class="max-w-40 line-clamp-2 text-ellipsis overflow-hidden"
-                                        :title="item.addressbl">
-                                        {{ item.addressbl }}
-                                    </div>
-                                </td>
-                                <td class="px-1 py-0.5 text-xs whitespace-nowrap max-w-28 truncate border border-gray-300 dark:border-gray-600"
-                                    :title="item.provincebl">
-                                    {{ item.provincebl }}
-                                </td>
-                                <td
-                                    class="px-1 py-0.5 text-center text-xs whitespace-nowrap border border-gray-300 dark:border-gray-600">
-                                    <span
-                                        :class="item.overdue < 0 ? 'text-red-600 font-semibold' : 'text-yellow-600 font-semibold'">
-                                        {{ item.overdue }}
-                                    </span>
-                                </td>
-                                <td
-                                    class="px-1 py-0.5 text-center text-xs whitespace-nowrap border border-gray-300 dark:border-gray-600">
-                                    <span class="text-orange-600 font-semibold">{{ item.fg }}</span>
-                                </td>
-                                <td
-                                    class="px-1 py-0.5 text-center text-purple-600 font-semibold border border-gray-300 dark:border-gray-600">
-                                    {{ item.pm }}
-                                </td>
-                                <td class="border border-gray-300 dark:border-gray-600 p-0 align-middle">
-                                    <select v-if="editingRowIndexes.has(item.originalIndex)" v-model="item.reason_id" class="bg-white border-none text-gray-900 text-xs rounded-lg focus:ring-1 focus:ring-blue-500 block w-full p-1.5 dark:bg-gray-700 dark:text-white">
-                                        <option value="" disabled>กรุณาเลือกสาเหตุ</option>
-                                        <option v-for="reason in reasonOptions" :key="reason.value" :value="reason.value">{{ reason.label }}</option>
-                                    </select>
-                                    <template v-else>
-                                        <span v-if="item.reason_name" class="px-1 py-0.5 text-xs">{{ item.reason_name }}</span>
-                                        <div v-else class="flex items-center justify-between bg-gray-100 dark:bg-gray-700 rounded-[5px] w-full text-xs text-gray-500 dark:text-gray-400 cursor-default mx-0.5">
-                                            <span class="pl-2 py-[3px]">เลือกสาเหตุ</span>
-                                            <Icon icon="mdi:chevron-down" class="w-4 h-4 mr-1" />
-                                        </div>
+                            <template v-else>
+                                <!-- Parent rows (provinces) and Child rows (customers) -->
+                                <template v-for="province in omsBacklogStore.filteredPlanningData" :key="province.id">
+                                    <!-- Parent row (province) -->
+                                    <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 font-semibold bg-yellow-50 cursor-pointer"
+                                        @click="omsBacklogStore.toggleRow(province.id)">
+                                        <td
+                                            class="px-2 py-1 text-left text-xs border border-gray-300 dark:border-gray-600">
+                                            <div class="flex items-center">
+                                                <span class="mr-1 cursor-pointer">
+                                                    <Icon
+                                                        :icon="omsBacklogStore.isRowCollapsed(province.id) ? 'mdi:chevron-right' : 'mdi:chevron-down'"
+                                                        class="w-4 h-4 text-blue-600" />
+                                                </span>
+                                                {{ province.label }}
+                                            </div>
+                                        </td>
+                                        <!-- Date Data for Province -->
+                                        <td v-for="date in omsBacklogStore.processedData.dateRange?.allDates"
+                                            :key="`province-${date}`"
+                                            class="px-2 py-1 text-center text-xs border border-gray-300 dark:border-gray-600 cursor-pointer hover:bg-blue-50"
+                                            @click="omsBacklogStore.getProvinceTotal(province, date) ? openDetailModal(province) : null">
+                                            {{ omsBacklogStore.getProvinceTotal(province, date) || '-' }}
+                                        </td>
+                                        <td
+                                            class="px-2 py-1 text-center text-xs font-semibold border border-gray-300 dark:border-gray-600 bg-gray-100">
+                                            {{ province.total || '-' }}
+                                        </td>
+                                    </tr>
+
+                                    <!-- Child rows (customers) for this province -->
+                                    <template v-if="!omsBacklogStore.isRowCollapsed(province.id)">
+
+                                        <tr v-for="child in province.children" :key="child.id"
+                                            class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                                            <td
+                                                class="px-2 py-1 text-left text-xs border border-gray-300 dark:border-gray-600">
+                                                <div class="flex items-center">
+                                                    <span class="ml-4">•</span>
+                                                    {{ child.label }}
+                                                </div>
+                                            </td>
+                                            <!-- Date Data for Customer -->
+                                            <td v-for="date in omsBacklogStore.processedData.dateRange?.allDates"
+                                                :key="`child-${date}`"
+                                                class="px-2 py-1 text-center text-xs border border-gray-300 dark:border-gray-600 cursor-pointer hover:bg-blue-50"
+                                                @click="child.dateData[date] && child.dateData[date] !== '-' ? openDetailModal(child) : null">
+                                                {{ child.dateData[date] || '-' }}
+                                            </td>
+                                            <td
+                                                class="px-2 py-1 text-center text-xs font-semibold border border-gray-300 dark:border-gray-600 bg-gray-100">
+                                                {{ omsBacklogStore.getCustomerTotal(child) || '-' }}
+                                            </td>
+                                        </tr>
                                     </template>
-                                </td>
-                                <td class="border border-gray-300 dark:border-gray-600 p-0 align-middle">
-                                    <input v-if="editingRowIndexes.has(item.originalIndex)" type="text" v-model="item.otherbl" class="bg-white border-none text-gray-900 text-xs rounded-lg focus:ring-1 focus:ring-blue-500 block w-full p-1.5 dark:bg-gray-700 dark:text-white">
-                                    <span v-else class="px-1 py-0.5 text-xs truncate max-w-28" :title="item.otherbl">{{ item.otherbl || '-' }}</span>
-                                </td>
-                                <td class="border border-gray-300 dark:border-gray-600 p-0 align-middle">
-                                    <DatePicker v-if="editingRowIndexes.has(item.originalIndex)" 
-                                               v-model:value="item.po_detail" 
-                                               type="date" 
-                                               format="DD/MM/YYYY" 
-                                               value-format="YYYY-MM-DD" 
-                                               placeholder="เลือกวันที่" 
-                                               :editable="false" 
-                                               :clearable="false">
-                                        <template #default="{ open }">
-                                            <button @click="open" class="p-1.5 bg-blue-500 text-white hover:bg-blue-600 rounded-lg">
-                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
-                                                    <path d="M12.75 12.75a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM7.5 15.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM8.25 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM9.75 15.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM10.5 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12 15.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM12.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM14.25 15.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM15 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM16.5 15.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM12 10.5a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM8.25 10.5a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM9.75 10.5a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM14.25 10.5a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z" />
-                                                    <path fill-rule="evenodd" d="M5.25 2.25A.75.75 0 0 1 6 3v.75h12V3a.75.75 0 0 1 1.5 0v.75h.75a3 3 0 0 1 3 3v11.25a3 3 0 0 1-3 3H5.25a3 3 0 0 1-3-3V6.75a3 3 0 0 1 3-3H4.5a.75.75 0 0 1 .75-.75Zm-1.5 4.5a1.5 1.5 0 0 1 1.5-1.5h13.5a1.5 1.5 0 0 1 1.5 1.5v11.25a1.5 1.5 0 0 1-1.5-1.5H5.25a1.5 1.5 0 0 1-1.5-1.5V6.75Z" clip-rule="evenodd" />
-                                                  </svg>
-                                            </button>
-                                        </template>
-                                    </DatePicker>
-                                    <div v-else class="text-xs text-center px-1 py-0.5">
-                                        {{ item.po_detail && !item.po_detail.startsWith('1900-01-01') ? formatThaiDate(item.po_detail) : '-' }}
-                                    </div>
-                                </td>
-                                <td class="px-1 py-0.5 text-center border border-gray-300 dark:border-gray-600 align-middle">
-                                    <div v-if="editingRowIndexes.has(item.originalIndex)">
-                                        <!-- Show individual controls only if ONE item is being edited -->
-                                        <div v-if="editingRowIndexes.size === 1" class="flex items-center justify-center space-x-1">
-                                            <button @click="saveChanges(item, item.originalIndex)" title="บันทึก" class="focus:outline-none text-white bg-green-600 hover:bg-green-700 focus:ring-2 focus:ring-green-300 font-medium rounded p-1">
-                                                <Icon icon="mdi:check-bold" class="w-4 h-4" />
-                                            </button>
-                                            <button @click="cancelEditing(item.originalIndex)" title="ยกเลิก" class="focus:outline-none text-white bg-red-600 hover:bg-red-700 focus:ring-2 focus:ring-red-300 font-medium rounded p-1">
-                                                <Icon icon="mdi:close-thick" class="w-4 h-4" />
-                                            </button>
-                                        </div>
-                                         <!-- In multi-edit mode, show only a per-row cancel button -->
-                                        <div v-else class="flex items-center justify-center">
-                                            <button @click="cancelEditing(item.originalIndex)" title="ยกเลิกการแก้ไขรายการนี้" class="focus:outline-none text-white bg-red-600 hover:bg-red-700 focus:ring-2 focus:ring-red-300 font-medium rounded p-1">
-                                                <Icon icon="mdi:close-thick" class="w-4 h-4" />
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <button v-else type="button" @click="startEditing(item, item.originalIndex)" title="แก้ไข" class="focus:outline-none text-white bg-amber-500 hover:bg-amber-600 focus:ring-2 focus:ring-amber-300 font-medium rounded text-xs p-1">
-                                        <Icon icon="mdi:pencil" class="w-4 h-4" />
-                                    </button>
-                                </td>
-                            </tr>
-                            
-                            <!-- Bottom padding for virtual scrolling -->
-                            <tr v-if="bottomPadding > 0">
-                                <td :colspan="16" :style="{ height: bottomPadding + 'px', padding: 0 }"></td>
-                            </tr>
+                                </template>
+                            </template>
                         </tbody>
                     </table>
                 </div>
@@ -389,7 +269,7 @@
 
         <!-- PO Detail Modal -->
         <div v-if="isPoDetailModalVisible"
-            class="fixed inset-0 bg-black bg-opacity-60 z-40 flex items-center justify-center p-4 sm:p-16">
+            class="fixed inset-0  bg-black bg-opacity-60 z-40 flex items-center justify-center p-4 sm:p-16">
             <div
                 class="bg-white rounded-lg shadow-2xl w-full max-w-7xl max-h-[90vh] flex flex-col transform transition-all duration-300 ease-in-out">
                 <!-- Modal Header -->
@@ -474,13 +354,15 @@
         </div>
 
         <!-- Multi-Save Loading Modal -->
-        <div v-if="isSavingMultiple" class="fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center p-4">
+        <div v-if="isSavingMultiple"
+            class="fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center p-4">
             <div class="bg-white rounded-lg shadow-2xl p-8 flex flex-col items-center space-y-4 w-full max-w-sm">
                 <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
                 <h3 class="text-lg font-semibold text-gray-800">กำลังบันทึกข้อมูล...</h3>
                 <div class="w-full">
                     <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
-                        <div class="bg-blue-600 h-2.5 rounded-full transition-all duration-300 ease-linear" :style="{ width: savePercentage + '%' }"></div>
+                        <div class="bg-blue-600 h-2.5 rounded-full transition-all duration-300 ease-linear"
+                            :style="{ width: savePercentage + '%' }"></div>
                     </div>
                     <p class="text-center text-gray-600 mt-2">
                         บันทึกแล้ว {{ saveProgress }} จาก {{ totalToSave }} รายการ
@@ -490,14 +372,16 @@
         </div>
 
         <!-- Confirm Reload Modal -->
-        <div v-if="showConfirmReload" class="fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center">
+        <div v-if="showConfirmReload"
+            class="fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center">
             <div class="bg-white rounded-lg p-6 flex flex-col items-center space-y-4">
                 <h3 class="text-lg font-semibold">ยืนยันการ Gen Back Order</h3>
                 <p>คุณต้องการสร้างข้อมูล Back Order ใหม่ใช่หรือไม่?</p>
                 <p class="text-sm text-gray-600">การดำเนินการนี้อาจใช้เวลาสักครู่</p>
                 <div class="flex space-x-4">
                     <button @click="confirmReload" class="bg-green-600 text-white px-4 py-2 rounded">ยืนยัน</button>
-                    <button @click="showConfirmReload = false" class="bg-gray-400 text-white px-4 py-2 rounded">ยกเลิก</button>
+                    <button @click="showConfirmReload = false"
+                        class="bg-gray-400 text-white px-4 py-2 rounded">ยกเลิก</button>
                 </div>
             </div>
         </div>
@@ -510,504 +394,374 @@
             </div>
         </div>
     </div>
+
+    <!-- Detail Modal -->
+    <div v-if="showDetailModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-center z-50 pt-4">
+        <div class="bg-white rounded-lg shadow-xl max-w-7xl w-full mx-4 max-h-[90vh] overflow-hidden">
+            <!-- Modal Header -->
+            <div class="flex items-center justify-between p-4 border-b border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-900">
+                    รายละเอียดข้อมูล - {{ selectedDetailData?.label || '' }}
+                </h3>
+                <button @click="closeDetailModal" class="text-gray-400 hover:text-gray-600">
+                    <Icon icon="mdi:close" class="w-6 h-6" />
+                </button>
+            </div>
+
+            <!-- Modal Content -->
+            <div class="p-4 overflow-auto max-h-[calc(90vh-120px)]">
+                <div class="relative shadow-md sm:rounded-lg overflow-x-auto">
+                    <table class="w-full text-xs text-left text-gray-500 border-collapse border border-gray-300">
+                        <thead class="text-xs text-white uppercase bg-blue-600">
+                            <tr>
+                                <th class="px-2 py-2 text-center border border-gray-300">
+                                    <div class="flex items-center justify-center">
+                                        คลัง
+                                        <Icon icon="mdi:chevron-down" class="w-4 h-4 ml-1" />
+                                    </div>
+                                </th>
+                                <th class="px-2 py-2 text-center border border-gray-300">
+                                    <div class="flex items-center justify-center">
+                                        SR Date
+                                        <Icon icon="mdi:chevron-down" class="w-4 h-4 ml-1" />
+                                    </div>
+                                </th>
+                                <th class="px-2 py-2 text-center border border-gray-300">
+                                    <div class="flex items-center justify-center">
+                                        กำหนดส่ง2
+                                        <Icon icon="mdi:chevron-down" class="w-4 h-4 ml-1" />
+                                    </div>
+                                </th>
+                                <th class="px-2 py-2 text-center border border-gray-300">
+                                    <div class="flex items-center justify-center">
+                                        เลขที่ใบสั่งซื้อ
+                                        <Icon icon="mdi:chevron-down" class="w-4 h-4 ml-1" />
+                                    </div>
+                                </th>
+                                <th class="px-2 py-2 text-center border border-gray-300">
+                                    <div class="flex items-center justify-center">
+                                        รหัสลูกค้า
+                                        <Icon icon="mdi:chevron-down" class="w-4 h-4 ml-1" />
+                                    </div>
+                                </th>
+                                <th class="px-2 py-2 text-center border border-gray-300">
+                                    <div class="flex items-center justify-center">
+                                        ชื่อลูกค้า
+                                        <Icon icon="mdi:chevron-down" class="w-4 h-4 ml-1" />
+                                    </div>
+                                </th>
+                                <th class="px-2 py-2 text-center border border-gray-300">
+                                    <div class="flex items-center justify-center">
+                                        จังหวัด2
+                                        <Icon icon="mdi:chevron-down" class="w-4 h-4 ml-1" />
+                                    </div>
+                                </th>
+                                <th class="px-2 py-2 text-center border border-gray-300">
+                                    <div class="flex items-center justify-center">
+                                        จังหวัด
+                                        <Icon icon="mdi:chevron-down" class="w-4 h-4 ml-1" />
+                                    </div>
+                                </th>
+                                <th class="px-2 py-2 text-center border border-gray-300">
+                                    <div class="flex items-center justify-center">
+                                        เกิน
+                                        <Icon icon="mdi:chevron-down" class="w-4 h-4 ml-1" />
+                                    </div>
+                                </th>
+                                <th class="px-2 py-2 text-center border border-gray-300">
+                                    <div class="flex items-center justify-center">
+                                        FG
+                                        <Icon icon="mdi:chevron-down" class="w-4 h-4 ml-1" />
+                                    </div>
+                                </th>
+                                <th class="px-2 py-2 text-center border border-gray-300">
+                                    <div class="flex items-center justify-center">
+                                        PM
+                                        <Icon icon="mdi:chevron-down" class="w-4 h-4 ml-1" />
+                                    </div>
+                                </th>
+                                <th class="px-2 py-2 text-center border border-gray-300">
+                                    <div class="flex items-center justify-center">
+                                        สาเหตุสิ้นเดือน
+                                        <Icon icon="mdi:chevron-down" class="w-4 h-4 ml-1" />
+                                    </div>
+                                </th>
+                                <th class="px-2 py-2 text-center border border-gray-300">
+                                    สาเหตุปัจจุบัน
+                                </th>
+                                <th class="px-2 py-2 text-center border border-gray-300">
+                                    <div class="flex items-center justify-center">
+                                        อื่นๆ (ระบุ)
+                                        <Icon icon="mdi:chevron-down" class="w-4 h-4 ml-1" />
+                                    </div>
+                                </th>
+                                <th class="px-2 py-2 text-center border border-gray-300">
+                                    <div class="flex items-center justify-center">
+                                        เลื่อนส่ง
+                                        <Icon icon="mdi:chevron-down" class="w-4 h-4 ml-1" />
+                                    </div>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="(detail, index) in detailData" :key="index"
+                                :class="index % 2 === 0 ? 'bg-gray-100' : 'bg-white'" class="border-b border-gray-300">
+                                <td class="px-2 py-1 text-center border border-gray-300">{{ detail.warehouse }}</td>
+                                <td class="px-2 py-1 text-center border border-gray-300">{{ detail.srDate }}</td>
+                                <td class="px-2 py-1 text-center border border-gray-300">{{ detail.deliveryDate }}</td>
+                                <td class="px-2 py-1 text-center border border-gray-300">{{ detail.poNumber }}</td>
+                                <td class="px-2 py-1 text-center border border-gray-300">{{ detail.customerCode }}</td>
+                                <td class="px-2 py-1 text-left border border-gray-300">{{ detail.customerName }}</td>
+                                <td class="px-2 py-1 text-center border border-gray-300">{{ detail.province2 }}</td>
+                                <td class="px-2 py-1 text-left border border-gray-300">{{ detail.province }}</td>
+                                <td class="px-2 py-1 text-center border border-gray-300">{{ detail.overdue }}</td>
+                                <td class="px-2 py-1 text-center border border-gray-300">{{ detail.fg }}</td>
+                                <td class="px-2 py-1 text-center border border-gray-300">{{ detail.pm }}</td>
+                                <td class="px-2 py-1 text-left border border-gray-300">{{ detail.reasonEndMonth }}</td>
+                                <td class="px-2 py-1 text-left border border-gray-300">{{ detail.currentReason }}</td>
+                                <td class="px-2 py-1 text-left border border-gray-300">{{ detail.others }}</td>
+                                <td class="px-2 py-1 text-center border border-gray-300">{{ detail.postponeDelivery ||
+                                    '-'
+                                }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
 </template>
 
 <script setup>
-import { ref, onMounted, computed, watch, nextTick } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import { Icon } from '@iconify/vue';
-import { useTransportStore, useBacklogStore, useAuthStore } from '@/stores';
-import { showError, showWarning, showSuccess } from '@/utils/toast';
-import * as XLSX from 'xlsx';
-import DatePicker from 'vue-datepicker-next';
-import 'vue-datepicker-next/index.css';
 import PageHeader from '@/components/PageHeader.vue';
 import ResultCount from '@/components/ResultCount.vue';
+import { useBacklogStore } from '@/stores/modules/backlog.js';
+import { useOmsBacklogStore } from '@/stores/modules/oms/manage/backlog.js';
 
-// Stores
-const transportStore = useTransportStore();
+
+// Store
 const backlogStore = useBacklogStore();
-const authStore = useAuthStore();
+const omsBacklogStore = useOmsBacklogStore();
 
 // Reactive data
-const selectedDC = ref('');
-const selectedStatus = ref('');
-const hasLoadedData = ref(false);
-const searchQuery = ref('');
+const selectedDC = ref(localStorage.getItem('selectedDC') || '');
+
+// Province filter state
+const showProvinceDropdown = ref(false);
+const selectedProvinces = ref(JSON.parse(localStorage.getItem('selectedProvinces') || '[]'));
+const availableProvinces = ref([]);
+const provinceDropdownRef = ref(null);
+
+// Modal state
+const showDetailModal = ref(false);
+const selectedDetailData = ref(null);
+const detailData = ref([]);
 const isPoDetailModalVisible = ref(false);
 const selectedPo = ref(null);
-const editingRowIndexes = ref(new Set());
-let originalRowData = new Map();
-
-// State for multi-save loading
-const isSavingMultiple = ref(false);
-const saveProgress = ref(0);
-const totalToSave = ref(0);
-
-const savePercentage = computed(() => {
-    return totalToSave.value > 0 ? (saveProgress.value / totalToSave.value) * 100 : 0;
-});
 
 // State for confirm reload
 const showConfirmReload = ref(false);
 const isReloading = ref(false);
 
+// State for saving multiple
+const isSavingMultiple = ref(false);
+const savePercentage = ref(0);
+const saveProgress = ref(0);
+const totalToSave = ref(0);
+
 // Computed properties from stores
-const isLoadingTransport = computed(() => transportStore.loading);
-const transportError = computed(() => transportStore.error);
-const transportOptions = computed(() => transportStore.getTransportOptions);
-
-const isLoadingBacklog = computed(() => backlogStore.loading);
-const backlogError = computed(() => backlogStore.error);
-const backlogData = computed(() => backlogStore.backlogList);
-const reasonOptions = computed(() => backlogStore.reasonOptions);
-
-const backlogSummaryPivot = computed(() => {
-    if (!backlogData.value) return { days: [], billCounts: [], fgTotals: [], pmTotals: [] };
-    // สร้าง map สำหรับแต่ละวัน
-    const map = {};
-    backlogData.value.forEach(item => {
-        const day = item.overdue;
-        if (!map[day]) {
-            map[day] = { bill: 0, fg: 0, pm: 0 };
-        }
-        map[day].bill += 1;
-        map[day].fg += Number(item.fg) || 0;
-        map[day].pm += Number(item.pm) || 0;
-    });
-    // เรียงวันที่จากน้อยไปมาก
-    const days = Object.keys(map).map(Number).sort((a, b) => a - b);
-    return {
-        days,
-        billCounts: days.map(d => map[d].bill),
-        fgTotals: days.map(d => map[d].fg),
-        pmTotals: days.map(d => map[d].pm)
-    };
-});
-
-// Edit Mode Functions
-const startEditing = (item, index) => {
-    originalRowData.set(index, JSON.parse(JSON.stringify(item)));
-    editingRowIndexes.value.add(index);
-};
-
-const cancelEditing = (index) => {
-    if (originalRowData.has(index)) {
-        const original = originalRowData.get(index);
-        const itemInList = filteredBacklogData.value.find((item, i) => i === index);
-        if (itemInList) {
-            Object.assign(itemInList, original);
-        }
-        originalRowData.delete(index);
-    }
-    editingRowIndexes.value.delete(index);
-};
-
-const saveChanges = async (item, index) => {
-    console.log("Saving changes for item:", item);
-    const result = await backlogStore.saveBacklogItem(item);
-    if (result.success) {
-        showSuccess('สำเร็จ', 'บันทึกข้อมูลเรียบร้อยแล้ว');
-        editingRowIndexes.value.delete(index);
-        originalRowData.delete(index);
-    } else {
-        showError('ผิดพลาด', `เกิดข้อผิดพลาดในการบันทึก: ${result.error}`);
-    }
-};
-
-const saveAllChanges = async () => {
-    const itemsToSave = Array.from(editingRowIndexes.value)
-        .map(index => filteredBacklogData.value[index])
-        .filter(item => item);
-
-    if (itemsToSave.length === 0) {
-        showWarning('ไม่มีรายการให้บันทึก', 'ไม่มีการเปลี่ยนแปลงข้อมูล');
-        return;
-    }
-
-    isSavingMultiple.value = true;
-    totalToSave.value = itemsToSave.length;
-    saveProgress.value = 0;
-
-    const progressCallback = (completedCount) => {
-        saveProgress.value = completedCount;
-    };
-
-    const result = await backlogStore.saveMultipleBacklogItems(itemsToSave, progressCallback);
-    
-    isSavingMultiple.value = false;
-
-    if (result.success) {
-        showSuccess('สำเร็จ', `บันทึกข้อมูล ${result.savedCount} รายการเรียบร้อยแล้ว`);
-        if (result.failedCount > 0) {
-            showWarning('ผิดพลาดบางรายการ', `ไม่สามารถบันทึกข้อมูลได้ ${result.failedCount} รายการ`);
-        }
-        editingRowIndexes.value.clear();
-        originalRowData.clear();
-    } else {
-        showError('ผิดพลาด', `เกิดข้อผิดพลาดในการบันทึก: ${result.error}`);
-    }
-};
-
-const cancelAllEditing = () => {
-    for (const index of editingRowIndexes.value) {
-        if (originalRowData.has(index)) {
-            const original = originalRowData.get(index);
-            const itemInList = filteredBacklogData.value.find((item, i) => i === index);
-            if (itemInList) {
-                Object.assign(itemInList, original);
-            }
-            originalRowData.delete(index);
-        }
-    }
-    editingRowIndexes.value.clear();
-};
-
-// Load transport data on component mount
-onMounted(() => {
-    loadTransportData();
-    backlogStore.fetchReasons();
-
-    // Restore from localStorage
-    selectedDC.value = localStorage.getItem('backlog_selectedDC') || '';
-    selectedStatus.value = localStorage.getItem('backlog_selectedStatus') || '';
-
-    // ถ้ามีค่า DC และ Status ที่เลือกไว้ ให้ดึงข้อมูลทันที
-    if (selectedDC.value && selectedStatus.value) {
-        loadData();
-    }
-
-    // ตั้งค่าความสูง container สำหรับ virtual scrolling
-    nextTick(() => {
-        setContainerHeight();
-    });
-});
-
-// Function to load transport data
-const loadTransportData = async () => {
-    await transportStore.fetchTransportList();
-    if (transportStore.error) {
-        showError('Error', 'ไม่สามารถโหลดข้อมูล DC ได้');
-    }
-};
-
-// Function to load backlog data
-const loadData = async () => {
-    if (!selectedDC.value || !selectedStatus.value) {
-        showWarning('คำเตือน', 'กรุณาเลือก DC และสถานะก่อนดึงข้อมูล');
-        return;
-    }
-    hasLoadedData.value = true;
-    
-    // Reset scroll position before loading new data
-    scrollTop.value = 0;
-    
-    await backlogStore.fetchBacklogData(selectedDC.value, selectedStatus.value);
-    if (backlogStore.error) {
-        showError('Error', `เกิดข้อผิดพลาด: ${backlogStore.error}`);
-    }
-    
-    // Reset scroll position after data is loaded
-    nextTick(() => {
-        const container = document.querySelector('.virtual-table-container');
-        if (container) {
-            container.scrollTop = 0;
-        }
-    });
-};
-
-const selectReason = (item, reason) => {
-    console.log(`Selected reason for item ${item.po_no}: ${reason}`);
-    // Implement logic to update the reason
-};
-
-const openCalendar = (item) => {
-    console.log(`Opening calendar for item ${item.po_no}`);
-    // Implement calendar opening logic
-};
-
-const editItem = (item) => {
-    console.log(`Editing item ${item.po_no}`);
-    // Implement edit item logic
-};
-
-const onDCChange = () => {
-    console.log(`Selected DC: ${selectedDC.value}`);
-    const selectedTransport = transportStore.getTransportById(selectedDC.value);
-    if (selectedTransport) {
-        transportStore.setSelectedTransport(selectedTransport);
-        console.log('Selected transport:', selectedTransport);
-    }
-};
-
-const onStatusChange = () => {
-    console.log(`Selected status: ${selectedStatus.value}`);
-};
-
-// Helper function to get status text
-const getStatusText = (status) => {
-    const statusMap = {
-        '1': 'เกินกำหนดส่ง',
-        '2': 'ครบกำหนดส่ง',
-        '3': 'ยังไม่ถึงกำหนดส่ง',
-        'ALL': 'ทุกสถานะ'
-    };
-    return statusMap[status] || '';
-};
-
-// Helper function to format date for Thai display
-const formatThaiDate = (dateString) => {
-    if (!dateString) return '';
-    const date = new Date(dateString);
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const year = date.getFullYear() + 543;
-
-    return `${day}/${month}/${year}`;
-};
-
-// Helper function to format date for HTML date input (YYYY-MM-DD)
-const formatDateForInput = (dateString) => {
-    if (!dateString || dateString.startsWith('1900-01-01')) return '';
-    const date = new Date(dateString);
-    return date.toISOString().split('T')[0]; // Returns YYYY-MM-DD format
-};
-
-// Helper function to convert HTML date input value to proper format
-const convertDateInputValue = (dateString) => {
-    if (!dateString) return '';
-    // HTML date input returns YYYY-MM-DD, convert to proper format if needed
-    return dateString;
-};
-
-// Function to format date for Excel
-const formatExcelDate = (dateStr) => {
-    if (!dateStr) return '';
-    const date = new Date(dateStr);
-    return `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getFullYear()}`;
-};
-
-// Function to format date as DD-MM-YYYY for Excel (for po_detail)
-const formatExcelDateDMY = (dateStr) => {
-    if (!dateStr) return '';
-    let dateObj = dateStr;
-    if (typeof dateStr === 'string' && dateStr.includes('T')) {
-        dateObj = new Date(dateStr);
-    } else if (dateStr instanceof Date) {
-        dateObj = dateStr;
-    } else {
-        return '';
-    }
-    const day = String(dateObj.getDate()).padStart(2, '0');
-    const month = String(dateObj.getMonth() + 1).padStart(2, '0');
-    const year = dateObj.getFullYear();
-    if (day === '01' && month === '01' && year === 1900) return '';
-    return `${day}-${month}-${year}`;
-};
-
-// Export to Excel function
-const exportToExcel = () => {
-    // Prepare summary row
-    const summaryRow = [
-        `คลัง ${selectedDC.value} : ${getSelectedDCName()}`,
-        `สถานะ: ${getStatusText(selectedStatus.value)}`,
-        '', '', '', '', '', '', '', '', '', '', '', '', ''
-    ];
-
-    console.log(summaryRow);
-    // Prepare header row
-    const headerRow = [
-        'ลำดับ', 'วันที่เปิด SR', 'กำหนดส่ง', 'เลขที่ใบสั่งซื้อ', 'รหัสลูกค้า', 'ชื่อลูกค้า',
-        'สถานที่จัดส่ง', 'จังหวัด', 'เกิน', 'ค้าง FG', 'ค้าง PM', 'สาเหตุ', 'อื่นๆ (ระบุ)', 'เลื่อนส่ง'
-    ];
-
-    // Prepare data rows
-    const dataRows = filteredBacklogData.value.map((item, index) => [
-        index + 1,
-        // item.wh_no,
-        formatExcelDate(item.date_create),
-        formatExcelDate(item.date_send),
-        item.po_no,
-        item.cus_code,
-        item.cus_name,
-        item.addressbl,
-        item.provincebl,
-        item.overdue,
-        item.fg,
-        item.pm,
-        item.reason_name,
-        item.otherbl,
-        formatExcelDateDMY(item.po_detail)
-    ]);
-    // Combine all rows
-    const aoa = [summaryRow, headerRow, ...dataRows];
-    // Create worksheet and merge summary cells if needed
-    const ws = XLSX.utils.aoa_to_sheet(aoa);
-    // Set column widths
-    const colWidths = [
-        { wch: 8 },  // ลำดับ
-        { wch: 12 }, // วันที่เปิด SR
-        { wch: 12 }, // กำหนดส่ง
-        { wch: 15 }, // เลขที่ใบสั่งซื้อ
-        { wch: 12 }, // รหัสลูกค้า
-        { wch: 30 }, // ชื่อลูกค้า
-        { wch: 40 }, // สถานที่จัดส่ง
-        { wch: 15 }, // จังหวัด
-        { wch: 8 },  // เกิน
-        { wch: 8 },  // ค้าง FG
-        { wch: 8 },  // ค้าง PM
-        { wch: 15 }, // สาเหตุ
-        { wch: 15 }, // อื่นๆ (ระบุ)
-        { wch: 12 }  // เลื่อนส่ง
-    ];
-    ws['!cols'] = colWidths;
-    // Create workbook
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'ออเดอร์ค้างส่ง');
-    // Generate filename with current date
-    const now = new Date();
-    const filename = `bl_${selectedDC.value}_${getStatusText(selectedStatus.value)}_${now.getFullYear()}${(now.getMonth() + 1).toString().padStart(2, '0')}${now.getDate().toString().padStart(2, '0')}.xlsx`;
-    // Save file
-    XLSX.writeFile(wb, filename);
-};
-
-// Modal Functions
-const openPoDetail = (item) => {
-    selectedPo.value = item;
-    isPoDetailModalVisible.value = true;
-    backlogStore.fetchPoDetails(item.po_no, item.wh_no);
-};
-
-const closePoDetailModal = () => {
-    isPoDetailModalVisible.value = false;
-    selectedPo.value = null;
-};
-
-// Function to confirm reload
-const confirmReload = async () => {
-    showConfirmReload.value = false;
-    isReloading.value = true;
-    
-    try {
-        // Reset scroll position before reloading
-        scrollTop.value = 0;
-        
-        // Call gen-back-order API
-        const params = {
-            warehouse: selectedDC.value || '',
-            start_date: '', // You can add date filters if needed
-            end_date: ''
-        };
-        
-        const result = await transportStore.getGenBackOrderData(params);
-        
-        if (result.success) {
-            showSuccess('สำเร็จ', 'ดึงข้อมูลใหม่เรียบร้อยแล้ว');
-            // Optionally reload the current backlog data
-            if (selectedDC.value && selectedStatus.value) {
-                await loadData();
-            }
-        } else {
-            showError('ผิดพลาด', result.message || 'ไม่สามารถดึงข้อมูลใหม่ได้');
-        }
-    } catch (err) {
-        showError('ผิดพลาด', 'เกิดข้อผิดพลาดในการดึงข้อมูลใหม่');
-        console.error('Error in confirmReload:', err);
-    } finally {
-        isReloading.value = false;
-    }
-};
-
-// Helper function to get selected DC name
-const getSelectedDCName = () => {
-    const selectedTransport = transportStore.getTransportById(selectedDC.value);
-    return selectedTransport ? selectedTransport.who_name : 'เลือก DC';
-};
-
-// Computed property for filtered backlog data
-const filteredBacklogData = computed(() => {
-    if (!backlogData.value || !searchQuery.value) {
-        return backlogData.value;
-    }
-    return backlogData.value.filter(item => {
-        const searchTerm = searchQuery.value.toLowerCase();
-        return (
-            (item.cus_name && item.cus_name.toLowerCase().includes(searchTerm)) ||
-            (item.po_no && item.po_no.toLowerCase().includes(searchTerm)) ||
-            (item.addressbl && item.addressbl.toLowerCase().includes(searchTerm)) ||
-            (item.provincebl && item.provincebl.toLowerCase().includes(searchTerm))
-        );
-    });
-});
-
-// Watch for changes in selectedDC and selectedStatus
-watch(selectedDC, (val) => {
-    localStorage.setItem('backlog_selectedDC', val || '');
-});
-
-watch(selectedStatus, (val) => {
-    localStorage.setItem('backlog_selectedStatus', val || '');
-});
-
-// Watch for changes in backlogData to reset scroll position
-watch(backlogData, () => {
-    // Reset scroll position when data changes
-    scrollTop.value = 0;
-    nextTick(() => {
-        const container = document.querySelector('.virtual-table-container');
-        if (container) {
-            container.scrollTop = 0;
-        }
-    });
-});
-
-const hoverCol = ref(null);
-
-// Virtual scrolling properties
-const rowHeight = 40; // ความสูงแต่ละแถว (px)
-const visibleRows = 20; // จำนวนแถวที่แสดงพร้อมกัน
-const scrollTop = ref(0);
-const containerHeight = ref(0);
-
-// คำนวณแถวที่ควรแสดงจาก scroll position
-const virtualScrollData = computed(() => {
-    if (!filteredBacklogData.value) return [];
-    
-    const startIndex = Math.floor(scrollTop.value / rowHeight);
-    const endIndex = Math.min(startIndex + visibleRows, filteredBacklogData.value.length);
-    
-    return filteredBacklogData.value.slice(startIndex, endIndex).map((item, index) => ({
-        ...item,
-        virtualIndex: startIndex + index,
-        originalIndex: startIndex + index
+const isLoadingTransport = computed(() => omsBacklogStore.isLoadingWarehouse);
+const transportError = computed(() => omsBacklogStore.warehouseError);
+const transportOptions = computed(() => {
+    return omsBacklogStore.warehouseData.map(warehouse => ({
+        value: warehouse.who_no,
+        label: warehouse.who_name
     }));
 });
 
-// คำนวณ padding-top เพื่อให้ scroll bar ถูกต้อง
-const topPadding = computed(() => {
-    return Math.floor(scrollTop.value / rowHeight) * rowHeight;
+const isLoadingBacklog = computed(() => false);
+const backlogError = computed(() => null);
+const backlogData = computed(() => {
+    return [];
 });
 
-// คำนวณ padding-bottom เพื่อให้ความสูงรวมเท่าเดิม
-const bottomPadding = computed(() => {
-    if (!filteredBacklogData.value) return 0;
-    const totalHeight = filteredBacklogData.value.length * rowHeight;
-    const visibleHeight = visibleRows * rowHeight;
-    const remainingHeight = totalHeight - visibleHeight - topPadding.value;
-    return Math.max(0, remainingHeight);
+
+// Watch for changes in selectedDC and selectedStatus
+watch(selectedDC, (val) => {
+    console.log('Selected DC changed:', val);
 });
 
-// จัดการ scroll event
-const handleScroll = (event) => {
-    scrollTop.value = event.target.scrollTop;
+
+// Call API on component mount
+onMounted(() => {
+    // ดึงข้อมูล warehouse เมื่อ component mount
+    omsBacklogStore.fetchWarehouseData();
+    console.log('Component mounted - loading warehouse data');
+
+    // Add click outside listener
+    document.addEventListener('click', handleClickOutside);
+
+    // Auto load data if DC is already selected
+    if (selectedDC.value) {
+        console.log('Auto loading data for saved DC:', selectedDC.value);
+        loadData();
+    }
+});
+
+// Function to confirm reload
+const confirmReload = async () => {
+    console.log('Confirm reload - placeholder');
 };
 
-// ตั้งค่าความสูง container
-const setContainerHeight = () => {
-    const container = document.querySelector('.virtual-table-container');
-    if (container) {
-        containerHeight.value = container.clientHeight;
+// Function to load data with selected DC and Status
+const loadData = async () => {
+    if (selectedDC.value) {
+        await omsBacklogStore.fetchData(selectedDC.value);
+        // Update available provinces after data is loaded
+        availableProvinces.value = omsBacklogStore.filteredPlanningData.map(province => province.label);
+
+        // Apply saved province filter if exists
+        if (selectedProvinces.value.length > 0) {
+            omsBacklogStore.setProvinceFilter(selectedProvinces.value);
+        }
     }
 };
+
+// Function to calculate total customers
+const getTotalCustomers = () => {
+    return omsBacklogStore.filteredPlanningData.reduce((total, province) => {
+        return total + province.children.length;
+    }, 0);
+};
+
+// Function to calculate total POs
+const getTotalPOs = () => {
+    return omsBacklogStore.filteredPlanningData.reduce((total, province) => {
+        return total + province.total;
+    }, 0);
+};
+
+// Province filter functions
+const toggleProvinceDropdown = () => {
+    showProvinceDropdown.value = !showProvinceDropdown.value;
+};
+
+const applyProvinceFilter = () => {
+    showProvinceDropdown.value = false;
+    // Save selected provinces to localStorage
+    localStorage.setItem('selectedProvinces', JSON.stringify(selectedProvinces.value));
+
+    // Filter data based on selected provinces
+    if (selectedProvinces.value.length > 0) {
+        // Filter the data in the store
+        omsBacklogStore.setProvinceFilter(selectedProvinces.value);
+    } else {
+        // Clear filter if no provinces selected
+        omsBacklogStore.clearProvinceFilter();
+    }
+};
+
+// Close dropdown when clicking outside
+const handleClickOutside = (event) => {
+    if (provinceDropdownRef.value && !provinceDropdownRef.value.contains(event.target)) {
+        showProvinceDropdown.value = false;
+    }
+};
+
+// Modal functions
+const openDetailModal = (item) => {
+    selectedDetailData.value = item;
+    detailData.value = generateMockDetailData();
+    showDetailModal.value = true;
+};
+
+const closeDetailModal = () => {
+    showDetailModal.value = false;
+    selectedDetailData.value = null;
+};
+
+const generateMockDetailData = () => {
+    // Mockup detail data based on the item
+    const mockDetailData = [
+        {
+            warehouse: '111',
+            srDate: '26/2/2025',
+            deliveryDate: '3/3/2025',
+            poNumber: '680215082',
+            customerCode: '11140008',
+            customerName: 'แผงเจ้แมว',
+            province2: 'บางใหญ่',
+            province: 'ต.เสาธงหิน อ.บางใหญ่ จ.นนทบุรี 11140',
+            overdue: -4,
+            fg: 470,
+            pm: 0,
+            reasonEndMonth: 'สินค้าขาดสต๊อก',
+            currentReason: 'ลูกค้าเลื่อนนัด',
+            others: 'เนื่องจากพื้นที่จัดเก็บลูกค้าไม่เพียงพอ',
+            postponeDelivery: ''
+        },
+        {
+            warehouse: '111',
+            srDate: '28/2/2025',
+            deliveryDate: '3/3/2025',
+            poNumber: '680215087',
+            customerCode: '11140046',
+            customerName: 'ร้านพร้อมโชค',
+            province2: 'บางใหญ่',
+            province: 'ต.เสาธงหิน อ.บางใหญ่',
+            overdue: -4,
+            fg: 218,
+            pm: 0,
+            reasonEndMonth: 'สินค้าขาดสต๊อก',
+            currentReason: 'เกินเทียว',
+            others: 'แบ่งส่งสินค้า',
+            postponeDelivery: ''
+        }
+    ];
+
+    return mockDetailData;
+};
+
+
+const onDCChange = () => {
+    console.log(`Selected DC: ${selectedDC.value}`);
+    // Save selected DC to localStorage
+    if (selectedDC.value) {
+        localStorage.setItem('selectedDC', selectedDC.value);
+    } else {
+        localStorage.removeItem('selectedDC');
+    }
+};
+
+// Function to clear all data and filters
+const clearAllData = () => {
+    // Clear localStorage
+    localStorage.removeItem('selectedDC');
+    localStorage.removeItem('selectedProvinces');
+
+    // Reset reactive data
+    selectedDC.value = '';
+    selectedProvinces.value = [];
+
+    // Clear store filters
+    omsBacklogStore.clearProvinceFilter();
+    omsBacklogStore.setSearchQuery('');
+
+    // Clear available provinces
+    availableProvinces.value = [];
+
+    console.log('All data cleared');
+};
+
+// Initialize data on component mount
+onMounted(() => {
+    // No longer needed as updatePlanningData and calculateMonthTotal are removed
+});
+
+
+
 </script>
 
 <style scoped>
@@ -1094,6 +848,7 @@ const setContainerHeight = () => {
         opacity: 0;
         transform: scale(0.95);
     }
+
     to {
         opacity: 1;
         transform: scale(1);

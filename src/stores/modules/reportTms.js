@@ -175,7 +175,10 @@ export const useReportTmsStore = defineStore('reportTms', () => {
   };
 
   const planningData = ref([])
+  const brandData = ref([])
+  const groupData = ref([])
   const loadingPlanning = ref(false)
+  const loadingGeneratePlanning = ref(false)
   const errorPlanning = ref(null)
 
   async function fetchPlanningAll() {
@@ -183,9 +186,13 @@ export const useReportTmsStore = defineStore('reportTms', () => {
     errorPlanning.value = null
     try {
       const response = await api.get(`${import.meta.env.VITE_API_BASE_URL || ''}/api/report/oms/planning-all`)
-      console.log(response.data.data.data)
+      // console.log(response.data.data.data)
       if (response.data?.status?.code === 200) {
         planningData.value = response.data.data.data || []
+        brandData.value = response.data.data.brandItems || []
+        console.log('Brand data:', brandData.value)
+        groupData.value = response.data.data.groupItems || []
+        console.log('Group data:', groupData.value)
       } else {
         planningData.value = []
       }
@@ -198,8 +205,50 @@ export const useReportTmsStore = defineStore('reportTms', () => {
     }
   }
 
+  async function generatePlanningData() {
+    loadingGeneratePlanning.value = true
+    errorPlanning.value = null
+    try {
+      const authStore = useAuthStore();
+      const response = await api.post(`${import.meta.env.VITE_API_BASE_URL || ''}/api/report/oms/planning-all/gen-data-pnl`, {}, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${authStore.token}`
+        }
+      });
+      
+      if (response.data?.status?.code === 200) {
+        // Refresh data after successful generation
+        await fetchPlanningAll();
+        return { success: true, message: 'Generated planning data successfully' };
+      } else {
+        throw new Error(response.data?.status?.message || 'Failed to generate planning data');
+      }
+    } catch (e) {
+      let errorMessage = 'เกิดข้อผิดพลาดในการสร้างข้อมูล Planning';
+      if (e.response) {
+        if (e.response.status === 401) {
+          errorMessage = 'Session expired. Please login again.';
+        } else {
+          errorMessage = e.response.data?.message || errorMessage;
+        }
+      } else if (e.request) {
+        errorMessage = 'Network error. Please check your connection.';
+      } else {
+        errorMessage = e.message || errorMessage;
+      }
+      errorPlanning.value = errorMessage;
+      console.error('Error generating planning data:', e);
+      return { success: false, message: errorMessage };
+    } finally {
+      loadingGeneratePlanning.value = false;
+    }
+  }
+
   // State for planning detail data
   const planningDetailData = ref([])
+  const groupItemsForDeatil = ref([])
+  const brandItemsFoDeatil = ref([])
   const loadingPlanningDetail = ref(false)
   const errorPlanningDetail = ref(null)
 
@@ -208,7 +257,7 @@ export const useReportTmsStore = defineStore('reportTms', () => {
   const loadingCreditLimit = ref(false)
   const errorCreditLimit = ref(null)
 
-  async function fetchPlanningDetail(warehouseId) {
+  async function fetchPlanningDetail(warehouseId, activeButton) {
     loadingPlanningDetail.value = true
     errorPlanningDetail.value = null
     try {
@@ -216,7 +265,8 @@ export const useReportTmsStore = defineStore('reportTms', () => {
       const response = await api.get(`${API_BASE_URL}/api/report/oms/planning-all/show-pna-dc`, {
         params: { 
           hcase: 'show_pna_dc', 
-          p1: warehouseId 
+          p1: warehouseId ,
+          p2:activeButton
         },
         headers: {
           'Content-Type': 'application/json',
@@ -225,7 +275,14 @@ export const useReportTmsStore = defineStore('reportTms', () => {
       });
       
       if (response.data?.status?.code === 200) {
+        console.log('Planning detail data:', response.data.data)
+        console.log('Planning detail data length:', response.data.data?.length || 0)
         planningDetailData.value = response.data.data || []
+        console.log('Store planningDetailData value:', planningDetailData.value)
+        groupItemsForDeatil.value = response.data.data.groupItems || []
+        console.log('Group items for detail:', groupItemsForDeatil.value)
+        brandItemsFoDeatil.value = response.data.data.brandItems || []
+        console.log('Brand items for detail:', brandItemsFoDeatil.value)
         return { success: true, data: planningDetailData.value };
       } else {
         throw new Error(response.data?.status?.message || 'Failed to fetch planning detail data');
@@ -307,9 +364,14 @@ export const useReportTmsStore = defineStore('reportTms', () => {
     roudcosPayOptions,
     codeTruckOptions,
     planningData,
+    brandData,
+    groupData,
     loadingPlanning,
+    loadingGeneratePlanning,
     errorPlanning,
     planningDetailData,
+    groupItemsForDeatil,
+    brandItemsFoDeatil,
     loadingPlanningDetail,
     errorPlanningDetail,
     creditLimitData,
@@ -332,5 +394,6 @@ export const useReportTmsStore = defineStore('reportTms', () => {
     fetchPlanningAll,
     fetchPlanningDetail,
     fetchCreditLimitData,
+    generatePlanningData,
   };
 }); 

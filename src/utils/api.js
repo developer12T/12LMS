@@ -44,6 +44,13 @@ api.interceptors.request.use(async config => {
   } catch (e) {
     user = {};
   }
+  
+  // Add authorization header if token exists
+  const authStore = useAuthStore();
+  if (authStore.token) {
+    config.headers.Authorization = `Bearer ${authStore.token}`;
+  }
+  
   config.headers.employeeID = user.employeeID || '';
   config.headers.fullName = user.fullName || '';
   config.headers.fullNameThai = '';
@@ -63,9 +70,27 @@ api.interceptors.request.use(async config => {
   return config;
 }, error => Promise.reject(error));
 
+// Add response interceptor to handle 401 errors
+api.interceptors.response.use(
+  response => response,
+  async error => {
+    if (error.response && error.response.status === 401) {
+      // Token expired or invalid, logout user
+      const authStore = useAuthStore();
+      console.log('Token expired, logging out user...');
+    await  authStore.logout();
+      
+      
+      // Redirect to login page
+      window.location.href = '/12lms/login?redirect=' + window.location.pathname;
+    }
+    return Promise.reject(error);
+  }
+);
+
 // Create fetch wrapper with authentication
 export const apiClient = {
-  async request(endpoint, options = {}) {
+  async request(endpoint, options = {}) { 
     const authStore = useAuthStore();
     
     // Add base URL

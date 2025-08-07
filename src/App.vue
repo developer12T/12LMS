@@ -8,7 +8,7 @@ import { ref, computed } from 'vue';
 const route = useRoute();
 
 const sideBarRef = ref();
-const isDailyStockPage = computed(() => route.path === '/oms/report/daily-stock');
+const isDailyStockPage = computed(() => route.path === '/oms/report/daily-stock' || route.path === '/oms/report/plan-total');
 // const isUploadExcelPage = computed(() => route.path === '/upload-excel');
 const showOverlay = computed(() =>
   isDailyStockPage.value &&

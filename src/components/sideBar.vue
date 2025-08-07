@@ -30,7 +30,7 @@
     <!-- Navigation - Scrollable -->
     <nav :class="[isCollapsed ? 'overflow-visible' : 'overflow-y-auto overflow-x-hidden', 'flex-1']">
       <div v-for="(data, system) in menuData" :key="system" class="relative" v-show="isMenuVisible(system, data)">
-        <button @click="isCollapsed ? toggleMiniMenu(system) : toggleMenu(system)" v-if="system === 'OMS' || system === 'PDM'"
+        <button @click="isCollapsed ? toggleMiniMenu(system) : toggleMenu(system)" v-if="system === 'OMS' || system === 'MMS' || system === 'CNS'"
           :title="isCollapsed ? 'คลิกเพื่อขยายเมนู' : ''" :class="[
             'w-full flex items-center px-4 py-3 text-left hover:bg-sky-600 transition-colors relative text-sm',
             isCollapsed ? 'justify-center' : 'justify-between',
@@ -299,7 +299,7 @@ const menuData = {
       'จัดการ': {
         icon: 'mdi:cog',
         children: [
-          // 'ออเดอร์ค้างส่ง',
+          'ออเดอร์ค้างส่ง',
           // 'ออเดอร์ค้างส่ง(หน่วยรถ)',
           // 'กำหนดปริมาตรและน้ำหนักรถบรรทุก',
           // 'จัดการค่าขนส่ง',
@@ -352,9 +352,23 @@ const menuData = {
       }
     }
   },
-  PDM: {
+  CNS: {
+    icon: 'mingcute:card-pay-fill',
+    label: 'Credit Note Management',
+    items: {
+      'Reports': {
+        icon: 'mdi:file-chart',
+        children: []
+      },
+      'Management': {
+        icon: 'mdi:cog',
+        children: []
+      }
+    }
+  },
+  MMS: {
     icon: 'mdi:package-variant',
-    label: 'Product Department Management',
+    label: 'Manufacture Management ',
     items: {
       'Reports': {
         icon: 'mdi:trending-up',
@@ -431,7 +445,13 @@ function getRoutePath(system, category, item) {
       'Management': {
       }
     },
-    'PDM': {
+    'CNS': {
+      'Reports': {
+      },
+      'Management': {
+      }
+    },
+    'MMS': {
       'Reports': {
       },
       'Management': {
