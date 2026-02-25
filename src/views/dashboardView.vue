@@ -40,7 +40,7 @@
                 <h3 class="text-sm font-semibold text-gray-900 dark:text-white">รายงาน</h3>
               </div>
               <div class="grid grid-cols-4 gap-2">
-                <router-link to="/tms/report/daily-stock"
+                <router-link to="/oms/report/daily-stock"
                   class="bg-gray-50 dark:bg-gray-700 rounded-lg p-3 border border-gray-200 dark:border-gray-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:border-blue-300 dark:hover:border-blue-500 transition-all duration-200 group">
                   <div class="flex items-center space-x-2 mb-2">
                     <div
@@ -55,7 +55,7 @@
                   <p class="text-xs text-gray-500 dark:text-gray-400">รายงานสต็อกประจำวัน</p>
                 </router-link>
 
-                <router-link to="/tms/report/not-bill"
+                <router-link to="/oms/report/not-bill"
                   class="bg-gray-50 dark:bg-gray-700 rounded-lg p-3 border border-gray-200 dark:border-gray-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:border-blue-300 dark:hover:border-blue-500 transition-all duration-200 group">
                   <div class="flex items-center space-x-2 mb-2">
                     <div
@@ -70,7 +70,7 @@
                   <p class="text-xs text-gray-500 dark:text-gray-400">รายการที่ไม่ได้วางบิล</p>
                 </router-link>
 
-                <router-link to="/tms/report/plan-total"
+                <router-link to="/oms/report/plan-total"
                   class="bg-gray-50 dark:bg-gray-700 rounded-lg p-3 border border-gray-200 dark:border-gray-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:border-blue-300 dark:hover:border-blue-500 transition-all duration-200 group">
                   <div class="flex items-center space-x-2 mb-2">
                     <div
@@ -85,7 +85,7 @@
                   <p class="text-xs text-gray-500 dark:text-gray-400">รายงานแผนรวม</p>
                 </router-link>
 
-                <router-link to="/tms/report/shipment-cost"
+                <router-link to="/oms/report/shipment-cost"
                   class="bg-gray-50 dark:bg-gray-700 rounded-lg p-3 border border-gray-200 dark:border-gray-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:border-blue-300 dark:hover:border-blue-500 transition-all duration-200 group">
                   <div class="flex items-center space-x-2 mb-2">
                     <div
@@ -109,7 +109,7 @@
                 <h3 class="text-sm font-semibold text-gray-900 dark:text-white">จัดการ</h3>
               </div>
               <div class="grid grid-cols-4 gap-2">
-                <router-link to="/tms/manage/backlog"
+                <router-link to="/oms/manage/backlog"
                   class="bg-gray-50 dark:bg-gray-700 rounded-lg p-3 border border-gray-200 dark:border-gray-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:border-blue-300 dark:hover:border-blue-500 transition-all duration-200 group">
                   <div class="flex items-center space-x-2 mb-2">
                     <div
