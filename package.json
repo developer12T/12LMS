@@ -1,0 +1,47 @@
+{
+  "name": "storedtug",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@tanstack/vue-virtual": "^3.13.11",
+    "@vueuse/core": "^10.2.1",
+    "ag-grid-vue3": "^33.3.2",
+    "axios": "^1.4.0",
+    "chart.js": "^4.5.0",
+    "cors": "^2.8.5",
+    "date-fns": "^2.30.0",
+    "dotenv": "^16.3.1",
+    "exceljs": "^4.4.0",
+    "file-saver": "^2.0.5",
+    "flowbite": "^1.7.0",
+    "jspdf": "^3.0.1",
+    "jspdf-autotable": "^5.0.2",
+    "moment": "^2.29.4",
+    "pdfmake": "^0.2.10",
+    "pinia": "^2.1.4",
+    "socket.io-client": "^4.7.2",
+    "sweetalert2": "^11.21.0",
+    "vue": "^3.3.4",
+    "vue-chartjs": "^5.3.2",
+    "vue-datepicker-next": "^1.0.3",
+    "vue-router": "^4.2.4",
+    "vue-toastification": "^2.0.0-rc.5",
+    "vue3-select": "^0.1.1",
+    "vue3-virtual-scroll-list": "^0.2.1",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "@iconify/vue": "^4.1.1",
+    "@vitejs/plugin-vue": "^4.2.3",
+    "autoprefixer": "^10.4.14",
+    "postcss": "^8.4.26",
+    "tailwindcss": "^3.3.3",
+    "vite": "^4.4.0"
+  }
+}
